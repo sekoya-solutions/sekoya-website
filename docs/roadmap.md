@@ -19,7 +19,7 @@ Everything the pages build on.
 
 ## [Epic #11](https://github.com/sekoya-solutions/sekoya-website/issues/11): Home page
 
-- [#9](https://github.com/sekoya-solutions/sekoya-website/issues/9) Hero and logo growth animation: the inlined animated logo with its circuit extension, halo and dot grid, the copy and the calls to action.
+- [#9](https://github.com/sekoya-solutions/sekoya-website/issues/9) Hero and logo growth animation: the inlined animated logo with its circuit extension, halo, travelling dot and dot grid, in pure CSS with nothing running under reduced motion; the copy in the first content collection, with `[TODO: …]` placeholder chips for the facts still to approve; and the calls to action, each shown once its page exists.
 - [#10](https://github.com/sekoya-solutions/sekoya-website/issues/10) Home sections: value propositions, offers teaser, featured case study with its integration map, portfolio teaser, quiz teaser, contact band, circuit dividers and scroll reveal.
 
 ## [Epic #17](https://github.com/sekoya-solutions/sekoya-website/issues/17): Content pages

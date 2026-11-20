@@ -1,0 +1,20 @@
+{
+  "hero": {
+    "eyebrow": "Sekoya Solutions · [TODO: région] · Remote",
+    "title": {
+      "lead": "Tech Lead freelance",
+      "rest": "je débloque, structure et accélère vos projets"
+    },
+    "lead": "Quand un projet patine, je pose un diagnostic net, un cadre technique clair, et la livraison repart. Je m'appuie sur l'IA pour aller plus vite, et je réponds de chaque ligne.",
+    "actions": [
+      { "label": "Me contacter", "page": "contact", "variant": "primary" },
+      { "label": "Voir les offres", "page": "offers", "variant": "ghost" }
+    ],
+    "trust": [
+      "[TODO: années d'expérience]",
+      "E-commerce · Architecture · CI/CD",
+      "Next.js · Astro · Unity"
+    ],
+    "scrollHint": "Défiler"
+  }
+}

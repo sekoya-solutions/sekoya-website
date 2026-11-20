@@ -1,9 +1,11 @@
 ---
 /**
  * The layout of every page: the head (language, hreflang alternates, font,
- * theme script, icons), a skip link, the header and footer shells, and the
- * page's content in <main>. The page's route comes from its path, which must
- * be in src/i18n/routes.ts in the page's language, or the build fails.
+ * theme script, icons, and what the page adds in its `head` slot), a skip
+ * link, the header and footer shells, and the page's content in <main>, where
+ * each section sets its own width. The page's route comes from its path,
+ * which must be in src/i18n/routes.ts in the page's language, or the build
+ * fails.
  */
 import { Font } from "astro:assets";
 import Footer from "../components/layout/Footer.astro";
@@ -49,6 +51,7 @@ const t = translations(locale);
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
+    <slot name="head" />
   </head>
   <body>
     <a
@@ -57,7 +60,7 @@ const t = translations(locale);
       >{t.layout.skipLink}</a
     >
     <Header route={route} />
-    <main id="content" tabindex="-1" class="mx-auto max-w-site px-(--gutter) focus:outline-none">
+    <main id="content" tabindex="-1" class="focus:outline-none">
       <slot />
     </main>
     <Footer />

@@ -1,14 +1,26 @@
 ---
 /**
  * The home page, in the page's language: src/pages/index.astro in French and
- * src/pages/en/index.astro in English. Its sections come with #9 and #10.
+ * src/pages/en/index.astro in English. Its copy is in src/content/home; its
+ * sections after the hero come with #10.
  */
-import { translations } from "../../i18n";
-import BaseLayout from "../../layouts/BaseLayout.astro";
 
-const t = translations(Astro.currentLocale);
+import { translations } from "../../i18n";
+import { pageLocale } from "../../i18n/config";
+import { homeContent } from "../../i18n/content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Hero from "./Hero.astro";
+import { scene, sceneCssHash } from "./scene";
+
+const locale = pageLocale(Astro.currentLocale);
+const t = translations(locale);
+const copy = await homeContent(locale);
+// The scene's timing rules are an inline <style>, which the policy must allow.
+if (Astro.csp === undefined) throw new Error("astro.config.mjs must enable the CSP");
+Astro.csp.insertStyleHash(sceneCssHash);
 ---
 
 <BaseLayout title={t.home.title} description={t.home.description}>
-  <h1 class="py-16 text-h1 leading-[1.08] font-bold tracking-[-0.02em]">Sekoya Solutions</h1>
+  <style slot="head" is:inline set:html={scene.css}></style>
+  <Hero copy={copy.hero} locale={locale} />
 </BaseLayout>

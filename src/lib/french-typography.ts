@@ -25,10 +25,21 @@ export type StringTree = { readonly [key: string]: string | StringTree };
 
 /** Applies French typography to every string of a tree, keeping its shape. */
 export function frenchTypographyTree<T extends StringTree>(tree: T): T {
-  return Object.fromEntries(
-    Object.entries(tree).map(([key, value]) => [
-      key,
-      typeof value === "string" ? frenchTypography(value) : frenchTypographyTree(value),
-    ]),
-  ) as T;
+  return frenchTypographyDeep(tree);
+}
+
+/**
+ * Applies French typography to every string of a value, such as a content
+ * entry, through its objects and arrays, keeping its shape; other values
+ * (numbers, booleans) are kept as they are.
+ */
+export function frenchTypographyDeep<T>(value: T): T {
+  if (typeof value === "string") return frenchTypography(value) as T;
+  if (Array.isArray(value)) return value.map((item) => frenchTypographyDeep(item)) as T;
+  if (typeof value === "object" && value !== null) {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, item]) => [key, frenchTypographyDeep(item)]),
+    ) as T;
+  }
+  return value;
 }

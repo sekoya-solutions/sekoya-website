@@ -1,0 +1,261 @@
+---
+/**
+ * The hero's decorative scene: the halo and the animated logo with its
+ * circuit extension (src/lib/hero-scene.ts). Its timing rules go in the page's
+ * head, from Home.astro. Pure CSS: no JavaScript.
+ *
+ * The growth plays once, from 0.10 s to 3.35 s; the halo then breathes and one
+ * dot travels along a trace. Under reduced motion no animation is declared at
+ * all, and the final state shows at once.
+ *
+ * Layout, from the home mockups. From 1024 px wide, the scene fills the hero
+ * behind the copy, on a 1440 px stage centred in the page, masked on the left
+ * so the traces never cross the text; beyond the stage, the traces run on to
+ * the page's edges. Below 1024 px, it sits above the copy, cropped to the
+ * mobile view (x from -330 to 1354 and y from -90 to 1040, in logo units).
+ */
+import { scene } from "./scene";
+---
+
+<div class="hero-scene" aria-hidden="true">
+  <div class="hero-stage">
+    <div class="hero-halo"></div>
+    <Fragment set:html={scene.svg} />
+  </div>
+</div>
+
+<style is:global>
+  /* Mobile view: the stage, 2800 units wide, is shown through a window of
+     1684 x 1130 units starting 1174 units from its left edge. */
+  .hero-scene {
+    position: relative;
+    max-width: 640px;
+    margin: 2px auto 22px;
+    aspect-ratio: 1684 / 1130;
+    overflow: hidden;
+  }
+
+  .hero-stage {
+    position: absolute;
+    top: 0;
+    left: calc(-1174 / 1684 * 100%);
+    width: calc(2800 / 1684 * 100%);
+    aspect-ratio: 2800 / 1190;
+  }
+
+  .hero-scene-svg {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  /* The halo: a soft glow behind the logo, never a neon. */
+  .hero-halo {
+    position: absolute;
+    left: 48.85%;
+    top: -4.4%;
+    width: 46.3%;
+    aspect-ratio: 1;
+    pointer-events: none;
+    background: radial-gradient(
+      closest-side,
+      rgb(34 192 138 / 0.2),
+      rgb(34 192 138 / 0.07) 55%,
+      transparent
+    );
+  }
+
+  :root[data-theme="light"] .hero-halo {
+    background: radial-gradient(
+      closest-side,
+      rgb(22 146 122 / 0.16),
+      rgb(22 146 122 / 0.05) 55%,
+      transparent
+    );
+  }
+
+  /* Between 640 and 1024 px, the cropped scene fades out at its sides. */
+  @media (min-width: 40rem) {
+    .hero-scene {
+      mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .hero-scene {
+      --stage-width: min(100%, 1440px);
+      --stage-left: calc(50% - var(--stage-width) / 2);
+      position: absolute;
+      inset: 0;
+      max-width: none;
+      margin: 0;
+      aspect-ratio: auto;
+      mask-image: linear-gradient(
+        to right,
+        transparent calc(var(--stage-left) + var(--stage-width) * 0.34),
+        rgb(0 0 0 / 0.35) calc(var(--stage-left) + var(--stage-width) * 0.5),
+        #000 calc(var(--stage-left) + var(--stage-width) * 0.68)
+      );
+    }
+
+    .hero-stage {
+      left: var(--stage-left);
+      width: var(--stage-width);
+    }
+
+    /* 620 px, its top-left corner at (760, -40) on the 1440 x 612 px stage. */
+    .hero-halo {
+      left: calc(760 / 1440 * 100%);
+      top: calc(-40 / 612 * 100%);
+      width: calc(620 / 1440 * 100%);
+    }
+  }
+
+  /* The circuit extension: 5 units wide, at 34 % opacity, nodes at 55 %. */
+  .hero-scene .traces {
+    opacity: 0.34;
+  }
+
+  .hero-scene .trace {
+    fill: none;
+    stroke: var(--logo-roots);
+    stroke-width: 5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .hero-scene .trace-nodes {
+    opacity: 0.55;
+    fill: var(--logo-roots);
+  }
+
+  .hero-scene .scene-dot {
+    display: none;
+    fill: var(--logo-canopy);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-scene .logo-trunk {
+      transform-box: fill-box;
+      transform-origin: 50% 100%;
+      animation: hero-trunk 0.5s cubic-bezier(0.3, 0.7, 0.35, 1) 0.1s both;
+    }
+
+    .hero-scene .root,
+    .hero-scene .trace {
+      stroke-dasharray: 1 2;
+      animation: hero-draw var(--dur) var(--ease-draw) var(--d) both;
+    }
+
+    .hero-scene .node,
+    .hero-scene .trace-node {
+      transform-box: fill-box;
+      transform-origin: 50% 50%;
+      animation: hero-pop 0.38s cubic-bezier(0.2, 0.9, 0.3, 1.25) var(--nd, var(--d)) both;
+    }
+
+    .hero-scene .chevron {
+      animation: hero-chevron 0.62s var(--ease-out) var(--d) both;
+    }
+
+    /* The ring starts drawing at 6 o'clock, where its path starts. */
+    .hero-scene .logo-ring {
+      stroke-dasharray: 1 2;
+      animation: hero-draw 0.95s var(--ease-ring) 2.4s both;
+    }
+
+    /* Idle, once the logo is complete at 3.35 s: one dot travels along a trace. */
+    .hero-scene .scene-dot {
+      display: block;
+      offset-rotate: 0deg;
+      animation: hero-travel 10s linear 3.35s infinite backwards;
+    }
+
+    :root:not([data-theme="light"]) .hero-halo {
+      animation: hero-breathe 3s ease-in-out infinite alternate;
+    }
+  }
+
+  @keyframes hero-trunk {
+    from {
+      opacity: 0;
+      transform: scaleY(0);
+    }
+    35% {
+      opacity: 1;
+    }
+    to {
+      opacity: 1;
+      transform: scaleY(1);
+    }
+  }
+
+  /* Hidden until it starts: a round cap would show a dot at the start. */
+  @keyframes hero-draw {
+    0% {
+      opacity: 0;
+      stroke-dashoffset: 1;
+    }
+    1% {
+      opacity: 1;
+      stroke-dashoffset: 1;
+    }
+    100% {
+      opacity: 1;
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes hero-pop {
+    from {
+      opacity: 0;
+      transform: scale(0);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes hero-chevron {
+    from {
+      opacity: 0;
+      transform: translateY(-46px);
+    }
+    60% {
+      opacity: 1;
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes hero-travel {
+    0% {
+      offset-distance: 0%;
+      opacity: 0;
+    }
+    8%,
+    92% {
+      opacity: 1;
+    }
+    100% {
+      offset-distance: 100%;
+      opacity: 0;
+    }
+  }
+
+  /* Opacity .85 to 1 and back: one 6 s cycle, as two alternating halves. */
+  @keyframes hero-breathe {
+    from {
+      opacity: 0.85;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+</style>
