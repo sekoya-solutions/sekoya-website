@@ -1,0 +1,36 @@
+import { fileURLToPath } from "node:url";
+import { defineConfig, devices } from "@playwright/test";
+
+/**
+ * Playwright's browsers live in the git-ignored .tools folder (ADR 0006),
+ * installed there by `npm run e2e:install`. The test workers, which launch
+ * the browsers, inherit this variable from the runner.
+ */
+export const browsersPath = fileURLToPath(new URL("./.tools/ms-playwright", import.meta.url));
+process.env.PLAYWRIGHT_BROWSERS_PATH = browsersPath;
+
+const port = 4321;
+const isCI = process.env.CI !== undefined && process.env.CI !== "";
+
+// The tests run against the production build in dist/, served by
+// `astro preview`: run `npm run build` first.
+export default defineConfig({
+  testDir: "e2e",
+  forbidOnly: isCI,
+  retries: 0,
+  reporter: isCI ? [["list"], ["github"]] : "list",
+  use: {
+    baseURL: `http://localhost:${port}`,
+    trace: "retain-on-failure",
+  },
+  projects: [
+    { name: "desktop", use: { ...devices["Desktop Chrome"] } },
+    { name: "mobile", use: { ...devices["Pixel 7"] } },
+  ],
+  webServer: {
+    command: `npm run preview -- --port ${port}`,
+    url: `http://localhost:${port}`,
+    reuseExistingServer: !isCI,
+    timeout: 60_000,
+  },
+});

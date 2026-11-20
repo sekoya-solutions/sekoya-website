@@ -1,0 +1,152 @@
+# Checks run on every pull request and every push to main (ADR 0006).
+# No path filter: a workflow filtered out by `paths` never reports, which
+# would block a required check. Instead, when every changed file is Markdown,
+# the heavy jobs are skipped through their if: condition, and a skipped job
+# counts as passed.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+# A new push to a pull request cancels its unfinished run; runs on main are
+# never cancelled.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  # No usage data is sent from CI builds.
+  ASTRO_TELEMETRY_DISABLED: "1"
+
+jobs:
+  # A change is documentation only when every file differing between the two
+  # commits ends in .md (scripts/changes.ts). For a pull request, the commits
+  # are its base and head: when main has moved on since, its new files count
+  # too, which can only make more jobs run. For a push to main, they are the
+  # previous and new heads. If this job fails, its output is empty and the
+  # heavy jobs run.
+  changes:
+    name: Change detection
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      docs_only: ${{ steps.decide.outputs.docs_only }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+      - id: decide
+        name: Decide
+        env:
+          BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+        # A base of zeros (a new branch) means every job runs, with no fetch.
+        run: |
+          if [ -n "$BASE_SHA" ] && ! printf '%s' "$BASE_SHA" | grep -qE '^0+$'; then
+            git fetch --quiet --no-tags --depth=1 origin "$BASE_SHA" "$HEAD_SHA"
+          fi
+          node scripts/changes.ts "$BASE_SHA" "$HEAD_SHA"
+
+  markdown:
+    name: Markdown checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - run: npm run lint:md
+      # The same lychee version as the portable one used locally, checked
+      # against the digest GitHub lists for the release asset.
+      - name: Install lychee
+        env:
+          LYCHEE_VERSION: 0.24.2
+          LYCHEE_SHA256: 1f4e0ef7f6554a6ed33dd7ac144fb2e1bbed98598e7af973042fc5cd43951c9a
+        run: |
+          archive="$RUNNER_TEMP/lychee.tar.gz"
+          curl --silent --show-error --fail --location --output "$archive" \
+            "https://github.com/lycheeverse/lychee/releases/download/lychee-v${LYCHEE_VERSION}/lychee-x86_64-unknown-linux-gnu.tar.gz"
+          echo "${LYCHEE_SHA256}  ${archive}" | sha256sum --check --strict
+          mkdir -p "$RUNNER_TEMP/lychee"
+          tar --extract --gzip --file "$archive" --directory "$RUNNER_TEMP/lychee"
+          binary="$(find "$RUNNER_TEMP/lychee" -type f -name lychee | head -n 1)"
+          test -n "$binary"
+          echo "LYCHEE=$binary" >> "$GITHUB_ENV"
+      - run: npm run links:md
+
+  checks:
+    name: Lint and types
+    needs: changes
+    if: ${{ !cancelled() && needs.changes.outputs.docs_only != 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+
+  unit-tests:
+    name: Unit tests
+    needs: changes
+    if: ${{ !cancelled() && needs.changes.outputs.docs_only != 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - run: npm test
+
+  # The build, then Playwright and axe against it, served by `astro preview`.
+  end-to-end:
+    name: Build and end-to-end tests
+    needs: changes
+    if: ${{ !cancelled() && needs.changes.outputs.docs_only != 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      # Chromium's headless shell into .tools/ms-playwright, as locally;
+      # --with-deps adds the system libraries it uses.
+      - run: npm run e2e:install -- --with-deps
+      - run: npm run test:e2e
+      # Traces of failed tests only. The repository is public, so anyone can
+      # download them: they hold the built pages, no secret.
+      - if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: playwright-traces
+          path: test-results/
+          retention-days: 7
