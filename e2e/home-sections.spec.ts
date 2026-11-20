@@ -186,7 +186,16 @@ test.describe("the scroll reveal", () => {
       );
       // What was on screen at load is marked at once, so it never blinks out.
       for (const { above, revealed } of inView) expect(revealed).toBe(above);
-      expect((await revealOpacities(page)).at(-1)).toBe(0);
+      // What is below the fold is hidden at once, not faded out: no transition
+      // runs on it, whatever the timing.
+      const hidden = await page.locator(".reveal:not(.in)").evaluateAll((elements) =>
+        elements.map((element) => ({
+          opacity: Number(getComputedStyle(element).opacity),
+          running: element.getAnimations().length,
+        })),
+      );
+      expect(hidden.length).toBeGreaterThan(0);
+      for (const state of hidden) expect(state).toEqual({ opacity: 0, running: 0 });
       expect(new Set(await opacitiesOnceInView(page))).toEqual(new Set([1]));
       // Every divider has been drawn: its cover has slid off.
       const covers = await page
