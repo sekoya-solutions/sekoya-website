@@ -21,6 +21,8 @@ The environments:
 
 Wrangler, Cloudflare's command-line tool, is a development dependency at an exact version; Workers Builds uses the version in `package.json`. Workers Builds reads the Node.js version from `.node-version`.
 
+Previews use Worker Previews: the `wrangler preview` command, which needs the `previews` block in `wrangler.jsonc`. It is in open beta (2026-11-20), so its commands may change; the fallback is in [ADR 0002](adr/0002-hosting-and-environments.md).
+
 ## Variables
 
 No variable is needed to build or serve the site, and no secret is stored in the repository. Variables the site may need later are listed, names only, in [`.env.example`](../.env.example). Values the build reads are set in the Cloudflare dashboard under **Settings** > **Build** > **Build variables and secrets**; values the Worker reads at run time would go under **Settings** > **Variables and Secrets**.
