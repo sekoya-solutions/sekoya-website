@@ -6,7 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!**/.astro", "!**/dist", "!**/*.md"]
+    "includes": ["**", "!**/.astro", "!**/dist", "!**/*.md", "!src/assets"]
   },
   "formatter": {
     "indentStyle": "space",
