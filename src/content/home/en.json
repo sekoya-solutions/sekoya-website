@@ -1,0 +1,20 @@
+{
+  "hero": {
+    "eyebrow": "Sekoya Solutions · [TODO: region] · Remote",
+    "title": {
+      "lead": "Freelance Tech Lead",
+      "rest": "I unblock, structure and speed up your projects"
+    },
+    "lead": "When a project stalls, I give a clear diagnosis and a sound technical framework, and delivery gets going again. I use AI to move faster, and I answer for every line.",
+    "actions": [
+      { "label": "Contact me", "page": "contact", "variant": "primary" },
+      { "label": "See the offers", "page": "offers", "variant": "ghost" }
+    ],
+    "trust": [
+      "[TODO: years of experience]",
+      "E-commerce · Architecture · CI/CD",
+      "Next.js · Astro · Unity"
+    ],
+    "scrollHint": "Scroll"
+  }
+}

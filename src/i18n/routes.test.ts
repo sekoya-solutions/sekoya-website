@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { locales } from "./config";
-import { alternates, normalizePath, routeOf, routes } from "./routes";
+import { alternates, isRouteKey, normalizePath, routeOf, routes } from "./routes";
 
 const entries = Object.entries(routes).flatMap(([key, paths]) =>
   locales.map((locale) => ({ key, locale, path: paths[locale] })),
@@ -52,5 +52,13 @@ describe("alternates", () => {
       { hreflang: "en", href: "https://sekoyasolutions.com/en" },
       { hreflang: "x-default", href: "https://sekoyasolutions.com/" },
     ]);
+  });
+});
+
+describe("isRouteKey", () => {
+  it("accepts a page of the map and rejects one that does not exist yet", () => {
+    expect(isRouteKey("home")).toBe(true);
+    expect(isRouteKey("contact")).toBe(false);
+    expect(isRouteKey("toString")).toBe(false);
   });
 });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { frenchTypography, frenchTypographyTree } from "./french-typography";
+import { frenchTypography, frenchTypographyDeep, frenchTypographyTree } from "./french-typography";
 
 const nbsp = " ";
 
@@ -41,6 +41,16 @@ describe("frenchTypography", () => {
     const once = frenchTypography("Un audit : vite, bien ; « net » !");
     expect(once).toBe(`Un audit${nbsp}: vite, bien${nbsp}; «${nbsp}net${nbsp}»${nbsp}!`);
     expect(frenchTypography(once)).toBe(once);
+  });
+});
+
+describe("frenchTypographyDeep", () => {
+  it("applies the typography through objects and arrays, keeping other values", () => {
+    expect(frenchTypographyDeep({ a: ["Oui ?", { b: "« c »" }], d: 2, e: true })).toEqual({
+      a: [`Oui${nbsp}?`, { b: `«${nbsp}c${nbsp}»` }],
+      d: 2,
+      e: true,
+    });
   });
 });
 

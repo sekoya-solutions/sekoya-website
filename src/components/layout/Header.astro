@@ -16,7 +16,7 @@ interface Props {
 const { route } = Astro.props;
 ---
 
-<header class="mx-auto flex h-21 max-w-site items-center justify-between px-(--gutter)">
+<header class="relative z-10 mx-auto flex h-21 max-w-site items-center justify-between px-(--gutter)">
   <a href={pathOf("home", route.locale)} class="-ml-2.5 rounded-md">
     <Logo class="h-14 w-auto" />
   </a>

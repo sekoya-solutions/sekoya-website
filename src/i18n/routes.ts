@@ -13,6 +13,11 @@ export const routes = {
 
 export type RouteKey = keyof typeof routes;
 
+/** Whether a page exists: a key of the route map. */
+export function isRouteKey(value: string): value is RouteKey {
+  return Object.hasOwn(routes, value);
+}
+
 /** A page's route and language. */
 export interface PageRoute {
   key: RouteKey;
