@@ -22,7 +22,7 @@ The site is the public presentation of the company: about ten page templates, in
 
 ## Decision
 
-Proposed: **option 1, Astro with `output: 'static'`**, in TypeScript with `strict` enabled.
+Chosen: **option 1, Astro with `output: 'static'`**, in TypeScript with `strict` enabled.
 
 - The current stable major version of Astro at setup, pinned in `package.json` and `package-lock.json`. Its documentation is read for the APIs used (content layer, internationalization, fonts, images), since they changed between majors.
 - Node.js at the version in `.node-version`, the same locally and in continuous integration (CI). npm as the package manager.

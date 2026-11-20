@@ -27,7 +27,7 @@ The site is written in French and translated faithfully into English. Long copy 
 
 ## Decision
 
-Proposed: **content collections with schemas (content 1) and Astro's built-in i18n with a route map (languages 1)**.
+Chosen: **content collections with schemas (content 1) and Astro's built-in i18n with a route map (languages 1)**.
 
 - No French text in components: interface strings in the dictionaries, long copy in collections.
 - French typography applied by a small helper in the content pipeline, covered by unit tests.

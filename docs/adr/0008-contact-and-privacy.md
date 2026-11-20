@@ -24,7 +24,7 @@ Visitors must be able to reach the company, and the site promises them privacy. 
 
 ## Decision
 
-Proposed: **launch with option 1**, with option 2 built and switched off by default, so it can be turned on later by setting the variable, once the owner has chosen a service and the legal page names it.
+Chosen: **launch with option 1**, with option 2 built and switched off by default, so it can be turned on later by setting the variable, once the owner has chosen a service and the legal page names it.
 
 ## Consequences
 

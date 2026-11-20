@@ -25,7 +25,7 @@ The site proves its claims rather than stating them. Two rules follow:
 
 ## Decision
 
-Proposed: **option 2 for the figures, and the build guard.**
+Chosen: **option 2 for the figures, and the build guard.**
 
 - If the file is missing, the footer says the measurement is pending; it never shows a number.
 - The list of open placeholders is generated from the repository (a search for `[TODO`), not kept by hand.

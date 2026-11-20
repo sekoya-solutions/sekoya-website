@@ -32,7 +32,7 @@ The site's source code is itself part of the portfolio, so the repository is mea
 
 ## Decision
 
-Proposed: **public from the first commit (visibility 1), MIT plus reserved brand assets (licences 1), mockups committed after the owner's review (design references 1)**.
+Chosen: **public from the first commit (visibility 1), MIT plus reserved brand assets (licences 1), mockups committed after the owner's review (design references 1)**.
 
 - Personal details appear only in content files and only once the owner has approved each one; age, home address and any detail not shown on the site are never committed.
 - Values not yet provided stay `[TODO: …]` placeholders ([ADR 0007](0007-measured-figures-and-placeholders.md)).

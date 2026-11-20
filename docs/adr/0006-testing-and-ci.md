@@ -27,7 +27,7 @@ The site's claims (speed, accessibility, honest figures) must be checked by mach
 
 ## Decision
 
-Proposed: **tools 1 and pipeline 1.**
+Chosen: **tools 1 and pipeline 1.**
 
 - **Budgets as tests:** compressed HTML per page, total CSS, JavaScript per page (0 KB except the quiz and career pages), fonts.
 - **Content rules as tests:** no price symbol on any page, no forbidden job title or headline wording, no French interface text under `/en/`.

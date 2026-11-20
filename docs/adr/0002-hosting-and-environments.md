@@ -66,7 +66,7 @@ Facts below come from each provider's own pages, read on 2026-11-20.
 
 ## Decision
 
-Proposed: **option A, Cloudflare Workers with static assets, on the free plan**, with the domain's DNS zone moved to Cloudflare's free DNS. The registration stays where it is; only the nameservers change. Option B stays the fallback if the zone must stay with the registrar: `www` can then point to Pages through a CNAME record, while the bare domain only redirects to `www` if the registrar's forwarding allows it.
+Chosen: **option A, Cloudflare Workers with static assets, on the free plan**, with the domain's DNS zone moved to Cloudflare's free DNS. The registration stays where it is; only the nameservers change. Option B stays the fallback if the zone must stay with the registrar: `www` can then point to Pages through a CNAME record, while the bare domain only redirects to `www` if the registrar's forwarding allows it.
 
 What the move involves (facts read on 2026-11-20):
 

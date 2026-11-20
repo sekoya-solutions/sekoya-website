@@ -32,7 +32,7 @@ The brand defines exact colours for a dark theme (the primary presentation) and 
 
 ## Decision
 
-Proposed: **Tailwind CSS v4 with tokens as CSS variables (styling 1), dark by default with a stored toggle (theme 1), the self-hosted variable WOFF2 (fonts 1)**, generated through Astro's font API if it supports a local file with fallback metrics in the chosen version, by hand otherwise.
+Chosen: **Tailwind CSS v4 with tokens as CSS variables (styling 1), dark by default with a stored toggle (theme 1), the self-hosted variable WOFF2 (fonts 1)**, generated through Astro's font API if it supports a local file with fallback metrics in the chosen version, by hand otherwise.
 
 ## Consequences
 

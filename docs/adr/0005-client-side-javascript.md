@@ -29,7 +29,7 @@ The budgets: no JavaScript on any page except the quiz (at most 15 KB compressed
 
 ## Decision
 
-Proposed: **a Preact island for the quiz (quiz 1)**, since the budget allows it and it keeps the result screen simple; **vanilla scripts for the rest (other 1)**.
+Chosen: **a Preact island for the quiz (quiz 1)**, since the budget allows it and it keeps the result screen simple; **vanilla scripts for the rest (other 1)**.
 
 - Scoring and the "top three priorities" live in `src/lib/quiz.ts`, a pure function covered by unit tests.
 - Every animation stops under `prefers-reduced-motion: reduce`, showing the final state.
