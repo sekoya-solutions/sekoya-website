@@ -1,1 +1,74 @@
 @import "tailwindcss";
+@import "./tokens.css";
+
+/*
+ * Tailwind's utilities map to the brand tokens (ADR 0003). `inline` makes
+ * each utility read the token itself, so it follows the theme. Tailwind's
+ * default palette is removed: only brand colours exist as utilities.
+ */
+@theme inline {
+  --color-*: initial;
+  --color-bg: var(--bg);
+  --color-mint: var(--mint);
+  --color-gold: var(--gold);
+  --color-grey: var(--grey);
+  --color-ink: var(--ink);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-primary: var(--primary);
+  --color-primary-text: var(--primary-text);
+  --color-link: var(--link);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-danger: var(--danger);
+
+  --font-sans: var(--font);
+
+  --text-display: var(--fs-display);
+  --text-h1: var(--fs-h1);
+  --text-h2: var(--fs-h2);
+  --text-h3: var(--fs-h3);
+  --text-h4: var(--fs-h4);
+  --text-lead: var(--fs-lead);
+  --text-body: var(--fs-body);
+  --text-sm: var(--fs-sm);
+  --text-xs: var(--fs-xs);
+
+  --radius-sm: var(--r-sm);
+  --radius-md: var(--r-md);
+  --radius-lg: var(--r-lg);
+  --radius-pill: var(--r-pill);
+
+  --shadow-glow-mint: var(--glow-mint);
+  --shadow-glow-gold: var(--glow-gold);
+
+  /* No easing utilities: their names would clash with the tokens, which
+     components read directly (var(--ease-out)). */
+  --ease-*: initial;
+
+  --container-site: var(--container);
+  --container-site-wide: var(--container-wide);
+}
+
+@layer base {
+  html {
+    background: var(--bg);
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font);
+    font-size: var(--fs-body);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* A visible 2 px focus ring, never removed, shown at once. */
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+  }
+}

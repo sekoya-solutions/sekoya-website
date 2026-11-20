@@ -12,8 +12,14 @@ test("the home page is served in French", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 });
 
-test("the home page has no accessibility violations", async ({ page }) => {
-  await page.goto("/");
-  const results = await new AxeBuilder({ page }).withTags(wcagTags).analyze();
-  expect(results.violations).toEqual([]);
-});
+for (const theme of ["dark", "light"] as const) {
+  test(`the home page has no accessibility violations in the ${theme} theme`, async ({ page }) => {
+    await page.addInitScript((stored) => localStorage.setItem("theme", stored), theme);
+    await page.goto("/");
+    const html = page.locator("html");
+    if (theme === "light") await expect(html).toHaveAttribute("data-theme", "light");
+    else await expect(html).not.toHaveAttribute("data-theme");
+    const results = await new AxeBuilder({ page }).withTags(wcagTags).analyze();
+    expect(results.violations).toEqual([]);
+  });
+}

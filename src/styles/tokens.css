@@ -1,0 +1,125 @@
+/*
+ * The brand tokens (ADR 0003), the single source of truth for colours, type,
+ * spacing, radii, glows and easings. Tailwind's theme maps its utilities to
+ * these variables (global.css). Dark is the default theme; the light theme
+ * applies when the root element carries data-theme="light", which the theme
+ * script sets before the first paint.
+ */
+
+:root {
+  color-scheme: dark;
+
+  /* Brand colours, dark theme */
+  --bg: #0a1d24;
+  --mint: #22c08a;
+  --gold: #e8d3a8;
+  --grey: #9dbdcc;
+
+  /* Derived neutrals and surfaces */
+  --ink: #eef4f6;
+  --surface-1: #0e262f;
+  --surface-2: #123039;
+  --line: rgb(157 189 204 / 0.16);
+  --line-strong: rgb(157 189 204 / 0.3);
+
+  /* Roles */
+  --primary: var(--mint);
+  --primary-text: var(--bg);
+  --link: var(--mint);
+  --muted: var(--grey);
+  --accent: var(--gold);
+  /* Functional status colour, for the quiz result only, never decorative */
+  --danger: #ef7f6b;
+  /* Focus ring: 2 px, offset 3 px (global.css) */
+  --focus: var(--gold);
+
+  /* Logo colours, for the inlined logos */
+  --logo-canopy: #22c08a;
+  --logo-gold: #e8d3a8;
+  --logo-roots: #9dbdcc;
+
+  /* Type: Outfit, through the variable Astro's font API defines */
+  --font: var(--font-outfit);
+  --fs-display: clamp(2.5rem, 1.4rem + 3.6vw, 4rem);
+  --fs-h1: clamp(2.25rem, 1.6rem + 2.2vw, 3.25rem);
+  --fs-h2: clamp(1.75rem, 1.3rem + 1.4vw, 2.5rem);
+  --fs-h3: 1.5rem;
+  --fs-h4: 1.25rem;
+  --fs-lead: 1.1875rem;
+  --fs-body: 1.0625rem;
+  --fs-sm: 0.9375rem;
+  --fs-xs: 0.8125rem;
+
+  /* Spacing, on a 4 px base */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+  --s-9: 96px;
+  --s-10: 128px;
+
+  /* Radii */
+  --r-sm: 6px;
+  --r-md: 12px;
+  --r-lg: 20px;
+  --r-pill: 999px;
+
+  /* Glows and easings */
+  --glow-mint:
+    0 0 0 1px rgb(34 192 138 / 0.38), 0 0 22px rgb(34 192 138 / 0.22),
+    0 0 72px rgb(34 192 138 / 0.1);
+  --glow-gold: 0 0 0 1px rgb(232 211 168 / 0.35), 0 0 22px rgb(232 211 168 / 0.16);
+  --ease-out: cubic-bezier(0.2, 0.8, 0.25, 1);
+  --ease-draw: cubic-bezier(0.3, 0.6, 0.3, 1);
+  --ease-ring: cubic-bezier(0.45, 0.1, 0.2, 1);
+
+  /* Layout */
+  --container: 1200px;
+  --container-wide: 1360px;
+  --gutter: 40px;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #f6f1e8;
+  --mint: #16927a;
+  --gold: #a8893f;
+  --grey: #4a6577;
+
+  --ink: #0e262f;
+  --surface-1: #ffffff;
+  --surface-2: #efe8da;
+  --line: rgb(74 101 119 / 0.18);
+  --line-strong: rgb(74 101 119 / 0.32);
+
+  /* A darker brand green for links and primary buttons: the brand green is
+     for large text, icons and strokes only on light backgrounds. */
+  --primary: #0f6b5a;
+  --primary-text: #ffffff;
+  --link: #0f6b5a;
+  --muted: #4a6577;
+  /* Deep gold is for strokes and shapes only, never text. */
+  --accent: #a8893f;
+  --danger: #b4472f;
+  /* Deep gold is below 3:1 on sand, too low for a focus ring. */
+  --focus: #0f6b5a;
+
+  --logo-canopy: #16927a;
+  --logo-gold: #a8893f;
+  --logo-roots: #4a6577;
+
+  /* Soft coloured shadows instead of glows */
+  --glow-mint: 0 0 0 1px rgb(22 146 122 / 0.35), 0 8px 28px rgb(22 146 122 / 0.14);
+  --glow-gold: 0 0 0 1px rgb(168 137 63 / 0.35);
+}
+
+@media (max-width: 767px) {
+  :root {
+    --gutter: 22px;
+  }
+}

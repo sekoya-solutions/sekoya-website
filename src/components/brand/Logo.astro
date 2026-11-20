@@ -1,0 +1,17 @@
+---
+/**
+ * The horizontal logo, inlined so that it follows the theme with no image
+ * request: the dark-theme SVG with its colours replaced by the logo tokens.
+ */
+import logo from "../../assets/logo/dark/logo-horizontal.svg?raw";
+import { themeableSvg } from "../../lib/themeable-svg";
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+const svg = themeableSvg(logo).replace("<svg ", `<svg class="${className ?? ""}" `);
+---
+
+<Fragment set:html={svg} />
