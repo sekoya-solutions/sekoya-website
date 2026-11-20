@@ -16,7 +16,7 @@ Astro copies `public/` into `dist/`, where Cloudflare reads `_headers` and `_red
 The environments:
 
 - **Production:** every push to `main` (each merged pull request) is built and deployed. Until launch it is served at `https://sekoya-website.<subdomain>.workers.dev`, where `<subdomain>` is the account's `workers.dev` subdomain.
-- **Previews:** every other branch gets a preview build at `https://<preview>-sekoya-website.<subdomain>.workers.dev`, updated on each push. On a pull request, Cloudflare posts a comment with the preview's URL. Previews are public, but not indexed.
+- **Previews:** every other branch gets a preview build at `https://<preview>-sekoya-website.<subdomain>.workers.dev`, updated on each push. `<preview>` is the branch name with `/` replaced by `-`: `chore/4-cloudflare-workers` gave `chore-4-cloudflare-workers`. Each build reports a check on its commit; Cloudflare also posts a comment on the pull request, which may not list the preview's URL. Previews are public, but not indexed.
 - **Local:** `npm run preview` serves `dist/` with `wrangler dev`, Cloudflare's local emulation, which applies the same configuration and headers files. The end-to-end tests run against it. No account is needed.
 
 Wrangler, Cloudflare's command-line tool, is a development dependency at an exact version; Workers Builds uses the version in `package.json`. Workers Builds reads the Node.js version from `.node-version`.
@@ -46,7 +46,7 @@ Done once by the owner, with the owner's Cloudflare account.
 
 ## Checks
 
-On a pull request, once Cloudflare's comment gives the preview URL:
+Once the branch's Cloudflare check has passed:
 
 ```sh
 curl --head https://<preview>-sekoya-website.<subdomain>.workers.dev/
