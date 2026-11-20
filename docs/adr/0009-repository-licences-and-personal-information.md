@@ -32,11 +32,12 @@ The site's source code is itself part of the portfolio, so the repository is mea
 
 ## Decision
 
-Chosen: **public from the first commit (visibility 1), MIT plus reserved brand assets (licences 1), mockups committed after the owner's review (design references 1)**.
+Chosen: **public from the first commit (visibility 1), MIT plus reserved brand assets (licences 1), mockups kept outside the repository (design references 2)**.
 
 - Personal details appear only in content files and only once the owner has approved each one; age, home address and any detail not shown on the site are never committed.
 - Values not yet provided stay `[TODO: …]` placeholders ([ADR 0007](0007-measured-figures-and-placeholders.md)).
 - The README, `package.json`, comments, commit messages and documentation never state availability for work.
+- The mockup images are never committed, and no per-page specification replaces them: agents work from the owner's local copies (owner decision, 2026-11-20, issue #29).
 
 ## Consequences
 
@@ -47,6 +48,7 @@ Positive:
 Negative:
 
 - Every content pull request needs the owner's check of personal details before it is pushed.
+- Comparing a page with its mockup is a local step: CI cannot do it, since the mockups are not in the repository.
 
 Follow-up:
 
