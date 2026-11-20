@@ -14,5 +14,7 @@ export const fr = frenchTypographyTree({
     title: "Sekoya Solutions",
     description:
       "Sekoya Solutions, Tech Lead freelance : audit technique, mission Tech Lead, sauvetage de projet.",
+    measuredOn: "mesuré le",
+    externalLink: "site externe",
   },
 });

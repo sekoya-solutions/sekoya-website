@@ -19,21 +19,24 @@ interface Running {
   direction: string;
 }
 
-/** Every animation on the page, with its target's classes. */
+/** Every animation of the hero, with its target's classes; the sections below have their own (home-sections.spec.ts). */
 function runningAnimations(page: Page): Promise<Running[]> {
   return page.evaluate(() =>
-    document.getAnimations().map((animation) => {
-      const effect = animation.effect as KeyframeEffect;
-      const timing = effect.getComputedTiming();
-      return {
-        name: (animation as CSSAnimation).animationName,
-        target: effect.target?.getAttribute("class") ?? "",
-        delay: Number(timing.delay),
-        duration: Number(timing.duration),
-        iterations: Number(timing.iterations),
-        direction: String(timing.direction),
-      };
-    }),
+    document
+      .getAnimations()
+      .filter((animation) => (animation.effect as KeyframeEffect | null)?.target?.closest(".hero"))
+      .map((animation) => {
+        const effect = animation.effect as KeyframeEffect;
+        const timing = effect.getComputedTiming();
+        return {
+          name: (animation as CSSAnimation).animationName,
+          target: effect.target?.getAttribute("class") ?? "",
+          delay: Number(timing.delay),
+          duration: Number(timing.duration),
+          iterations: Number(timing.iterations),
+          direction: String(timing.direction),
+        };
+      }),
   );
 }
 
@@ -132,7 +135,12 @@ test.describe("the logo's growth", () => {
     await page.goto("/");
     const stageAt = (time: number) =>
       page.evaluate((at) => {
-        for (const animation of document.getAnimations()) {
+        const hero = document
+          .getAnimations()
+          .filter((animation) =>
+            (animation.effect as KeyframeEffect | null)?.target?.closest(".hero"),
+          );
+        for (const animation of hero) {
           animation.pause();
           animation.currentTime = at;
         }
@@ -257,6 +265,9 @@ test.describe("the hero copy", () => {
       Promise.all(
         document
           .getAnimations()
+          .filter((animation) =>
+            (animation.effect as KeyframeEffect | null)?.target?.closest(".hero"),
+          )
           .filter((animation) => animation.effect?.getComputedTiming().endTime !== Infinity)
           .map((animation) => animation.finished),
       ),
@@ -273,10 +284,13 @@ test.describe("the hero copy", () => {
     expect(shifts).toEqual([]);
   });
 
-  test("ships no JavaScript beyond the theme script", async ({ page }) => {
+  test("ships no JavaScript beyond the theme and scroll reveal scripts", async ({ page }) => {
     await page.goto("/");
     await expect(page.locator("script[src]")).toHaveCount(0);
-    await expect(page.locator("script")).toHaveCount(1);
+    const scripts = await page.locator("script").allTextContents();
+    expect(scripts).toHaveLength(2);
+    expect(scripts[0]).toContain("data-theme-toggle");
+    expect(scripts[1]).toContain("IntersectionObserver");
   });
 
   test("shows no button to a page that does not exist yet", async ({ page }) => {

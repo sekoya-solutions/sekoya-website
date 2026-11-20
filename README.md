@@ -34,12 +34,12 @@ Node.js at the version in [`.node-version`](.node-version), with npm.
 | --- | --- |
 | `src/pages/` | One file per page: French at the root, English under `en/` |
 | `src/layouts/` | The base layout of every page |
-| `src/components/` | Components: the logo, the header and footer shells, the language switch, the theme toggle and its script, the placeholder chip, the home hero and its animated scene, and the page bodies shared by both languages |
+| `src/components/` | Components: the logo, the header and footer shells, the language switch, the theme toggle and its script, the scroll reveal script, the placeholder chip, the shared buttons, chips and icons, the home hero and its animated scene, the home sections, and the page bodies shared by both languages |
 | `src/i18n/` | The languages, the interface strings of each (`fr.ts`, `en.ts`), the map of translated paths (`routes.ts`) and the reading of the content in a page's language (`content.ts`) |
 | `src/content/` | Long copy, in content collections declared in `src/content.config.ts`: one entry per language (`fr.json`, `en.json`) |
 | `src/lib/` | Pure functions, with their unit tests |
-| `src/styles/` | The brand tokens (`tokens.css`), mapped into Tailwind with the base styles (`global.css`) |
-| `src/assets/` | Logos, animated logo and font, processed by the build |
+| `src/styles/` | The brand tokens (`tokens.css`), mapped into Tailwind with the base styles, the card and the scroll reveal (`global.css`) |
+| `src/assets/` | Logos, animated logo, portfolio screenshots and font, processed by the build |
 | `public/` | Files copied as they are into the build, including the `_headers` and `_redirects` files |
 | `e2e/` | End-to-end and accessibility tests |
 | `scripts/` | Build and CI helper scripts, with their unit tests |

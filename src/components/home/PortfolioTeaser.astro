@@ -1,0 +1,106 @@
+---
+/**
+ * The portfolio teaser: three cards, each with a screenshot (or, for this
+ * site, its logo on a glow), a title, one line and its stack. A measured
+ * figure carries its measurement date (ADR 0007). The screenshots are
+ * optimised at build time and load lazily, at a fixed size, so they shift no
+ * layout.
+ */
+
+import { Picture } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import sekoyaParts from "../../assets/portfolio/sekoya-parts.jpg";
+import sekoyaTransit from "../../assets/portfolio/sekoya-transit.jpg";
+import { translations } from "../../i18n";
+import type { Locale } from "../../i18n/config";
+import { numericDate } from "../../lib/dates";
+import LogoIcon from "../brand/LogoIcon.astro";
+import PlaceholderText from "../content/PlaceholderText.astro";
+import Chip from "../ui/Chip.astro";
+import SectionHead from "./SectionHead.astro";
+
+interface Props {
+  copy: CollectionEntry<"home">["data"]["portfolio"];
+  locale: Locale;
+}
+
+const { copy, locale } = Astro.props;
+const t = translations(locale);
+const screenshots = { "sekoya-transit": sekoyaTransit, "sekoya-parts": sekoyaParts };
+---
+
+<section aria-labelledby="portfolio-title">
+  <SectionHead id="portfolio-title" eyebrow={copy.eyebrow} title={copy.title} />
+  <ul class="reveal-group grid gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+    {
+      copy.projects.map((project) => (
+        <li class="card reveal">
+          {project.image === "logo" ? (
+            <div class="project-shot project-logo">
+              <LogoIcon class="h-[150px] w-auto" />
+            </div>
+          ) : (
+            <Picture
+              src={screenshots[project.image]}
+              alt={project.alt}
+              formats={["avif", "webp"]}
+              widths={[400, 600, 900]}
+              sizes="(min-width: 1024px) 360px, (min-width: 768px) 50vw, 100vw"
+              loading="lazy"
+              decoding="async"
+              class="project-shot object-cover object-top"
+            />
+          )}
+          <div class="grid gap-2 px-6 pt-5.5 pb-6.5">
+            <h3 class="text-[1.25rem] font-semibold">
+              <PlaceholderText text={project.title} />
+            </h3>
+            <p class="text-[0.95rem] text-muted">
+              <PlaceholderText text={project.text} />
+              {project.measuredOn !== undefined && (
+                <>
+                  {" "}
+                  <span class="whitespace-nowrap">
+                    ({t.home.measuredOn} {numericDate(project.measuredOn)})
+                  </span>
+                </>
+              )}
+            </p>
+            <ul class="mt-1 flex flex-wrap gap-1.5">
+              {project.stack.map((item) => (
+                <li>
+                  <Chip>
+                    <PlaceholderText text={item} />
+                  </Chip>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .project-shot {
+    display: block;
+    width: 100%;
+    height: 200px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .project-logo {
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(circle at 50% 40%, rgb(34 192 138 / 0.2), transparent 60%),
+      #0c242c;
+  }
+
+  :global(:root[data-theme="light"]) .project-logo {
+    background:
+      radial-gradient(circle at 50% 40%, rgb(22 146 122 / 0.14), transparent 60%),
+      var(--surface-2);
+  }
+</style>

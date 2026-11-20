@@ -4,12 +4,13 @@ The [MIT licence](LICENSE) covers the source code of this repository only. It do
 
 ## Brand assets: all rights reserved
 
-The Sekoya Solutions name, its logos (static and animated), icons, favicons, social sharing images and other brand imagery in this repository are © 2026 Sekoya Solutions, all rights reserved. No permission is granted to use, copy, modify or distribute them outside this website without the prior written permission of Sekoya Solutions.
+The Sekoya Solutions name, its logos (static and animated), icons, favicons, social sharing images, the screenshots of its projects and other brand imagery in this repository are © 2026 Sekoya Solutions, all rights reserved. No permission is granted to use, copy, modify or distribute them outside this website without the prior written permission of Sekoya Solutions.
 
 The brand assets are in these folders and files:
 
-- `src/assets/logo/`: the logos, for dark and light backgrounds.
+- `src/assets/logo/`: the logos, for dark and light backgrounds, and the logo's icon.
 - `src/assets/animated/`: the animated logo.
+- `src/assets/portfolio/`: the screenshots of the portfolio projects.
 - `public/favicon.ico`, `public/favicon.svg`, `public/apple-touch-icon.png`, `public/icon-192.png` and `public/icon-512.png`: the favicons and app icons, at the root of the site where browsers look for them.
 
 ## Font: SIL Open Font License

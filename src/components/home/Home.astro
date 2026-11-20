@@ -1,16 +1,27 @@
 ---
 /**
  * The home page, in the page's language: src/pages/index.astro in French and
- * src/pages/en/index.astro in English. Its copy is in src/content/home; its
- * sections after the hero come with #10.
+ * src/pages/en/index.astro in English. Its copy is in src/content/home.
+ *
+ * The hero, then the sections, 96 px apart (56 px below 768 px), with a
+ * circuit divider between two sections. The sections reveal themselves as
+ * they scroll into view (global.css, with ScrollReveal.astro's fallback).
  */
 
 import { translations } from "../../i18n";
 import { pageLocale } from "../../i18n/config";
 import { homeContent } from "../../i18n/content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import ScrollReveal from "../layout/ScrollReveal.astro";
+import CircuitDivider from "./CircuitDivider.astro";
+import ContactBand from "./ContactBand.astro";
+import FeaturedCase from "./FeaturedCase.astro";
 import Hero from "./Hero.astro";
+import OffersTeaser from "./OffersTeaser.astro";
+import PortfolioTeaser from "./PortfolioTeaser.astro";
+import QuizTeaser from "./QuizTeaser.astro";
 import { scene, sceneCssHash } from "./scene";
+import ValueProps from "./ValueProps.astro";
 
 const locale = pageLocale(Astro.currentLocale);
 const t = translations(locale);
@@ -23,4 +34,39 @@ Astro.csp.insertStyleHash(sceneCssHash);
 <BaseLayout title={t.home.title} description={t.home.description}>
   <style slot="head" is:inline set:html={scene.css}></style>
   <Hero copy={copy.hero} locale={locale} />
+  <div class="home-sections mx-auto max-w-site px-(--gutter)">
+    <ValueProps copy={copy.values} />
+    <CircuitDivider />
+    <OffersTeaser copy={copy.offers} locale={locale} />
+    <CircuitDivider flip />
+    <FeaturedCase copy={copy.featuredCase} locale={locale} />
+    <CircuitDivider />
+    <PortfolioTeaser copy={copy.portfolio} locale={locale} />
+    <CircuitDivider flip />
+    <QuizTeaser copy={copy.quiz} locale={locale} />
+    <CircuitDivider />
+    <ContactBand copy={copy.contact} locale={locale} />
+  </div>
+  <ScrollReveal />
 </BaseLayout>
+
+<style>
+  /* 96 px between sections (56 px below 768 px), the divider centred in the gap. */
+  .home-sections {
+    padding-top: 56px;
+  }
+
+  .home-sections > :global(.divider) {
+    margin-block: 15px;
+  }
+
+  @media (min-width: 48rem) {
+    .home-sections {
+      padding-top: 96px;
+    }
+
+    .home-sections > :global(.divider) {
+      margin-block: 35px;
+    }
+  }
+</style>

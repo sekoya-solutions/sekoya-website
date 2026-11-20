@@ -1,0 +1,127 @@
+---
+/**
+ * The featured case study: a card with the role and period, the three steps
+ * (context, what was done, result), and a link to the case study once it
+ * exists; from 1024 px, the integration map on its right.
+ */
+import type { CollectionEntry } from "astro:content";
+import type { Locale } from "../../i18n/config";
+import { isRouteKey, pathOf } from "../../i18n/routes";
+import PlaceholderText from "../content/PlaceholderText.astro";
+import Button from "../ui/Button.astro";
+import Chip from "../ui/Chip.astro";
+import IntegrationMap from "./IntegrationMap.astro";
+import SectionHead from "./SectionHead.astro";
+
+interface Props {
+  copy: CollectionEntry<"home">["data"]["featuredCase"];
+  locale: Locale;
+}
+
+const { copy, locale } = Astro.props;
+const { context, work, results } = copy.steps;
+const href = isRouteKey(copy.action.page) ? pathOf(copy.action.page, locale) : undefined;
+---
+
+<section aria-labelledby="case-title">
+  <SectionHead id="case-title" eyebrow={copy.eyebrow} title={copy.title} />
+  <div class="card reveal grid lg:grid-cols-[1.05fr_0.95fr]">
+    <div class="p-5.5 lg:p-11">
+      <p class="mb-1.5 flex flex-wrap gap-2">
+        <Chip variant="mint"><PlaceholderText text={copy.role} /></Chip>
+        <Chip><PlaceholderText text={copy.period} /></Chip>
+      </p>
+      <dl class="case-steps">
+        <div>
+          <dt><PlaceholderText text={context.label} /></dt>
+          <dd><PlaceholderText text={context.text} /></dd>
+        </div>
+        <div>
+          <dt><PlaceholderText text={work.label} /></dt>
+          <dd><PlaceholderText text={work.text} /></dd>
+        </div>
+        <div>
+          <dt><PlaceholderText text={results.label} /></dt>
+          <dd>
+            <ul class="flex flex-wrap gap-1.5">
+              {
+                results.items.map((item) => (
+                  <li>
+                    <PlaceholderText text={item} />
+                  </li>
+                ))
+              }
+            </ul>
+          </dd>
+        </div>
+      </dl>
+      {
+        href !== undefined && (
+          <Button href={href} variant={copy.action.variant} size="sm" icon="arrow">
+            {copy.action.label}
+          </Button>
+        )
+      }
+    </div>
+    <div class="case-map hidden place-items-center p-5 lg:grid">
+      <IntegrationMap map={copy.map} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .case-steps {
+    display: grid;
+    gap: 14px;
+    margin: 18px 0 24px;
+  }
+
+  .case-steps dt {
+    margin-bottom: 4px;
+    color: var(--gold);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .case-steps dd {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  :global(:root[data-theme="light"]) .case-steps dt {
+    color: var(--muted);
+  }
+
+  .case-map {
+    border-left: 1px solid var(--line);
+    background:
+      radial-gradient(circle at 60% 50%, rgb(34 192 138 / 0.1), transparent 70%),
+      rgb(8 24 30 / 0.7);
+  }
+
+  :global(:root[data-theme="light"]) .case-map {
+    background:
+      radial-gradient(circle at 60% 50%, rgb(22 146 122 / 0.08), transparent 70%),
+      var(--surface-2);
+  }
+
+  @media (min-width: 64rem) {
+    .case-steps {
+      gap: 18px;
+      margin: 26px 0 30px;
+    }
+
+    .case-steps > div {
+      display: grid;
+      grid-template-columns: 132px 1fr;
+      gap: 16px;
+      align-items: baseline;
+    }
+
+    .case-steps dt {
+      margin-bottom: 0;
+    }
+  }
+</style>

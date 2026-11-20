@@ -1,0 +1,81 @@
+---
+/**
+ * The three value propositions: from 1024 px, three cards with their icon
+ * tile and a ghost number; below, one row per card, the icon beside the text.
+ */
+import type { CollectionEntry } from "astro:content";
+import PlaceholderText from "../content/PlaceholderText.astro";
+import Icon from "../ui/Icon.astro";
+import SectionHead from "./SectionHead.astro";
+
+interface Props {
+  copy: CollectionEntry<"home">["data"]["values"];
+}
+
+const { copy } = Astro.props;
+---
+
+<section aria-labelledby="values-title">
+  <SectionHead id="values-title" eyebrow={copy.eyebrow} title={copy.title} />
+  <ul class="reveal-group grid gap-4 lg:grid-cols-3 lg:gap-6">
+    {
+      copy.items.map((item, index) => (
+        <li class="card reveal flex gap-4.5 p-5.5 lg:block lg:px-8 lg:pt-8.5 lg:pb-9">
+          <span class="value-number" aria-hidden="true">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+          <span class="value-icon">
+            <Icon name={item.icon} size={26} />
+          </span>
+          <div>
+            <h3 class="mb-1.5 text-[1.15rem] font-semibold lg:mb-2.5 lg:text-h3">
+              <PlaceholderText text={item.title} />
+            </h3>
+            <p class="text-[0.95rem] text-muted lg:text-base">
+              <PlaceholderText text={item.text} />
+            </p>
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .value-icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border: 1px solid rgb(34 192 138 / 0.45);
+    border-radius: 14px;
+    box-shadow: var(--glow-mint);
+    color: var(--mint);
+  }
+
+  .value-number {
+    display: none;
+    position: absolute;
+    top: 22px;
+    right: 26px;
+    color: rgb(232 211 168 / 0.1);
+    font-size: 3.2rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  :global(:root[data-theme="light"]) .value-number {
+    color: rgb(168 137 63 / 0.14);
+  }
+
+  @media (min-width: 64rem) {
+    .value-icon {
+      margin-bottom: 24px;
+    }
+
+    .value-number {
+      display: block;
+    }
+  }
+</style>
