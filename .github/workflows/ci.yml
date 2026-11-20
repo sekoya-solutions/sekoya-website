@@ -141,6 +141,14 @@ jobs:
       # Chromium's headless shell into .tools/ms-playwright, as locally;
       # --with-deps adds the system libraries it uses.
       - run: npm run e2e:install -- --with-deps
+      # The font's size-adjusted fallbacks resize fonts a visitor's machine
+      # has (Segoe UI, Roboto, Arial...); the runner has none of them, so the
+      # layout shift test would see an unadjusted fallback. Roboto is the one
+      # under a free licence in Ubuntu's archive, and the one Android has.
+      - name: Install Roboto
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends fonts-roboto
       - run: npm run test:e2e
       # Traces of failed tests only. The repository is public, so anyone can
       # download them: they hold the built pages, no secret.

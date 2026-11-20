@@ -47,9 +47,11 @@ test("the font is preloaded, swapped, and has size-adjusted fallbacks", async ({
   expect(await page.evaluate(outfitStatus)).toBe("loaded");
 });
 
-// The page shows no shift through a real swap. On this nearly empty page,
-// nothing moves when text metrics change, so the size-adjusted fallbacks
-// themselves are checked by the test above.
+// The page shows no shift through a real swap from a size-adjusted fallback
+// to Outfit. Those fallbacks resize fonts installed on the visitor's machine
+// (for system-ui: BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue or
+// Arial), so one of them must be installed where the test runs; CI installs
+// Roboto. Without one, the page starts in an unadjusted font and shifts.
 test("swapping the fallback for the font shifts no layout", async ({ page }) => {
   // Every layout shift, recorded from before the page's first byte.
   await page.addInitScript(() => {
@@ -78,6 +80,17 @@ test("swapping the fallback for the font shifts no layout", async ({ page }) => 
     () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
   );
   expect(await page.evaluate(outfitStatus)).toBe("loading");
+  // A local face that matched an installed font has loaded; the others
+  // report an error.
+  const fallbacksInUse = await page.evaluate(() =>
+    [...document.fonts]
+      .filter((font) => font.family.includes(" fallback: ") && font.status === "loaded")
+      .map((font) => font.family),
+  );
+  expect(
+    fallbacksInUse,
+    "no size-adjusted fallback draws the page: install one of the fonts it resizes",
+  ).not.toEqual([]);
   release();
 
   const shifts = await page.evaluate(async () => {
