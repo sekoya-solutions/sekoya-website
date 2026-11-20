@@ -1,0 +1,89 @@
+---
+/**
+ * A circuit divider between two home sections (the brand's circuit motif):
+ * a horizontal trace across the container, 26 px tall, with one 45° jog and
+ * a node at each end; `flip` mirrors it. The straight runs stretch with the
+ * width while the jog keeps its angle. It draws once it enters the viewport
+ * (global.css): a cover in the page's colour slides off it.
+ */
+interface Props {
+  flip?: boolean;
+}
+
+const { flip = false } = Astro.props;
+---
+
+<div class:list={["divider reveal-draw", { "divider-flip": flip }]} aria-hidden="true">
+  <span class="divider-node"></span>
+  <span class="divider-run divider-run-top"></span>
+  <svg class="divider-jog" width="18" height="26" viewBox="0 0 18 26" aria-hidden="true">
+    <path d="M0 6 H2 L16 20 H18"></path>
+  </svg>
+  <span class="divider-run divider-run-bottom"></span>
+  <span class="divider-node divider-node-bottom"></span>
+  <span class="divider-cover"></span>
+</div>
+
+<style>
+  .divider {
+    position: relative;
+    display: flex;
+    height: 26px;
+    overflow: clip;
+    color: var(--grey);
+  }
+
+  .divider-flip {
+    transform: scaleX(-1);
+  }
+
+  /* The runs are 2 px lines at y 6 and 20, the jog's ends. */
+  .divider-run {
+    height: 2px;
+    border-radius: 1px;
+    background: currentColor;
+    opacity: 0.3;
+  }
+
+  .divider-run-top {
+    flex: 38 1 0;
+    margin-top: 5px;
+  }
+
+  .divider-run-bottom {
+    flex: 62 1 0;
+    margin-top: 19px;
+  }
+
+  .divider-jog {
+    flex: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.3;
+  }
+
+  .divider-node {
+    flex: none;
+    width: 7px;
+    height: 7px;
+    margin-top: 2.5px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.55;
+  }
+
+  .divider-node-bottom {
+    margin-top: 16.5px;
+  }
+
+  /* Shown only while drawing (global.css): it covers the trace, then slides off. */
+  .divider-cover {
+    position: absolute;
+    inset: 0 -1px;
+    display: none;
+    background: var(--bg);
+  }
+</style>

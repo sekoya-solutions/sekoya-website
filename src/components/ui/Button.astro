@@ -1,0 +1,95 @@
+---
+/**
+ * A link styled as a button (the brand's design system): primary (mint, with
+ * a glow), ghost (gold outline) or text (mint, with an arrow), in two sizes.
+ * Its focus ring is the site's (global.css). A link to another site shows an
+ * external-link icon and says so to screen readers (`externalHint`).
+ */
+import Icon from "./Icon.astro";
+
+interface Props {
+  href: string;
+  variant: "primary" | "ghost" | "text";
+  size?: "md" | "sm";
+  icon?: "arrow" | "external";
+  /** For a link to another site: the hidden words that say so. */
+  externalHint?: string;
+  class?: string;
+}
+
+const { href, variant, size = "md", icon, externalHint, class: className } = Astro.props;
+---
+
+<a href={href} class:list={["button", `button-${variant}`, `button-${size}`, className]}>
+  <slot />
+  {externalHint !== undefined && <span class="sr-only">({externalHint})</span>}
+  {icon !== undefined && <Icon name={icon} size={icon === "external" || size === "sm" ? 16 : 18} />}
+</a>
+
+<style>
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: 1px solid transparent;
+    border-radius: var(--r-pill);
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    transition: box-shadow 220ms var(--ease-out);
+  }
+
+  .button-md {
+    padding: 15px 26px;
+  }
+
+  .button-sm {
+    padding: 10px 18px;
+    font-size: var(--fs-sm);
+  }
+
+  .button-primary {
+    background: var(--primary);
+    box-shadow: var(--glow-mint);
+    color: var(--primary-text);
+    font-weight: 600;
+  }
+
+  /* The glow grows on hover, with no movement. */
+  .button-primary:hover {
+    box-shadow:
+      0 0 0 1px rgb(34 192 138 / 0.45), 0 0 30px rgb(34 192 138 / 0.3),
+      0 0 80px rgb(34 192 138 / 0.14);
+  }
+
+  .button-ghost {
+    border-color: rgb(232 211 168 / 0.5);
+    color: var(--gold);
+  }
+
+  .button-ghost:hover {
+    box-shadow: var(--glow-gold);
+  }
+
+  .button-text {
+    padding: 0;
+    color: var(--link);
+  }
+
+  .button-text:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  /* Deep gold is for strokes only on sand: the text stays ink. */
+  :global(:root[data-theme="light"]) .button-ghost {
+    border-color: var(--accent);
+    color: var(--ink);
+  }
+
+  :global(:root[data-theme="light"]) .button-primary:hover {
+    box-shadow:
+      0 0 0 1px rgb(22 146 122 / 0.45), 0 10px 32px rgb(22 146 122 / 0.2);
+  }
+</style>

@@ -1,0 +1,20 @@
+---
+/**
+ * The logo's icon (tree, roots and ring, no name), inlined so that it follows
+ * the theme, as a decoration: the text next to it names what it stands for.
+ */
+import logo from "../../assets/logo/logo-icon.svg?raw";
+import { themeableSvg } from "../../lib/themeable-svg";
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+const svg = themeableSvg(logo)
+  .replace(/\s(role|aria-label)="[^"]*"/g, "")
+  .replace(/<title[^>]*>[^<]*<\/title>/, "")
+  .replace("<svg ", `<svg class="${className ?? ""}" aria-hidden="true" `);
+---
+
+<Fragment set:html={svg} />

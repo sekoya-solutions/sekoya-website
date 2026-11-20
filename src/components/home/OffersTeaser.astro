@@ -1,0 +1,148 @@
+---
+/**
+ * The offers teaser: three compact cards, each with its icon, its duration,
+ * its title and one line, and a link to its offer once the offers page
+ * exists. The whole card is then clickable. Below 768 px, a card is a row:
+ * its icon, title and duration.
+ */
+import type { CollectionEntry } from "astro:content";
+import type { Locale } from "../../i18n/config";
+import { isRouteKey, pathOf } from "../../i18n/routes";
+import PlaceholderText from "../content/PlaceholderText.astro";
+import Chip from "../ui/Chip.astro";
+import Icon from "../ui/Icon.astro";
+import SectionHead from "./SectionHead.astro";
+
+interface Props {
+  copy: CollectionEntry<"home">["data"]["offers"];
+  locale: Locale;
+}
+
+const { copy, locale } = Astro.props;
+const offers = copy.items.map((item) => ({
+  ...item,
+  href: isRouteKey(item.link.page)
+    ? `${pathOf(item.link.page, locale)}${item.link.hash === undefined ? "" : `#${item.link.hash}`}`
+    : undefined,
+}));
+---
+
+<section aria-labelledby="offers-title">
+  <SectionHead id="offers-title" eyebrow={copy.eyebrow} title={copy.title} />
+  <ul class="reveal-group grid gap-3.5 lg:grid-cols-3 lg:gap-6">
+    {
+      offers.map((offer) => (
+        <li class="card reveal offer">
+          <span class="offer-icon">
+            <Icon name={offer.icon} size={26} />
+          </span>
+          <Chip variant="gold" class="offer-duration">
+            <PlaceholderText text={offer.duration} />
+          </Chip>
+          <h3 class="offer-title text-[1.05rem] font-semibold md:text-[1.3rem]">
+            <PlaceholderText text={offer.title} />
+          </h3>
+          <p class="offer-text text-[0.98rem] text-muted">
+            <PlaceholderText text={offer.text} />
+          </p>
+          {offer.href !== undefined && (
+            <a href={offer.href} class="offer-link font-medium text-link">
+              <span class="max-md:sr-only">{copy.more}</span>
+              <Icon name="arrow" size={16} />
+            </a>
+          )}
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  /* Below 768 px: icon | title, duration | arrow. */
+  .offer {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      "icon title link"
+      "icon duration link";
+    align-items: center;
+    column-gap: 16px;
+    padding: 18px 20px;
+  }
+
+  .offer-icon {
+    grid-area: icon;
+    color: var(--mint);
+  }
+
+  .offer-title {
+    grid-area: title;
+  }
+
+  .offer-text {
+    display: none;
+  }
+
+  .offer-link {
+    display: inline-flex;
+    grid-area: link;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* The link covers the whole card. */
+  .offer-link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+
+  .offer-link:focus-visible {
+    outline: none;
+  }
+
+  .offer:has(.offer-link:focus-visible) {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+  }
+
+  /* Below 768 px the duration is plain text under the title. */
+  @media (max-width: 47.99rem) {
+    .offer :global(.offer-duration) {
+      grid-area: duration;
+      justify-self: start;
+      padding: 0;
+      border: 0;
+      background: none;
+      color: var(--muted);
+      letter-spacing: normal;
+    }
+  }
+
+  @media (min-width: 48rem) {
+    .offer {
+      grid-template-columns: 1fr auto;
+      grid-template-areas:
+        "icon duration"
+        "title title"
+        "text text"
+        "link link";
+      align-content: start;
+      row-gap: 10px;
+      padding: 26px 28px;
+    }
+
+    .offer :global(.offer-duration) {
+      grid-area: duration;
+    }
+
+    .offer-text {
+      display: block;
+      grid-area: text;
+    }
+
+    .offer-link {
+      justify-self: start;
+    }
+  }
+</style>

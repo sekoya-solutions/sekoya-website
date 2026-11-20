@@ -1,0 +1,122 @@
+---
+/**
+ * The quiz teaser: a band with the quiz's promise and a link to the quiz
+ * once it exists; from 768 px, a sample result gauge on its right, labelled
+ * as an example. The gauge's arc is drawn at build time from the sample score.
+ */
+import type { CollectionEntry } from "astro:content";
+import type { Locale } from "../../i18n/config";
+import { isRouteKey, pathOf } from "../../i18n/routes";
+import PlaceholderText from "../content/PlaceholderText.astro";
+import Button from "../ui/Button.astro";
+
+interface Props {
+  copy: CollectionEntry<"home">["data"]["quiz"];
+  locale: Locale;
+}
+
+const { copy, locale } = Astro.props;
+const href = isRouteKey(copy.action.page) ? pathOf(copy.action.page, locale) : undefined;
+
+// A half circle of radius 92 centred at (115, 133.4), from 9 o'clock over the
+// top to 3 o'clock; the score's arc ends at its share of the half turn.
+const { score, max } = copy.sample;
+const angle = Math.PI * (1 - Math.min(score, max) / max);
+const end = { x: 115 + 92 * Math.cos(angle), y: 133.4 - 92 * Math.sin(angle) };
+const scoreArc = `M23 133.4 A92 92 0 0 1 ${end.x.toFixed(1)} ${end.y.toFixed(1)}`;
+---
+
+<section aria-labelledby="quiz-title" class="quiz-band reveal">
+  <div>
+    <p class="eyebrow"><PlaceholderText text={copy.eyebrow} /></p>
+    <h2 id="quiz-title" class="mt-2.5 mb-3 text-h2 leading-[1.12] font-bold tracking-[-0.015em]">
+      <PlaceholderText text={copy.title} />
+    </h2>
+    <p class="max-w-[560px] text-[1.02rem] leading-[1.6] font-light text-muted lg:text-lead">
+      <PlaceholderText text={copy.lead} />
+    </p>
+    {
+      href !== undefined && (
+        <Button href={href} variant={copy.action.variant} icon="arrow" class="mt-6.5">
+          {copy.action.label}
+        </Button>
+      )
+    }
+  </div>
+  <figure class="quiz-gauge hidden text-center md:block">
+    <div class="relative">
+      <svg width="230" height="152" viewBox="0 0 230 152" aria-hidden="true">
+        <path class="gauge-track" d="M23 133.4 A92 92 0 0 1 207 133.4"></path>
+        <path class="gauge-score" d={scoreArc}></path>
+      </svg>
+      <p class="gauge-value">{score}<span>/{max}</span></p>
+    </div>
+    <figcaption class="-mt-2 text-xs tracking-[0.2em] text-muted uppercase">
+      <PlaceholderText text={copy.sample.label} />
+    </figcaption>
+  </figure>
+</section>
+
+<style>
+  .quiz-band {
+    display: grid;
+    gap: 40px;
+    align-items: center;
+    padding: 32px 24px;
+    border: 1px solid rgb(34 192 138 / 0.3);
+    border-radius: var(--r-lg);
+    background: linear-gradient(110deg, rgb(34 192 138 / 0.12), rgb(14 38 47 / 0.8) 55%);
+  }
+
+  :global(:root[data-theme="light"]) .quiz-band {
+    border-color: rgb(22 146 122 / 0.35);
+    background: linear-gradient(110deg, rgb(22 146 122 / 0.12), var(--surface-1) 55%);
+  }
+
+  @media (min-width: 48rem) {
+    .quiz-band {
+      grid-template-columns: 1fr auto;
+      padding: 44px 52px;
+    }
+  }
+
+  .gauge-track,
+  .gauge-score {
+    fill: none;
+    stroke-linecap: round;
+    stroke-width: 9;
+  }
+
+  .gauge-track {
+    stroke: rgb(157 189 204 / 0.2);
+  }
+
+  .gauge-score {
+    stroke: var(--gold);
+  }
+
+  :global(:root[data-theme="light"]) .gauge-track {
+    stroke: rgb(74 101 119 / 0.2);
+  }
+
+  :global(:root[data-theme="light"]) .gauge-score {
+    stroke: var(--accent);
+  }
+
+  /* The score sits on the gauge's baseline, inside the arc. */
+  .gauge-value {
+    position: absolute;
+    right: 0;
+    bottom: 14px;
+    left: 0;
+    font-size: 46px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .gauge-value span {
+    color: var(--muted);
+    font-size: 23px;
+    font-weight: 400;
+  }
+</style>

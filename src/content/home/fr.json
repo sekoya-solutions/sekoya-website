@@ -16,5 +16,146 @@
       "Next.js · Astro · Unity"
     ],
     "scrollHint": "Défiler"
+  },
+  "values": {
+    "eyebrow": "Pourquoi Sekoya",
+    "title": "Une seule promesse : que votre projet reparte.",
+    "items": [
+      {
+        "icon": "unlock",
+        "title": "Je débloque",
+        "text": "Diagnostic en quelques jours, décisions techniques tranchées, blocages levés. Vous savez où vous en êtes et quoi faire en premier."
+      },
+      {
+        "icon": "layers",
+        "title": "Je structure",
+        "text": "Architecture, tests, CI/CD, revues de code : de la rigueur sans bureaucratie, pour que l'équipe livre sereinement."
+      },
+      {
+        "icon": "bolt",
+        "title": "J'accélère",
+        "text": "J'optimise la façon dont l'équipe développe, IA comprise, avec un code relu, testé, et dont je réponds ligne par ligne."
+      }
+    ]
+  },
+  "offers": {
+    "eyebrow": "Offres",
+    "title": "Trois façons de travailler ensemble.",
+    "more": "En savoir plus",
+    "items": [
+      {
+        "icon": "search",
+        "title": "Audit technique",
+        "duration": "≈ 5 jours",
+        "text": "Un état des lieux factuel et un plan d'action priorisé.",
+        "link": { "page": "offers", "hash": "audit" }
+      },
+      {
+        "icon": "layers",
+        "title": "Mission Tech Lead / Lead Dev",
+        "duration": "3 à 12 mois",
+        "text": "Un référent technique qui cadre, code et fait grandir l'équipe.",
+        "link": { "page": "offers", "hash": "tech-lead" }
+      },
+      {
+        "icon": "rescue",
+        "title": "Sauvetage de projet",
+        "duration": "4 à 12 semaines",
+        "text": "Stabiliser, remettre sur les rails, passer la main proprement.",
+        "link": { "page": "offers", "hash": "sauvetage" }
+      }
+    ]
+  },
+  "featuredCase": {
+    "eyebrow": "Réalisation à la une",
+    "title": "Refonte e-commerce et SI chez SOS Accessoire.",
+    "role": "Lead Dev",
+    "period": "05/2022 – 09/2025",
+    "steps": {
+      "context": {
+        "label": "Contexte",
+        "text": "Boutique e-commerce vieillissante, SI hétérogène, déploiements à risque."
+      },
+      "work": {
+        "label": "Ce que j'ai fait",
+        "text": "Reconstruction en Next.js, intégration à Sage X3, Salesforce et Speed WMS, CI/CD, Docker, AWS."
+      },
+      "results": {
+        "label": "Résultat",
+        "items": ["[TODO: métrique]", "[TODO: métrique]", "[TODO: métrique]"]
+      }
+    },
+    "action": {
+      "label": "Lire l'étude de cas",
+      "page": "caseStudySosAccessoire",
+      "variant": "ghost"
+    },
+    "map": {
+      "label": "Le système d'information intégré autour de la boutique",
+      "centre": { "name": "Next.js", "role": "E-commerce" },
+      "systems": [
+        { "name": "Sage X3", "role": "ERP" },
+        { "name": "Salesforce", "role": "CRM" },
+        { "name": "Speed WMS", "role": "Logistique" },
+        { "name": "PrestaShop", "role": "Historique" },
+        { "name": "Blueway · Talend", "role": "Intégration" },
+        { "name": "AWS · Docker", "role": "Infra" }
+      ]
+    }
+  },
+  "portfolio": {
+    "eyebrow": "Portfolio",
+    "title": "Des projets personnels, mesurés et publics.",
+    "projects": [
+      {
+        "title": "Sekoya Transit",
+        "text": "Jeu de gestion de transport en Unity, jouable dans le navigateur.",
+        "image": "sekoya-transit",
+        "alt": "Le jeu Sekoya Transit : une carte en vue isométrique avec des routes, des villes et le tableau de bord des contrats.",
+        "stack": ["Unity", "C#", "WebGL"]
+      },
+      {
+        "title": "Sekoya Parts",
+        "text": "E-commerce de 100 000 produits, Lighthouse mobile 96 à 100.",
+        "measuredOn": "2026-11-17",
+        "image": "sekoya-parts",
+        "alt": "La page d'accueil de la boutique Sekoya Parts : une recherche de pièces par marque, type et modèle d'appareil, au-dessus d'une photo de pièces détachées.",
+        "stack": ["Next.js", "Payload", "PostgreSQL"]
+      },
+      {
+        "title": "Ce site",
+        "text": "Astro, zéro JS par défaut, code source public.",
+        "image": "logo",
+        "alt": "",
+        "stack": ["Astro", "Tailwind CSS", "TypeScript"]
+      }
+    ]
+  },
+  "quiz": {
+    "eyebrow": "Auto-diagnostic",
+    "title": "Votre projet est-il bloqué ?",
+    "lead": "10 questions, 2 minutes, un score et des pistes concrètes. Tout reste dans votre navigateur : rien n'est envoyé ni enregistré.",
+    "action": { "label": "Faire le test", "page": "quiz", "variant": "primary" },
+    "sample": { "score": 11, "max": 20, "label": "Exemple de résultat" }
+  },
+  "contact": {
+    "eyebrow": "Contact",
+    "title": "Un projet qui patine ? Parlons-en.",
+    "lead": "Un premier échange pour comprendre votre situation, sans engagement.",
+    "action": { "label": "Me contacter", "page": "contact", "variant": "primary" },
+    "external": {
+      "label": "Profil Malt",
+      "href": "https://www.malt.fr/profile/fabricereynaud",
+      "variant": "ghost"
+    },
+    "links": [
+      { "icon": "email", "label": "[TODO: email]" },
+      {
+        "icon": "github",
+        "label": "github.com/sekoya-solutions",
+        "href": "https://github.com/sekoya-solutions"
+      },
+      { "icon": "linkedin", "label": "[TODO: URL LinkedIn]" }
+    ]
   }
 }

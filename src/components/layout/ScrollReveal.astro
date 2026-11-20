@@ -1,0 +1,13 @@
+---
+/**
+ * The scroll reveal's fallback script (scroll-reveal.ts), inlined after the
+ * page's content, so every element it reveals already exists, with its hash
+ * added to the page's Content Security Policy.
+ */
+import { scrollRevealHash, scrollRevealScript } from "./scroll-reveal";
+
+if (Astro.csp === undefined) throw new Error("astro.config.mjs must enable the CSP");
+Astro.csp.insertScriptHash(scrollRevealHash);
+---
+
+<script is:inline set:html={scrollRevealScript}></script>

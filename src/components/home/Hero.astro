@@ -14,6 +14,7 @@ import type { CollectionEntry } from "astro:content";
 import type { Locale } from "../../i18n/config";
 import { isRouteKey, pathOf } from "../../i18n/routes";
 import PlaceholderText from "../content/PlaceholderText.astro";
+import Button from "../ui/Button.astro";
 import HeroScene from "./HeroScene.astro";
 
 interface Props {
@@ -48,24 +49,9 @@ const actions = copy.actions.flatMap(({ label, page, variant }) =>
         actions.length > 0 && (
           <div class="hero-reveal reveal-4 mt-6.5 grid gap-3 lg:mt-8.5 lg:flex lg:gap-3.5">
             {actions.map(({ label, variant, href }) => (
-              <a href={href} class:list={["hero-action", `hero-action-${variant}`]}>
+              <Button href={href} variant={variant} icon={variant === "primary" ? "arrow" : undefined}>
                 {label}
-                {variant === "primary" && (
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
-                  >
-                    <path d="M5 12h14M13 6l6 6-6 6" />
-                  </svg>
-                )}
-              </a>
+              </Button>
             ))}
           </div>
         )
@@ -139,36 +125,6 @@ const actions = copy.actions.flatMap(({ label, page, variant }) =>
     .hero-title-rest {
       line-height: 1.06;
     }
-  }
-
-  .hero-action {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 15px 26px;
-    border: 1px solid transparent;
-    border-radius: var(--r-pill);
-    font-weight: 500;
-    line-height: 1;
-    white-space: nowrap;
-  }
-
-  .hero-action-primary {
-    background: var(--primary);
-    box-shadow: var(--glow-mint);
-    color: var(--primary-text);
-    font-weight: 600;
-  }
-
-  .hero-action-ghost {
-    border-color: rgb(232 211 168 / 0.5);
-    color: var(--gold);
-  }
-
-  :global(:root[data-theme="light"]) .hero-action-ghost {
-    border-color: var(--accent);
-    color: var(--ink);
   }
 
   /* The trust line's items, separated by small gold dots. */

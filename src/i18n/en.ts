@@ -13,5 +13,7 @@ export const en = {
     title: "Sekoya Solutions",
     description:
       "Sekoya Solutions, freelance Tech Lead: technical audit, Tech Lead engagement, project rescue.",
+    measuredOn: "measured on",
+    externalLink: "external site",
   },
 } satisfies Dictionary;

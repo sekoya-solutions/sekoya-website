@@ -1,0 +1,166 @@
+---
+/**
+ * The featured case study's integration map: the shop at the centre, linked
+ * by circuit traces (90° and 45° only) to the six systems around it, three on
+ * each side. Two dots take turns travelling along two traces, one at a time;
+ * under reduced motion they are not shown. The map is one image for screen
+ * readers, named after its systems.
+ */
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  map: CollectionEntry<"home">["data"]["featuredCase"]["map"];
+}
+
+const { map } = Astro.props;
+const label = `${map.label}. ${[map.centre, ...map.systems]
+  .map(({ name, role }) => `${name} (${role})`)
+  .join(", ")}`;
+
+// The systems' boxes, three on the left and three on the right of a 520 x 330
+// view, and the trace from each box to the centre's box (196, 112, 128 x 76).
+const rows = [16, 126, 236];
+const boxes = map.systems.map((system, index) => ({
+  ...system,
+  x: index < 3 ? 0 : 380,
+  y: rows[index % 3] ?? 0,
+}));
+const traces = [
+  "M140 40 H200 L230 70 V112",
+  "M140 150 H196",
+  "M140 260 H200 L230 230 V188",
+  "M380 40 H320 L290 70 V112",
+  "M380 150 H324",
+  "M380 260 H320 L290 230 V188",
+];
+---
+
+<svg class="integration-map" viewBox="0 0 520 330" role="img" aria-label={label}>
+  {traces.map((d) => <path class="map-trace" d={d} />)}
+  <circle class="map-dot map-dot-in" r="4"></circle>
+  <circle class="map-dot map-dot-out" r="4"></circle>
+  {
+    boxes.map(({ name, role, x, y }) => (
+      <g>
+        <rect class="map-box" x={x + 0.5} y={y + 0.5} width="139" height="47" rx="10" />
+        <text class="map-name" x={x + 14} y={y + 21}>
+          {name}
+        </text>
+        <text class="map-role" x={x + 14} y={y + 38}>
+          {role}
+        </text>
+      </g>
+    ))
+  }
+  <rect class="map-centre" x="196" y="112" width="128" height="76" rx="14" />
+  <text class="map-centre-name" x="260" y="146" text-anchor="middle">{map.centre.name}</text>
+  <text class="map-role" x="260" y="166" text-anchor="middle">{map.centre.role}</text>
+</svg>
+
+<style>
+  .integration-map {
+    display: block;
+    width: 100%;
+    max-width: 520px;
+    height: auto;
+    overflow: visible;
+  }
+
+  .map-trace {
+    fill: none;
+    stroke: var(--grey);
+    stroke-linejoin: round;
+    stroke-opacity: 0.5;
+    stroke-width: 2;
+  }
+
+  .map-box {
+    fill: var(--surface-1);
+    stroke: rgb(157 189 204 / 0.35);
+  }
+
+  .map-name {
+    fill: var(--ink);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .map-role {
+    fill: var(--grey);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .map-centre {
+    fill: #0d2b2e;
+    stroke: var(--mint);
+    stroke-width: 1.5;
+    filter: drop-shadow(0 0 8px rgb(34 192 138 / 0.45));
+  }
+
+  .map-centre-name {
+    fill: var(--mint);
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  :global(:root[data-theme="light"]) .map-box {
+    stroke: rgb(74 101 119 / 0.35);
+  }
+
+  :global(:root[data-theme="light"]) .map-centre {
+    fill: var(--surface-1);
+    filter: drop-shadow(0 4px 10px rgb(22 146 122 / 0.2));
+  }
+
+  :global(:root[data-theme="light"]) .map-centre-name {
+    fill: var(--link);
+  }
+
+  /* Two dots take turns, so at most one travels at a time: one from Sage X3
+     in to the shop, then one from the shop out to AWS · Docker. */
+  .map-dot {
+    display: none;
+    fill: var(--mint);
+    offset-rotate: 0deg;
+  }
+
+  .map-dot-in {
+    offset-path: path("M140 40 H200 L230 70 V112");
+  }
+
+  .map-dot-out {
+    offset-path: path("M290 188 V230 L320 260 H380");
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .map-dot {
+      display: block;
+      animation: map-travel 10s linear infinite both;
+    }
+
+    .map-dot-out {
+      animation-delay: 5s;
+    }
+  }
+
+  @keyframes map-travel {
+    0% {
+      offset-distance: 0%;
+      opacity: 0;
+    }
+    4%,
+    36% {
+      opacity: 1;
+    }
+    40% {
+      offset-distance: 100%;
+      opacity: 0;
+    }
+    100% {
+      offset-distance: 100%;
+      opacity: 0;
+    }
+  }
+</style>

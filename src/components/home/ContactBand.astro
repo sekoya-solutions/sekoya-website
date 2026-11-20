@@ -1,0 +1,79 @@
+---
+/**
+ * The contact band, centred: a title, one line, the link to the contact page
+ * once it exists and the external profile, then the direct contact links. A
+ * link whose address is still a placeholder is shown as its placeholder chip,
+ * with no link.
+ */
+import type { CollectionEntry } from "astro:content";
+import { translations } from "../../i18n";
+import type { Locale } from "../../i18n/config";
+import { isRouteKey, pathOf } from "../../i18n/routes";
+import PlaceholderText from "../content/PlaceholderText.astro";
+import Button from "../ui/Button.astro";
+import Icon from "../ui/Icon.astro";
+
+interface Props {
+  copy: CollectionEntry<"home">["data"]["contact"];
+  locale: Locale;
+}
+
+const { copy, locale } = Astro.props;
+const t = translations(locale);
+const href = isRouteKey(copy.action.page) ? pathOf(copy.action.page, locale) : undefined;
+---
+
+<section aria-labelledby="contact-title" class="reveal text-center">
+  <p class="eyebrow"><PlaceholderText text={copy.eyebrow} /></p>
+  <h2 id="contact-title" class="my-3.5 text-h1 leading-[1.12] font-bold tracking-[-0.02em]">
+    <PlaceholderText text={copy.title} />
+  </h2>
+  <p class="mx-auto max-w-[640px] text-[1.02rem] leading-[1.6] font-light text-muted lg:text-lead">
+    <PlaceholderText text={copy.lead} />
+  </p>
+  <div class="mt-7.5 grid gap-3 md:flex md:justify-center md:gap-3.5">
+    {
+      href !== undefined && (
+        <Button href={href} variant={copy.action.variant} icon="arrow">
+          {copy.action.label}
+        </Button>
+      )
+    }
+    <Button
+      href={copy.external.href}
+      variant={copy.external.variant}
+      icon="external"
+      externalHint={t.home.externalLink}
+    >
+      {copy.external.label}
+    </Button>
+  </div>
+  <ul class="mt-8.5 flex flex-wrap justify-center gap-x-6.5 gap-y-3 text-sm text-muted">
+    {
+      copy.links.map((link) => (
+        <li>
+          {link.href === undefined ? (
+            <span class="contact-link">
+              <Icon name={link.icon} size={18} />
+              <PlaceholderText text={link.label} />
+            </span>
+          ) : (
+            <a href={link.href} class="contact-link hover:text-ink">
+              <Icon name={link.icon} size={18} />
+              <PlaceholderText text={link.label} />
+            </a>
+          )}
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .contact-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+  }
+</style>
