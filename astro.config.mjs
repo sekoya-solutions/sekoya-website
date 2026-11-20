@@ -11,6 +11,16 @@ export default defineConfig({
   build: {
     format: "file",
   },
+  // ADR 0002: each page carries a Content Security Policy in a meta tag, with
+  // the hashes of its own inline scripts and styles, so no 'unsafe-inline' is
+  // needed. The directives a meta tag cannot carry (frame-ancestors) are sent
+  // as a header from public/_headers. No form-action: the optional contact
+  // form posts to another origin (ADR 0008).
+  security: {
+    csp: {
+      directives: ["default-src 'self'", "object-src 'none'", "base-uri 'self'"],
+    },
+  },
   vite: {
     plugins: [tailwindcss()],
   },

@@ -85,8 +85,9 @@ Moving the zone, with the owner, at launch so that the end of the site builder s
 The environments:
 
 - **Production** from `main`, built by Workers Builds after a merge, on the custom domain.
-- **Previews** for every other branch, on `workers.dev` URLs, kept out of search engines by the `noindex` header.
-- **Local:** `astro dev` and `astro preview`; no account is needed to build or test. Wrangler, Cloudflare's command-line tool, is a development dependency of the project if needed, never installed globally.
+- **Previews** for every other branch, on `workers.dev` URLs, kept out of search engines by the `noindex` header. They are built with Worker Previews (`wrangler preview`, Workers Builds' default), in open beta on 2026-11-20 and kept by the owner; if it changes or breaks, `wrangler versions upload` with a preview alias per branch is the generally available fallback.
+- **Local:** `astro dev`, and the build served by `wrangler dev`, Cloudflare's local emulation; no account is needed to build or test. Wrangler, Cloudflare's command-line tool, is a development dependency of the project, never installed globally.
+- **Headers:** security headers and cache lifetimes in `_headers`. The Content Security Policy is Astro's built-in `security.csp`, a meta tag in each page with the hashes of its inline scripts and styles, so no `'unsafe-inline'` is needed; `_headers` adds `frame-ancestors`, which a meta tag cannot carry.
 - **Secrets:** none are needed to build. Optional values (such as the contact form address of [ADR 0008](0008-contact-and-privacy.md)) live in Cloudflare's environment variables, never in the repository; `.env.example` lists the names only.
 
 ## Consequences

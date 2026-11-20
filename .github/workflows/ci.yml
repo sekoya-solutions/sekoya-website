@@ -121,7 +121,7 @@ jobs:
       - run: npm ci
       - run: npm test
 
-  # The build, then Playwright and axe against it, served by `astro preview`.
+  # The build, then Playwright and axe against it, served by `wrangler dev`.
   end-to-end:
     name: Build and end-to-end tests
     needs: changes

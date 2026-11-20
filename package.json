@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview",
+    "preview": "wrangler dev",
     "check": "biome check && astro check",
     "format": "biome check --write",
     "test": "vitest run",
@@ -28,6 +28,7 @@
     "markdownlint-cli2": "0.24.2",
     "tailwindcss": "4.3.5",
     "typescript": "6.0.3",
-    "vitest": "5.1.1"
+    "vitest": "5.1.1",
+    "wrangler": "4.165.0"
   }
 }
