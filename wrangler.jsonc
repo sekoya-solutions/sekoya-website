@@ -10,6 +10,9 @@
   // connected at launch, and a preview URL per branch.
   "workers_dev": true,
   "preview_urls": true,
+  // `wrangler preview` runs only when this block exists. Empty: previews use
+  // the settings above, assets included.
+  "previews": {},
   "assets": {
     "directory": "./dist",
     // Pages are built as `offres.html` and served at `/offres`; `/offres/`
