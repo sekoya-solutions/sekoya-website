@@ -33,7 +33,10 @@ Node.js at the version in [`.node-version`](.node-version), with npm.
 | Path | Contents |
 | --- | --- |
 | `src/pages/` | One file per page |
-| `src/styles/` | Global styles |
+| `src/layouts/` | The base layout of every page |
+| `src/components/` | Components: the logo, the header and footer shells, the theme toggle and its script |
+| `src/lib/` | Pure functions, with their unit tests |
+| `src/styles/` | The brand tokens (`tokens.css`), mapped into Tailwind with the base styles (`global.css`) |
 | `src/assets/` | Logos, animated logo and font, processed by the build |
 | `public/` | Files copied as they are into the build, including the `_headers` and `_redirects` files |
 | `e2e/` | End-to-end and accessibility tests |

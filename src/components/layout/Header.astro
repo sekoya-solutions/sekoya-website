@@ -1,0 +1,15 @@
+---
+/**
+ * The header shell: the logo, linking to the home page, and the theme
+ * toggle. The navigation and the language switch come with their pages.
+ */
+import Logo from "../brand/Logo.astro";
+import ThemeToggle from "./ThemeToggle.astro";
+---
+
+<header class="mx-auto flex h-21 max-w-site items-center justify-between px-(--gutter)">
+  <a href="/" class="-ml-2.5 rounded-md">
+    <Logo class="h-14 w-auto" />
+  </a>
+  <ThemeToggle />
+</header>

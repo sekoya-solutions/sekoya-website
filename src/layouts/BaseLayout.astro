@@ -1,0 +1,46 @@
+---
+/**
+ * The layout of every page: the head (font, theme script, icons), a skip
+ * link, the header and footer shells, and the page's content in <main>.
+ */
+import { Font } from "astro:assets";
+import Footer from "../components/layout/Footer.astro";
+import Header from "../components/layout/Header.astro";
+import ThemeScript from "../components/layout/ThemeScript.astro";
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <ThemeScript />
+    <Font cssVariable="--font-outfit" preload />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+  </head>
+  <body>
+    <a
+      href="#contenu"
+      class="sr-only rounded-pill bg-primary px-5 py-3 font-medium text-primary-text focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50"
+      >Aller au contenu</a
+    >
+    <Header />
+    <main id="contenu" tabindex="-1" class="mx-auto max-w-site px-(--gutter) focus:outline-none">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

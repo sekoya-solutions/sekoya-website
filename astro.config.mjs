@@ -1,6 +1,6 @@
 // @ts-check
 import tailwindcss from "@tailwindcss/vite";
-import { defineConfig } from "astro/config";
+import { defineConfig, fontProviders } from "astro/config";
 
 // ADR 0001: a static site, one URL per page without a trailing slash.
 export default defineConfig({
@@ -21,6 +21,27 @@ export default defineConfig({
       directives: ["default-src 'self'", "object-src 'none'", "base-uri 'self'"],
     },
   },
+  // ADR 0003: Outfit, one self-hosted variable WOFF2 for every weight, served
+  // by Astro's font API with a hashed URL and `font-display: swap`. The
+  // fallbacks end with a generic family, so Astro also generates fallback
+  // faces with `size-adjust` and metric overrides: the swap shifts no layout.
+  fonts: [
+    {
+      provider: fontProviders.local(),
+      name: "Outfit",
+      cssVariable: "--font-outfit",
+      fallbacks: ["system-ui"],
+      options: {
+        variants: [
+          {
+            src: ["./src/assets/fonts/Outfit-latin-variable.woff2"],
+            weight: "100 900",
+            style: "normal",
+          },
+        ],
+      },
+    },
+  ],
   vite: {
     plugins: [tailwindcss()],
   },

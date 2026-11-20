@@ -1,0 +1,37 @@
+---
+/**
+ * The one blocking script in <head> (ADR 0003, ADR 0005). It runs before the
+ * first paint, so a visitor who chose the light theme never sees the dark
+ * one first. Dark is the default: only a stored "light" changes the theme.
+ * It also wires the theme toggle, by delegation, once the page is parsed.
+ * Storage can be unavailable (private browsing, blocked cookies): the theme
+ * then still switches, for the current page only.
+ */
+---
+
+<script is:inline>
+  (() => {
+    const root = document.documentElement;
+    const key = "theme";
+    try {
+      if (localStorage.getItem(key) === "light") root.dataset.theme = "light";
+    } catch {}
+    const sync = () => {
+      const isLight = root.dataset.theme === "light";
+      for (const button of document.querySelectorAll("[data-theme-toggle]")) {
+        button.setAttribute("aria-pressed", String(isLight));
+      }
+    };
+    document.addEventListener("DOMContentLoaded", sync);
+    document.addEventListener("click", (event) => {
+      if (!(event.target instanceof Element) || !event.target.closest("[data-theme-toggle]")) return;
+      const theme = root.dataset.theme === "light" ? "dark" : "light";
+      if (theme === "light") root.dataset.theme = "light";
+      else delete root.dataset.theme;
+      try {
+        localStorage.setItem(key, theme);
+      } catch {}
+      sync();
+    });
+  })();
+</script>
