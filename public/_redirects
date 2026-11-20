@@ -1,0 +1,2 @@
+# Redirects for the files Cloudflare serves (ADR 0002), one per line:
+# <source> <destination> [code]. None yet.

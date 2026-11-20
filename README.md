@@ -8,6 +8,7 @@ The source of the Sekoya Solutions website: a static site, in French with an Eng
 - [Tailwind CSS](https://tailwindcss.com/) 4, through its Vite plugin ([ADR 0003](docs/adr/0003-styling-theme-and-fonts.md)).
 - [Biome](https://biomejs.dev/) for linting and formatting, [Vitest](https://vitest.dev/) for unit tests, [Playwright](https://playwright.dev/) with [axe](https://github.com/dequelabs/axe-core-npm/tree/develop/packages/playwright) for end-to-end and accessibility tests, [markdownlint-cli2](https://github.com/DavidAnson/markdownlint-cli2) and [lychee](https://lychee.cli.rs/) for the Markdown files ([ADR 0006](docs/adr/0006-testing-and-ci.md)).
 - GitHub Actions for continuous integration (CI).
+- [Cloudflare Workers](https://developers.cloudflare.com/workers/static-assets/) with static assets for hosting, built by Workers Builds with a preview per branch ([ADR 0002](docs/adr/0002-hosting-and-environments.md), [hosting setup](docs/hosting.md)).
 
 ## Commands
 
@@ -18,7 +19,7 @@ Node.js at the version in [`.node-version`](.node-version), with npm.
 | `npm ci` | Installs the locked dependencies |
 | `npm run dev` | Starts the development server |
 | `npm run build` | Builds the static site into `dist/` |
-| `npm run preview` | Serves the build in `dist/` |
+| `npm run preview` | Serves the build in `dist/` with `wrangler dev`, with the hosting configuration and headers |
 | `npm run check` | Lints and checks formatting (Biome), and checks types (`astro check`) |
 | `npm run format` | Fixes formatting and safe lint issues |
 | `npm test` | Runs the unit tests |
@@ -33,10 +34,13 @@ Node.js at the version in [`.node-version`](.node-version), with npm.
 | --- | --- |
 | `src/pages/` | One file per page |
 | `src/styles/` | Global styles |
+| `public/` | Files copied as they are into the build, including the `_headers` and `_redirects` files |
 | `e2e/` | End-to-end and accessibility tests |
 | `scripts/` | Build and CI helper scripts, with their unit tests |
 | `docs/adr/` | Architecture Decision Records |
 | `docs/roadmap.md` | The epics and their issues |
+| `docs/hosting.md` | The hosting configuration and its one-time setup |
+| `wrangler.jsonc` | The Cloudflare Worker that serves the site |
 | `.github/workflows/` | The CI workflow |
 
 ## Continuous integration

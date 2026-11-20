@@ -1,0 +1,28 @@
+# HTTP headers for the files Cloudflare serves (ADR 0002). Every matching
+# rule adds its headers, so a header is set in one rule only. Limits: 100
+# rules, 2,000 characters per line.
+
+# Security headers on every response. The Content Security Policy is a meta
+# tag in each page, with the hashes of its inline code (astro.config.mjs); a
+# meta tag cannot carry frame-ancestors, so that directive is sent here, and
+# the browser enforces both policies. Strict-Transport-Security has no
+# includeSubDomains: other subdomains of the domain are not served here.
+/*
+  Content-Security-Policy: frame-ancestors 'none'
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  Cross-Origin-Opener-Policy: same-origin
+  Strict-Transport-Security: max-age=31536000
+
+# Files under /_astro/ carry a hash of their content in their name, so a
+# changed file gets a new URL and can be cached for a year.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Every workers.dev host (production before launch, and the previews, whose
+# names are <preview>-<worker>.<subdomain>.workers.dev) is kept out of search
+# engines. The custom domain never matches this rule.
+https://:worker.:subdomain.workers.dev/*
+  X-Robots-Tag: noindex

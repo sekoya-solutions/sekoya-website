@@ -1,0 +1,20 @@
+// The Worker that serves the site: static assets only, no Worker script
+// (ADR 0002). Workers Builds runs `npm run build`, then `wrangler deploy` on
+// main and `wrangler preview` on every other branch. The name must match the
+// Worker's name in the Cloudflare dashboard, or the build fails.
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "sekoya-website",
+  "compatibility_date": "2026-11-20",
+  // Production on <name>.<subdomain>.workers.dev until the domain is
+  // connected at launch, and a preview URL per branch.
+  "workers_dev": true,
+  "preview_urls": true,
+  "assets": {
+    "directory": "./dist",
+    // Pages are built as `offres.html` and served at `/offres`; `/offres/`
+    // and `/offres.html` redirect there, matching `trailingSlash: "never"`
+    // in astro.config.mjs.
+    "html_handling": "drop-trailing-slash"
+  }
+}
