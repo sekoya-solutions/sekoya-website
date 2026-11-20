@@ -32,13 +32,14 @@ Done once by the owner, with the owner's Cloudflare account.
 1. In the [Cloudflare dashboard](https://dash.cloudflare.com/), open **Workers & Pages**, then select **Create application**.
 2. Choose **GitHub** and authorize the Cloudflare Workers & Pages GitHub App when asked. Give it access to **Only select repositories**: `sekoya-solutions/sekoya-website`.
 3. Select the repository and set:
-   - **The Worker's name:** `sekoya-website`. It must match `name` in `wrangler.jsonc`, or the build fails.
+   - **Project name** (the Worker's name): `sekoya-website`. It must match `name` in `wrangler.jsonc`, or the build fails.
    - **Build command:** `npm run build`
    - **Deploy command:** `npx wrangler deploy` (the default)
    - **Preview command:** `npx wrangler preview` (the default)
-   - **Root directory:** empty (the repository root)
-4. Select **Save and Deploy**. The first production build runs from `main`.
-5. In the Worker, open **Settings** > **Build** > **Branch control**: check that the production branch is `main` and that **Enable Preview Builds** is ticked.
+   - **Enable Preview builds:** on; **Protect with Cloudflare Access:** off (previews are public, but not indexed)
+   - Under **Advanced settings**, **Path:** `/` (the repository root); **API token:** let Cloudflare create one; no variable
+4. Select **Deploy**. The first production build runs from `main`, which must already contain `wrangler.jsonc`; without it, Wrangler guesses a configuration and the build fails.
+5. In the Worker's **Settings**, under **Builds**, check that **Production branch** is `main`. A retried build runs the same commit again; changing the branch takes effect on the next push.
 6. Note the Worker's `workers.dev` URL, shown on the Worker's overview page.
 
 ## Checks
