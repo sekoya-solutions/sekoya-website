@@ -1,0 +1,12 @@
+// markdownlint-cli2 configuration (ADR 0006).
+{
+  "config": {
+    "default": true,
+    // Paragraphs are written as one line each, so line length is not limited.
+    "MD013": false
+  },
+  "globs": ["**/*.md"],
+  // Files git ignores are skipped, such as .tools, so the linted set is the
+  // committed Markdown.
+  "gitignore": ".gitignore"
+}

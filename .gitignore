@@ -1,0 +1,25 @@
+# Generic entries for every project. Stack-specific entries go below them.
+
+# Portable tools, downloaded locally
+.tools/
+
+# Obsidian, an optional viewer for docs/
+.obsidian/
+
+# Environment files can hold secrets; only an example file may be committed
+.env
+.env.*
+!.env.example
+
+# Personal Claude Code settings for this repository
+.claude/settings.local.json
+
+# Operating system files
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Editor swap and backup files
+*.swp
+*.swo
+*~
