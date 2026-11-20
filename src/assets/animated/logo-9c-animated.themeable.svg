@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="t">
+<title id="t">Sekoya Solutions</title>
+<style>.logo *{transform-box:fill-box}
+.logo .anim-trunk{transform-origin:50% 100%;animation:trunk-grow .5s cubic-bezier(.3,.7,.35,1) .1s both}
+.logo .root{stroke-dasharray:1 2;animation:root-draw var(--dur) cubic-bezier(.3,.6,.3,1) var(--d) both}
+.logo .node{transform-origin:50% 50%;animation:node-pop .38s cubic-bezier(.2,.9,.3,1.25) var(--nd) both}
+.logo .chevron{animation:chev-in .62s cubic-bezier(.2,.8,.25,1) var(--d) both}
+.logo #ring{stroke-dasharray:1 2;animation:ring-draw .95s cubic-bezier(.45,.1,.2,1) 2.4s both}
+@keyframes trunk-grow{from{opacity:0;transform:scaleY(0)}35%{opacity:1}to{opacity:1;transform:scaleY(1)}}
+@keyframes root-draw{0%{opacity:0;stroke-dashoffset:1}1%{opacity:1;stroke-dashoffset:1}100%{opacity:1;stroke-dashoffset:0}}
+@keyframes node-pop{from{opacity:0;transform:scale(0)}to{opacity:1;transform:scale(1)}}
+@keyframes chev-in{from{opacity:0;transform:translateY(-46px)}60%{opacity:1}to{opacity:1;transform:translateY(0)}}
+@keyframes ring-draw{0%{opacity:0;stroke-dashoffset:1}1%{opacity:1;stroke-dashoffset:1}100%{opacity:1;stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){.logo .anim-trunk,.logo .root,.logo .node,.logo .chevron,.logo #ring{animation:none!important}}
+/* THEMEABLE: set these on the parent element when the SVG is INLINED in the page (CSS variables do not cross <img>).
+   dark : --logo-canopy:#22c08a; --logo-gold:#e8d3a8; --logo-roots:#9dbdcc;
+   light: --logo-canopy:#16927a; --logo-gold:#a8893f; --logo-roots:#4a6577; */
+.logo #roots{stroke:var(--logo-roots,#9dbdcc)}
+.logo .node{fill:var(--logo-roots,#9dbdcc)}
+.logo #trunk{fill:var(--logo-gold,#e8d3a8)}
+.logo .chevron{fill:var(--logo-canopy,#22c08a);stroke:var(--logo-canopy,#22c08a)}
+.logo #ring{stroke:var(--logo-gold,#e8d3a8)}</style>
+<g class="logo">
+<g id="roots" fill="none" stroke="#9dbdcc" stroke-width="11.5" stroke-linecap="round" stroke-linejoin="round">
+<g class="root-group" id="root-Z" style="--d:0.55s;--dur:0.67s;--nd:1.10s"><path class="root" pathLength="1" d="M512 635.5 L512 802"/><circle class="node" fill="#9dbdcc" stroke="none" cx="512" cy="802" r="14.4"/></g>
+<g class="root-group" id="root-AL" style="--d:0.63s;--dur:0.65s;--nd:1.16s"><path class="root" pathLength="1" d="M483.4 644.8 L457.7 644.8 L436.2 663.9 L327.6 663.9"/><circle class="node" fill="#9dbdcc" stroke="none" cx="327.6" cy="663.9" r="14.4"/></g>
+<g class="root-group" id="root-BL" style="--d:0.63s;--dur:0.85s;--nd:1.36s"><path class="root" pathLength="1" d="M486 642.4 L486 689.5 L431.5 740.2 L431.5 791.3 L405.4 821.7"/><circle class="node" fill="#9dbdcc" stroke="none" cx="405.4" cy="821.7" r="14.4"/></g>
+<g class="root-group" id="root-CL" style="--d:0.73s;--dur:0.63s;--nd:1.24s"><path class="root" pathLength="1" d="M464.8 671.2 L439.7 695 L398.9 695 L371.4 721.5 L327.5 721.5"/><circle class="node" fill="#9dbdcc" stroke="none" cx="327.5" cy="721.5" r="14.4"/></g>
+<g class="root-group" id="root-DL" style="--d:0.89s;--dur:0.38s;--nd:1.15s"><path class="root" pathLength="1" d="M394.8 703.2 L394.8 738 L353 781.7"/><circle class="node" fill="#9dbdcc" stroke="none" cx="353" cy="781.7" r="14.4"/></g>
+<g class="root-group" id="root-EL" style="--d:0.73s;--dur:0.52s;--nd:1.13s"><path class="root" pathLength="1" d="M487.5 726.4 L471.5 745.8 L471.5 849.5"/><circle class="node" fill="#9dbdcc" stroke="none" cx="471.5" cy="849.5" r="14.4"/></g>
+<g class="root-group" id="root-AR" style="--d:0.63s;--dur:0.65s;--nd:1.16s"><path class="root" pathLength="1" d="M539.6 644.8 L565.3 644.8 L586.8 663.9 L695.4 663.9"/><circle class="node" fill="#9dbdcc" stroke="none" cx="695.4" cy="663.9" r="14.4"/></g>
+<g class="root-group" id="root-BR" style="--d:0.63s;--dur:0.85s;--nd:1.36s"><path class="root" pathLength="1" d="M537 642.4 L537 689.5 L591.5 740.2 L591.5 791.3 L617.6 821.7"/><circle class="node" fill="#9dbdcc" stroke="none" cx="617.6" cy="821.7" r="14.4"/></g>
+<g class="root-group" id="root-CR" style="--d:0.73s;--dur:0.63s;--nd:1.24s"><path class="root" pathLength="1" d="M558.2 671.2 L583.3 695 L624.1 695 L651.6 721.5 L695.5 721.5"/><circle class="node" fill="#9dbdcc" stroke="none" cx="695.5" cy="721.5" r="14.4"/></g>
+<g class="root-group" id="root-DR" style="--d:0.89s;--dur:0.38s;--nd:1.15s"><path class="root" pathLength="1" d="M628.2 703.2 L628.2 738 L670 781.7"/><circle class="node" fill="#9dbdcc" stroke="none" cx="670" cy="781.7" r="14.4"/></g>
+<g class="root-group" id="root-ER" style="--d:0.73s;--dur:0.52s;--nd:1.13s"><path class="root" pathLength="1" d="M535.5 726.4 L551.5 745.8 L551.5 849.5"/><circle class="node" fill="#9dbdcc" stroke="none" cx="551.5" cy="849.5" r="14.4"/></g>
+</g>
+<rect id="trunk" class="anim-trunk" x="489" y="499.5" width="45.9" height="105" rx="6.3" fill="#e8d3a8"/>
+<g id="canopy">
+<polygon class="chevron" id="chevron-1" style="--d:2.00s" points="511.8,157.8 591.8,229.3 596.3,281 511.8,207.2 427.3,281 431.8,229.3" fill="#22c08a" stroke="#22c08a" stroke-width="14" stroke-linejoin="round"/>
+<polygon class="chevron" id="chevron-2" style="--d:1.85s" points="511.8,272.9 632.2,362 638.4,417.8 511.8,325.4 385.2,417.8 391.4,362" fill="#22c08a" stroke="#22c08a" stroke-width="11.7" stroke-linejoin="round"/>
+<polygon class="chevron" id="chevron-3" style="--d:1.70s" points="511.8,391.2 676.3,500.9 681.7,553.5 511.8,441.5 341.9,553.5 347.3,500.9" fill="#22c08a" stroke="#22c08a" stroke-width="13.7" stroke-linejoin="round"/>
+</g>
+<path id="ring" pathLength="1" d="M511.8 921.8 A406.4 413 0 1 1 511.8 95.7 A406.4 413 0 1 1 511.8 921.8Z" fill="none" stroke="#e8d3a8" stroke-width="13.3"/>
+</g></svg>

@@ -34,6 +34,7 @@ Node.js at the version in [`.node-version`](.node-version), with npm.
 | --- | --- |
 | `src/pages/` | One file per page |
 | `src/styles/` | Global styles |
+| `src/assets/` | Logos, animated logo and font, processed by the build |
 | `public/` | Files copied as they are into the build, including the `_headers` and `_redirects` files |
 | `e2e/` | End-to-end and accessibility tests |
 | `scripts/` | Build and CI helper scripts, with their unit tests |
