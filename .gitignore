@@ -23,3 +23,12 @@ desktop.ini
 *.swp
 *.swo
 *~
+
+# Dependencies, and the files Astro builds or generates
+/node_modules/
+/dist/
+/.astro/
+
+# Playwright results and traces
+/test-results/
+/playwright-report/
