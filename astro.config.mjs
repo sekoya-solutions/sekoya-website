@@ -1,11 +1,23 @@
 // @ts-check
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, fontProviders } from "astro/config";
+import { defaultLocale, locales } from "./src/i18n/config.ts";
 
 // ADR 0001: a static site, one URL per page without a trailing slash.
 export default defineConfig({
   output: "static",
   trailingSlash: "never",
+  // The production domain (ADR 0002), for the full URLs search engines
+  // require, such as the hreflang alternates. Previews and workers.dev also
+  // point there; they are kept out of search engines.
+  site: "https://sekoyasolutions.com",
+  // ADR 0004: French at the root, English under /en/. The translated paths
+  // are mapped in src/i18n/routes.ts.
+  i18n: {
+    locales: [...locales],
+    defaultLocale,
+    routing: { prefixDefaultLocale: false },
+  },
   // Pages are written as `offres.html` rather than `offres/index.html`, the
   // build format that matches URLs without a trailing slash.
   build: {

@@ -4,6 +4,9 @@
  * script wires it. Without scripting it would do nothing, so it is hidden.
  * The sun shows in the dark theme, the moon in the light one.
  */
+import { translations } from "../../i18n";
+
+const t = translations(Astro.currentLocale);
 ---
 
 <button
@@ -12,7 +15,7 @@
   aria-pressed="false"
   data-theme-toggle
 >
-  <span class="sr-only">Thème clair</span>
+  <span class="sr-only">{t.layout.lightTheme}</span>
   <svg
     class="theme-toggle-sun"
     width="18"

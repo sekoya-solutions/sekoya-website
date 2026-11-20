@@ -1,12 +1,17 @@
 ---
 /**
- * The layout of every page: the head (font, theme script, icons), a skip
- * link, the header and footer shells, and the page's content in <main>.
+ * The layout of every page: the head (language, hreflang alternates, font,
+ * theme script, icons), a skip link, the header and footer shells, and the
+ * page's content in <main>. The page's route comes from its path, which must
+ * be in src/i18n/routes.ts in the page's language, or the build fails.
  */
 import { Font } from "astro:assets";
 import Footer from "../components/layout/Footer.astro";
 import Header from "../components/layout/Header.astro";
 import ThemeScript from "../components/layout/ThemeScript.astro";
+import { translations } from "../i18n";
+import { pageLocale } from "../i18n/config";
+import { alternates, routeOf } from "../i18n/routes";
 import "../styles/global.css";
 
 interface Props {
@@ -15,15 +20,29 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
+const locale = pageLocale(Astro.currentLocale);
+const route = routeOf(Astro.url.pathname);
+if (route.locale !== locale) {
+  throw new Error(
+    `${Astro.url.pathname} is the ${route.locale} path of "${route.key}", but the page is in ${locale}`,
+  );
+}
+if (Astro.site === undefined) throw new Error("astro.config.mjs must set `site`");
+const t = translations(locale);
 ---
 
 <!doctype html>
-<html lang="fr">
+<html lang={locale}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {
+      alternates(route.key, Astro.site).map(({ hreflang, href }) => (
+        <link rel="alternate" hreflang={hreflang} href={href} />
+      ))
+    }
     <ThemeScript />
     <Font cssVariable="--font-outfit" preload />
     <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -33,12 +52,12 @@ const { title, description } = Astro.props;
   </head>
   <body>
     <a
-      href="#contenu"
+      href="#content"
       class="sr-only rounded-pill bg-primary px-5 py-3 font-medium text-primary-text focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50"
-      >Aller au contenu</a
+      >{t.layout.skipLink}</a
     >
-    <Header />
-    <main id="contenu" tabindex="-1" class="mx-auto max-w-site px-(--gutter) focus:outline-none">
+    <Header route={route} />
+    <main id="content" tabindex="-1" class="mx-auto max-w-site px-(--gutter) focus:outline-none">
       <slot />
     </main>
     <Footer />

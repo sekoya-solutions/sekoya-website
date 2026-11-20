@@ -1,0 +1,54 @@
+---
+/**
+ * The language switch: a pill with each language's code, the current one
+ * highlighted, the other a link to the same page in that language. The link
+ * is named by its visible code then, in hidden text, the language's own name
+ * (« EN English », « FR Français »), in that language: voice control finds
+ * it by the code it shows (WCAG 2.5.3, Label in Name) and a screen reader
+ * pronounces the name. The current code, which only repeats the page's
+ * language, is hidden from assistive technologies.
+ */
+import { languages, locales } from "../../i18n/config";
+import { type PageRoute, pathOf } from "../../i18n/routes";
+
+interface Props {
+  route: PageRoute;
+}
+
+const { route } = Astro.props;
+---
+
+<div class="flex items-center rounded-pill border border-line-strong p-0.5 text-xs font-medium tracking-[0.12em]">
+  {
+    locales.map((locale) =>
+      locale === route.locale ? (
+        <span class="language-current rounded-pill px-3 py-2 leading-none" aria-hidden="true">
+          {languages[locale].code}
+        </span>
+      ) : (
+        <a
+          href={pathOf(route.key, locale)}
+          hreflang={locale}
+          lang={locale}
+          class="rounded-pill px-3 py-2 leading-none text-grey no-underline hover:text-ink"
+        >
+          <span>{languages[locale].code}</span>{" "}<span class="sr-only">{languages[locale].name}</span>
+        </a>
+      ),
+    )
+  }
+</div>
+
+<style>
+  /* Gold on a gold tint in the dark theme. Deep gold is never text in the
+     light theme, so there the code is ink on the tint. */
+  .language-current {
+    background: rgb(232 211 168 / 0.14);
+    color: var(--gold);
+  }
+
+  :root[data-theme="light"] .language-current {
+    background: rgb(168 137 63 / 0.16);
+    color: var(--ink);
+  }
+</style>
