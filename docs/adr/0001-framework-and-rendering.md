@@ -1,6 +1,6 @@
 # ADR 0001: Framework and rendering
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-11-20
 - Deciders: Owner
 

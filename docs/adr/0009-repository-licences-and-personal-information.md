@@ -1,6 +1,6 @@
 # ADR 0009: Repository, licences and personal information
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-11-20
 - Deciders: Owner
 

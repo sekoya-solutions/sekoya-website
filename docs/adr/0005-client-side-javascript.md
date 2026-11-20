@@ -1,6 +1,6 @@
 # ADR 0005: Client-side JavaScript
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-11-20
 - Deciders: Owner
 

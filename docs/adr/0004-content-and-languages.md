@@ -1,6 +1,6 @@
 # ADR 0004: Content and languages
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-11-20
 - Deciders: Owner
 

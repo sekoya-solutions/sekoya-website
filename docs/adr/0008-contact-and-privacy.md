@@ -1,6 +1,6 @@
 # ADR 0008: Contact and privacy
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-11-20
 - Deciders: Owner
 

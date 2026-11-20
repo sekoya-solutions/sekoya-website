@@ -1,6 +1,6 @@
 # ADR 0007: Measured figures and placeholders
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-11-20
 - Deciders: Owner
 

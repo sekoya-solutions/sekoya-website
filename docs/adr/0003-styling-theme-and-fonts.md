@@ -1,6 +1,6 @@
 # ADR 0003: Styling, theme and fonts
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-11-20
 - Deciders: Owner
 

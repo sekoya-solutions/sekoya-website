@@ -1,6 +1,6 @@
 # ADR 0002: Hosting and environments
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-11-20
 - Deciders: Owner
 

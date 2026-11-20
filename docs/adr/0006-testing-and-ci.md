@@ -1,6 +1,6 @@
 # ADR 0006: Testing and continuous integration
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-11-20
 - Deciders: Owner
 
