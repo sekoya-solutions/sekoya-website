@@ -1,0 +1,201 @@
+---
+/**
+ * The offers page, in the page's language: src/pages/offres.astro in French
+ * and src/pages/en/services.astro in English. Its copy is in
+ * src/content/offers.
+ *
+ * The page's heading, the three offer cards, the three steps to start, and
+ * the quiz band. Each card's id is the anchor the home page's offers teaser
+ * links to. Each call to action is shown once its page exists.
+ */
+import { translations } from "../../i18n";
+import { pageLocale } from "../../i18n/config";
+import { offersContent } from "../../i18n/content";
+import { isRouteKey, pathOf } from "../../i18n/routes";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PlaceholderText from "../content/PlaceholderText.astro";
+import ScrollReveal from "../layout/ScrollReveal.astro";
+import Button from "../ui/Button.astro";
+import OfferCard from "./OfferCard.astro";
+
+const locale = pageLocale(Astro.currentLocale);
+const t = translations(locale);
+const copy = await offersContent(locale);
+const quizHref = isRouteKey(copy.quiz.action.page)
+  ? pathOf(copy.quiz.action.page, locale)
+  : undefined;
+---
+
+<BaseLayout title={t.offers.title} description={t.offers.description}>
+  <div class="offers-page mx-auto max-w-site px-(--gutter)">
+    <div class="offers-head">
+      <div>
+        <p class="eyebrow"><PlaceholderText text={copy.eyebrow} /></p>
+        <h1 class="offers-title mt-3.5 font-bold tracking-[-0.02em]">
+          <PlaceholderText text={copy.title} />
+        </h1>
+      </div>
+      <p class="text-[1.02rem] leading-[1.6] font-light text-muted lg:text-lead">
+        <PlaceholderText text={copy.lead} />
+      </p>
+    </div>
+
+    <ul class="offers reveal-group">
+      {
+        copy.items.map((offer) => (
+          <OfferCard offer={offer} labels={copy.labels} locale={locale} />
+        ))
+      }
+    </ul>
+
+    <section aria-labelledby="steps-title" class="mt-14 lg:mt-17.5">
+      <h2 id="steps-title" class="sr-only"><PlaceholderText text={copy.steps.title} /></h2>
+      <ol class="steps reveal-group">
+        {
+          copy.steps.items.map((step, index) => (
+            <li class="step reveal">
+              <span class="step-number" aria-hidden="true">
+                {index + 1}
+              </span>
+              <div>
+                <h3 class="mb-1 text-[1.15rem] font-semibold">
+                  <PlaceholderText text={step.title} />
+                </h3>
+                <p class="text-[0.95rem] text-muted">
+                  <PlaceholderText text={step.text} />
+                </p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section aria-labelledby="offers-quiz-title" class="offers-quiz reveal">
+      <div>
+        <h2 id="offers-quiz-title" class="mb-1.5 text-[1.5rem] leading-[1.2] font-bold">
+          <PlaceholderText text={copy.quiz.title} />
+        </h2>
+        <p class="font-light text-muted"><PlaceholderText text={copy.quiz.text} /></p>
+      </div>
+      {
+        quizHref !== undefined && (
+          <Button href={quizHref} variant={copy.quiz.action.variant} icon="arrow">
+            {copy.quiz.action.label}
+          </Button>
+        )
+      }
+    </section>
+  </div>
+  <ScrollReveal />
+</BaseLayout>
+
+<style>
+  .offers-page {
+    padding-top: 32px;
+    padding-bottom: 72px;
+  }
+
+  .offers-head {
+    display: grid;
+    gap: 18px;
+  }
+
+  .offers-title {
+    font-size: var(--fs-h1);
+    line-height: 1.08;
+  }
+
+  /* The cards stack below 1024 px. */
+  .offers {
+    display: grid;
+    gap: 16px;
+    margin-top: 40px;
+  }
+
+  .steps {
+    display: grid;
+    gap: 24px;
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 16px;
+  }
+
+  .step-number {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1.5px solid var(--gold);
+    border-radius: 50%;
+    color: var(--gold);
+    font-weight: 600;
+  }
+
+  /* Deep gold is for strokes only on sand: the text stays ink. */
+  :global(:root[data-theme="light"]) .step-number {
+    border-color: var(--accent);
+    color: var(--ink);
+  }
+
+  .offers-quiz {
+    display: grid;
+    gap: 24px;
+    align-items: center;
+    justify-items: start;
+    margin-top: 56px;
+    padding: 28px 24px;
+    border: 1px solid rgb(34 192 138 / 0.3);
+    border-radius: var(--r-lg);
+    background: linear-gradient(110deg, rgb(34 192 138 / 0.12), rgb(14 38 47 / 0.8) 60%);
+  }
+
+  :global(:root[data-theme="light"]) .offers-quiz {
+    border-color: rgb(22 146 122 / 0.35);
+    background: linear-gradient(110deg, rgb(22 146 122 / 0.12), var(--surface-1) 60%);
+  }
+
+  @media (min-width: 48rem) {
+    .steps {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 26px;
+    }
+
+    .offers-quiz {
+      grid-template-columns: 1fr auto;
+      gap: 30px;
+      padding: 34px 44px;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .offers-page {
+      padding-top: 40px;
+      padding-bottom: 96px;
+    }
+
+    .offers-head {
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 60px;
+      align-items: end;
+    }
+
+    /* Each card spans six rows and shares them with the others (subgrid), so
+       their icons, titles, durations, "for whom", deliverables and calls to
+       action line up across the row. */
+    .offers {
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(6, auto);
+      column-gap: 26px;
+      row-gap: 0;
+      margin-top: 56px;
+    }
+
+    .offers-quiz {
+      margin-top: 64px;
+    }
+  }
+</style>

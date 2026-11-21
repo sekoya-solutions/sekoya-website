@@ -293,11 +293,12 @@ test.describe("the hero copy", () => {
     expect(scripts[1]).toContain("IntersectionObserver");
   });
 
-  test("shows no button to a page that does not exist yet", async ({ page }) => {
+  test("shows only the buttons to pages that exist: the offers page", async ({ page }) => {
     for (const locale of locales) {
       await page.goto(pathOf("home", locale));
-      const hero = page.locator("section.hero");
-      await expect(hero.getByRole("link")).toHaveCount(0);
+      const links = page.locator("section.hero").getByRole("link");
+      await expect(links).toHaveCount(1);
+      await expect(links).toHaveAttribute("href", pathOf("offers", locale));
     }
   });
 

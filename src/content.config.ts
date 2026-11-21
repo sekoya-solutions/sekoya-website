@@ -10,6 +10,9 @@ import { z } from "astro/zod";
 /** A text, which may hold `[TODO: …]` placeholders (ADR 0007). */
 const text = z.string().trim().min(1);
 
+/** An anchor on a page: the id of the element it scrolls to. */
+const anchor = z.string().regex(/^[a-z0-9-]+$/);
+
 /**
  * A link to a page of the site: `page` is a key of src/i18n/routes.ts, and
  * `hash` an optional anchor on that page. Until the page exists, the link is
@@ -17,10 +20,7 @@ const text = z.string().trim().min(1);
  */
 const pageLink = z.object({
   page: z.string().min(1),
-  hash: z
-    .string()
-    .regex(/^[a-z0-9-]+$/)
-    .optional(),
+  hash: anchor.optional(),
 });
 
 /** A call to action to a page of the site, shown once that page exists. */
@@ -36,7 +36,7 @@ const externalAction = z.object({
   variant: z.enum(["primary", "ghost"]),
 });
 
-/** The icons a card can show (src/components/home/Icon.astro). */
+/** The icons a card can show (src/components/ui/Icon.astro). */
 const icon = z.enum(["unlock", "layers", "bolt", "search", "rescue"]);
 
 /** A section's heading: its eyebrow and its title. */
@@ -133,4 +133,36 @@ const home = defineCollection({
   }),
 });
 
-export const collections = { home };
+const offers = defineCollection({
+  loader: glob({ pattern: "*.json", base: "./src/content/offers" }),
+  schema: z.object({
+    eyebrow: text,
+    title: text,
+    lead: text,
+    labels: z.object({ forWho: text, deliverables: text }),
+    items: z
+      .array(
+        z.object({
+          /** The card's anchor, which the home page's offers teaser links to. */
+          id: anchor,
+          icon,
+          title: text,
+          duration: text,
+          forWho: text,
+          deliverables: z.array(text).min(1),
+          action,
+        }),
+      )
+      .length(3)
+      .refine((items) => new Set(items.map(({ id }) => id)).size === items.length, {
+        message: "Two offers have the same id",
+      }),
+    steps: z.object({
+      title: text,
+      items: z.array(z.object({ title: text, text })).length(3),
+    }),
+    quiz: z.object({ title: text, text, action }),
+  }),
+});
+
+export const collections = { home, offers };

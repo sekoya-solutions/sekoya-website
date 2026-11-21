@@ -21,9 +21,7 @@ const { copy } = Astro.props;
     {
       copy.items.map((item, index) => (
         <li class="card reveal flex gap-4.5 p-5.5 lg:block lg:px-8 lg:pt-8.5 lg:pb-9">
-          <span class="value-number" aria-hidden="true">
-            {String(index + 1).padStart(2, "0")}
-          </span>
+          <span class="value-number" data-number={String(index + 1).padStart(2, "0")} aria-hidden="true"></span>
           <span class="value-icon">
             <Icon name={item.icon} size={26} />
           </span>
@@ -54,6 +52,8 @@ const { copy } = Astro.props;
     color: var(--mint);
   }
 
+  /* A ghost number, decorative: drawn as generated content, not as text, so
+     it is not read out or measured as text that must contrast. */
   .value-number {
     display: none;
     position: absolute;
@@ -63,6 +63,10 @@ const { copy } = Astro.props;
     font-size: 3.2rem;
     font-weight: 700;
     line-height: 1;
+  }
+
+  .value-number::before {
+    content: attr(data-number);
   }
 
   :global(:root[data-theme="light"]) .value-number {

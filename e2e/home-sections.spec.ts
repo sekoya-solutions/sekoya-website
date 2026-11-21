@@ -86,15 +86,21 @@ test.describe("the home sections", () => {
     });
   }
 
-  test("link to no page that does not exist yet", async ({ page }) => {
+  test("link only to pages that exist: the offers page and other sites", async ({ page }) => {
     for (const locale of locales) {
+      const offers = homeCopy(locale).offers.items.map(
+        (item: { link: { hash: string } }) => `${pathOf("offers", locale)}#${item.link.hash}`,
+      );
       await page.goto(pathOf("home", locale));
       const hrefs = await page
         .getByRole("main")
         .getByRole("link")
         .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
-      // Only the external links remain until the other pages exist.
+      // The hero's offers button, the offers teaser, then the other sites; the
+      // other pages' links appear with their pages.
       expect(hrefs).toEqual([
+        pathOf("offers", locale),
+        ...offers,
         "https://www.malt.fr/profile/fabricereynaud",
         "https://github.com/sekoya-solutions",
       ]);

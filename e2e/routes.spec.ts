@@ -59,6 +59,9 @@ for (const key of Object.keys(routes) as RouteKey[]) {
 
       for (const theme of ["dark", "light"] as const) {
         test(`has no accessibility violations in the ${theme} theme`, async ({ page }) => {
+          // Under reduced motion nothing fades in (global.css), so axe measures the
+          // final colours, not an element caught part-way through its scroll reveal.
+          await page.emulateMedia({ reducedMotion: "reduce" });
           await page.addInitScript((stored) => localStorage.setItem("theme", stored), theme);
           await page.goto(path);
           const html = page.locator("html");
