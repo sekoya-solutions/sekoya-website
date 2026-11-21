@@ -137,6 +137,32 @@ test("the menu opens and closes with the keyboard, and Tab leaves it", async ({ 
   await expect(links.first()).toBeVisible();
 });
 
+test("the open menu stands apart from the page, in both themes", async ({ page }) => {
+  await page.setViewportSize(narrow);
+  for (const theme of ["dark", "light"] as const) {
+    await page.addInitScript((stored) => localStorage.setItem("theme", stored), theme);
+    await page.goto(pathOf("about", "fr"));
+    const header = page.getByRole("banner");
+    const panel = navigation(page);
+    const background = (locator: typeof header) =>
+      locator.evaluate((element) => getComputedStyle(element).backgroundColor);
+    const pageBackground = await page.evaluate(
+      () => getComputedStyle(document.body).backgroundColor,
+    );
+    // Closed, the bar sits on the page.
+    expect(await background(header)).toBe("rgba(0, 0, 0, 0)");
+    await menuButton(page, "fr").click();
+    // Open, the bar and the panel share one surface, unlike the page's, and
+    // a scrim (a shadow spread over the screen) dims the page below.
+    const surface = await background(panel);
+    expect(surface).not.toBe(pageBackground);
+    expect(await background(header)).toBe(surface);
+    expect(await panel.evaluate((element) => getComputedStyle(element).boxShadow)).toMatch(
+      /^rgba\(.+\) 0px 0px 0px \d+(\.\d+)?px$/,
+    );
+  }
+});
+
 test.describe("without JavaScript", () => {
   test.use({ javaScriptEnabled: false });
 

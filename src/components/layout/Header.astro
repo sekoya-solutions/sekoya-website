@@ -66,7 +66,7 @@ const contact = isRouteKey("contact")
         <Icon name="menu" size={20} class="menu-open-icon" />
         <Icon name="close" size={20} class="menu-close-icon" />
       </summary>
-      <nav aria-label={t.layout.navigation} class="menu-panel border-b border-line bg-bg">
+      <nav aria-label={t.layout.navigation} class="menu-panel border-b border-line-strong bg-surface-1">
         <div class="mx-auto max-w-site px-(--gutter) pt-2 pb-8">
           <ul class="text-lead">
             {
@@ -187,6 +187,25 @@ const contact = isRouteKey("contact")
     left: 0;
     max-height: calc(100dvh - 100%);
     overflow-y: auto;
+    /* A scrim dims the page around and under the panel, so the open menu
+       reads as a layer: a shadow spread over the whole screen, clipped so
+       it never covers the header bar above. A shadow takes no clicks. */
+    box-shadow: 0 0 0 100vmax var(--menu-scrim);
+    clip-path: inset(0 -100vmax -100vmax -100vmax);
+  }
+
+  /* While the menu is open, the header bar takes the panel's surface, so
+     the bar and the panel form one sheet over the dimmed page. */
+  header:has(.menu[open]) {
+    background: var(--surface-1);
+  }
+
+  header {
+    --menu-scrim: rgb(4 14 18 / 0.66);
+  }
+
+  :global(:root[data-theme="light"]) header {
+    --menu-scrim: rgb(10 29 36 / 0.4);
   }
 
   .menu-link {
