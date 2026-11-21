@@ -5,7 +5,7 @@
 
 import { spawnSync } from "node:child_process";
 import { createRequire } from "node:module";
-import { browsersPath } from "../playwright.config.ts";
+import { browsersPath } from "./playwright-browsers.ts";
 
 const cli = createRequire(import.meta.url).resolve("@playwright/test/cli");
 const result = spawnSync(

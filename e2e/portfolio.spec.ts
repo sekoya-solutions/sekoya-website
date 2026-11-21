@@ -5,7 +5,9 @@ import { projectSlugs, projectsFolder } from "../src/content/slugs";
 import { locales } from "../src/i18n/config";
 import { pathOf, projectKey } from "../src/i18n/routes";
 import { numericDate } from "../src/lib/dates";
+import { categories, measurementSource } from "../src/lib/lighthouse";
 import { ghostSpan } from "../src/lib/portfolio-grid";
+import { committedMeasurement } from "./site-measurement";
 
 // The portfolio (#14): a card per project file, in both languages; the ghost
 // card filling the last row; the filters, which work without JavaScript; each
@@ -122,9 +124,21 @@ for (const locale of locales) {
       for (const [, source] of sources) {
         await expect(main.locator(`a[href="${source}"]`).first()).toBeVisible();
       }
+      // This site's own scores come from its measurement file (#21).
       if (/^lighthouse: this-site$/m.test(frontmatter(locale, slug))) {
-        await expect(main.locator(".scores")).toContainText(copy.labels.lighthousePending);
-        await expect(main.locator(".scores-ring")).toHaveCount(0);
+        const measurement = committedMeasurement();
+        if (measurement === undefined) {
+          await expect(main.locator(".scores")).toContainText(copy.labels.lighthousePending);
+          await expect(main.locator(".scores-ring")).toHaveCount(0);
+        } else {
+          await expect(main.locator(".scores")).toContainText(numericDate(measurement.measuredOn));
+          await expect(main.locator(".scores-ring")).toHaveText(
+            categories.map((category) => String(measurement.summary[category])),
+          );
+          await expect(
+            main.locator(`a[href="${measurementSource(field(locale, slug, "repo"))}"]`),
+          ).toBeVisible();
+        }
       }
     });
   }

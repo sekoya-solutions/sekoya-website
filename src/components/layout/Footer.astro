@@ -1,13 +1,14 @@
 ---
 /**
- * The footer shell: the copyright line, the link to the quiz, and the link
- * to the legal notice, which French law requires on every page. Its columns
- * (brand, navigation and the measured Lighthouse scores) come with their
- * own issues.
+ * The footer: the site's measured Lighthouse scores, then the copyright
+ * line, the link to the quiz, and the link to the legal notice, which French
+ * law requires on every page. The brand and navigation columns come with
+ * their own issue (#48).
  */
 import { translations } from "../../i18n";
 import { pageLocale } from "../../i18n/config";
 import { pathOf } from "../../i18n/routes";
+import SiteScores from "./SiteScores.astro";
 
 const locale = pageLocale(Astro.currentLocale);
 const t = translations(locale);
@@ -15,12 +16,13 @@ const year = new Date().getFullYear();
 ---
 
 <footer class="mt-24 border-t border-line">
-  <div
-    class="mx-auto flex max-w-site flex-wrap items-center gap-x-6 gap-y-2 px-(--gutter) py-8 text-sm text-muted"
-  >
-    <p>© {year} Sekoya Solutions</p>
-    <a href={pathOf("quiz", locale)} class="footer-link hover:text-ink">{t.layout.quiz}</a>
-    <a href={pathOf("legal", locale)} class="footer-link hover:text-ink">{t.layout.legalNotice}</a>
+  <div class="mx-auto max-w-site px-(--gutter) py-8 text-sm text-muted">
+    <SiteScores />
+    <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-line pt-6">
+      <p>© {year} Sekoya Solutions</p>
+      <a href={pathOf("quiz", locale)} class="footer-link hover:text-ink">{t.layout.quiz}</a>
+      <a href={pathOf("legal", locale)} class="footer-link hover:text-ink">{t.layout.legalNotice}</a>
+    </div>
   </div>
 </footer>
 

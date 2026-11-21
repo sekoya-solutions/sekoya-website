@@ -148,6 +148,7 @@ const hasFigures = data.stats.length > 0 || data.lighthouse !== undefined;
               {data.lighthouse !== undefined && (
                 <LighthouseScores
                   lighthouse={data.lighthouse}
+                  repo={data.repo}
                   labels={labels}
                   externalHint={externalHint}
                 />

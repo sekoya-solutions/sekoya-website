@@ -25,6 +25,30 @@ export const fr = frenchTypographyTree({
       about: "À propos",
     },
     contact: "Me contacter",
+    /** The footer's "this site, measured" column (src/components/layout/SiteScores.astro). */
+    scores: {
+      title: "Ce site, mesuré",
+      source: "Lighthouse mobile",
+      pending: "mesure en cours",
+      /** Shown under each ring. */
+      categories: {
+        performance: "Perf.",
+        accessibility: "Access.",
+        bestPractices: "Pratiques",
+        seo: "SEO",
+      },
+      /** Read by screen readers in place of the short names. */
+      categoryNames: {
+        performance: "Performance",
+        accessibility: "Accessibilité",
+        bestPractices: "Bonnes pratiques",
+        seo: "SEO",
+      },
+      builtWith: "Construit avec",
+      sourceCode: "Code source",
+      /** For a link to another site, read by screen readers only. */
+      externalLink: "site externe",
+    },
   },
   home: {
     title: "Sekoya Solutions",
