@@ -15,6 +15,7 @@ const pages = {
   offers: { fr: "/offres", en: "/en/services" },
   caseStudies: { fr: "/realisations", en: "/en/case-studies" },
   portfolio: { fr: "/portfolio", en: "/en/portfolio" },
+  about: { fr: "/a-propos", en: "/en/about" },
 } as const satisfies Record<string, Record<Locale, string>>;
 
 /** A case study's page: `caseStudy/<slug>`, under the case studies' path. */

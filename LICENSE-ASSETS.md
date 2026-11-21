@@ -10,6 +10,7 @@ The brand assets are in these folders and files:
 
 - `src/assets/logo/`: the logos, for dark and light backgrounds, and the logo's icon.
 - `src/assets/animated/`: the animated logo.
+- `src/assets/avatar/`: the avatar, shown on the About page until a photo replaces it.
 - `src/assets/portfolio/`: the screenshots of the portfolio projects.
 - `public/favicon.ico`, `public/favicon.svg`, `public/apple-touch-icon.png`, `public/icon-192.png` and `public/icon-512.png`: the favicons and app icons, at the root of the site where browsers look for them.
 

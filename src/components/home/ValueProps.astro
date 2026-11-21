@@ -2,6 +2,7 @@
 /**
  * The three value propositions: from 1024 px, three cards with their icon
  * tile and a ghost number; below, one row per card, the icon beside the text.
+ * The home page and the About page show theirs, with the same fields.
  */
 import type { CollectionEntry } from "astro:content";
 import PlaceholderText from "../content/PlaceholderText.astro";
@@ -9,7 +10,7 @@ import Icon from "../ui/Icon.astro";
 import SectionHead from "./SectionHead.astro";
 
 interface Props {
-  copy: CollectionEntry<"home">["data"]["values"];
+  copy: CollectionEntry<"home" | "about">["data"]["values"];
 }
 
 const { copy } = Astro.props;

@@ -1,0 +1,127 @@
+{
+  "hero": {
+    "eyebrow": "About",
+    "title": "Fabrice Reynaud, freelance Tech Lead.",
+    "bio": [
+      "I am a freelance Tech Lead, based in [TODO: region], and I work mostly remotely. For [TODO: years of experience], I have been building, connecting and putting systems back on their feet: e-commerce, information systems, IoT platforms.",
+      "My job: join a project that is stalling, understand what is blocking it, and give the team back a framework where shipping becomes simple again."
+    ],
+    "portrait": {
+      "avatarAlt": "The Sekoya Solutions avatar: the logo, a tree whose roots form a circuit, in a golden ring."
+    }
+  },
+  "values": {
+    "eyebrow": "Values",
+    "title": "What guides every engagement.",
+    "items": [
+      {
+        "icon": "shield",
+        "title": "Rigour",
+        "text": "Tests, CI, reviews. Not on principle: because that is what makes releases boring, and therefore reliable."
+      },
+      {
+        "icon": "eye",
+        "title": "Transparency",
+        "text": "My repositories are public, my decisions are written down (ADRs), my measurements are published. You see what I see."
+      },
+      {
+        "icon": "target",
+        "title": "Pragmatism",
+        "text": "The right level of tooling for your team, not that of a large corporation. I prefer a simple solution that holds to a brilliant one that breaks."
+      }
+    ]
+  },
+  "bring": {
+    "eyebrow": "For you",
+    "title": "What I bring to my clients.",
+    "items": [
+      "A clear diagnosis within a few days",
+      "A technical framework the team makes its own",
+      "More regular and safer delivery",
+      "A documented handover: you do not depend on me"
+    ]
+  },
+  "stack": {
+    "eyebrow": "Stack",
+    "title": "What I work with.",
+    "groups": [
+      {
+        "title": "Today",
+        "items": [
+          "TypeScript",
+          "Next.js",
+          "Astro",
+          "Node.js",
+          "PostgreSQL",
+          "Unity / C#",
+          "Docker",
+          "AWS",
+          "CI/CD"
+        ]
+      },
+      {
+        "title": "Past experience",
+        "items": ["Java", "PHP", "Salesforce", "Talend", "Sage X3", "Information systems", "IoT"]
+      }
+    ]
+  },
+  "ai": {
+    "id": "ia",
+    "eyebrow": "AI",
+    "title": "How I work with AI",
+    "lead": "Every day I use Claude Code and Cursor, with the latest models from Anthropic and xAI, as well as Grok and Grok Imagine for mockups and visuals. They help me go faster; they decide nothing.",
+    "workflow": {
+      "title": "From framing to delivery",
+      "steps": [
+        {
+          "title": "Frame",
+          "text": "I decide the architecture and write the decision down (ADR)."
+        },
+        {
+          "title": "Generate",
+          "text": "The agent proposes, following rules written in AGENTS.md."
+        },
+        {
+          "title": "Review and test",
+          "text": "I review every line; the tests and the CI must pass."
+        },
+        {
+          "title": "Deliver",
+          "text": "Review, pipeline, deployment."
+        }
+      ]
+    },
+    "guardrails": {
+      "title": "My guardrails",
+      "items": [
+        { "text": "Systematic code reviews." },
+        { "text": "Automated tests that guard every change." },
+        { "text": "Recorded decisions, one per technical choice." },
+        {
+          "text": "I answer for every line shipped, whether I wrote it or an agent did."
+        },
+        {
+          "text": "Transparency: my Transit and Parts projects state explicitly that code is written by agents under my direction; the rules are in their AGENTS.md files.",
+          "links": [
+            {
+              "label": "Sekoya Transit's AGENTS.md",
+              "href": "https://github.com/sekoya-solutions/sekoya-transit/blob/main/AGENTS.md"
+            },
+            {
+              "label": "Sekoya Parts' AGENTS.md",
+              "href": "https://github.com/sekoya-solutions/sekoya-parts/blob/main/AGENTS.md"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "closing": {
+    "title": "A project that's stalling? Let's talk.",
+    "text": "A first conversation to understand your situation, with no commitment.",
+    "actions": [
+      { "label": "Contact me", "page": "contact", "variant": "primary" },
+      { "label": "See the services", "page": "offers", "variant": "ghost" }
+    ]
+  }
+}

@@ -39,4 +39,13 @@ export const fr = frenchTypographyTree({
     /** For a link to another site, read by screen readers only. */
     externalLink: "site externe",
   },
+  about: {
+    title: "À propos — Sekoya Solutions",
+    description:
+      "Qui je suis, mes valeurs, ce que j'apporte à mes clients, ma stack, et comment je travaille avec l'IA.",
+    /** Shown under the brand avatar until the photo is added (ADR 0007). */
+    photoMissing: "[TODO: photo à fournir]",
+    /** For a link to another site, read by screen readers only. */
+    externalLink: "site externe",
+  },
 });

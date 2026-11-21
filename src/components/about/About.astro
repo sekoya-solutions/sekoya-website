@@ -1,0 +1,398 @@
+---
+/**
+ * The About page, in the page's language: src/pages/a-propos.astro in French
+ * and src/pages/en/about.astro in English. Its copy is in src/content/about.
+ *
+ * Who, with the portrait: the photo once the owner adds it to the content,
+ * and until then the brand avatar with a placeholder, which the placeholder
+ * guard reports (ADR 0007). Then the values, what clients get, the
+ * technologies by group, how the work is done with AI (its anchor, `#ia`,
+ * comes from the content), and a closing band whose calls to action are
+ * shown once their pages exist.
+ */
+import { Image } from "astro:assets";
+import avatar from "../../assets/avatar/avatar.svg";
+import { translations } from "../../i18n";
+import { pageLocale } from "../../i18n/config";
+import { aboutContent } from "../../i18n/content";
+import { isRouteKey, pathOf } from "../../i18n/routes";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PlaceholderText from "../content/PlaceholderText.astro";
+import CircuitDivider from "../home/CircuitDivider.astro";
+import SectionHead from "../home/SectionHead.astro";
+import ValueProps from "../home/ValueProps.astro";
+import ScrollReveal from "../layout/ScrollReveal.astro";
+import Button from "../ui/Button.astro";
+import Chip from "../ui/Chip.astro";
+import Icon from "../ui/Icon.astro";
+import AiWorkflow from "./AiWorkflow.astro";
+
+const locale = pageLocale(Astro.currentLocale);
+const t = translations(locale);
+const copy = await aboutContent(locale);
+const { hero, bring, stack, ai, closing } = copy;
+const { photo } = hero.portrait;
+const actions = closing.actions.flatMap(({ page, label, variant }) =>
+  isRouteKey(page) ? [{ label, variant, href: pathOf(page, locale) }] : [],
+);
+---
+
+<BaseLayout title={t.about.title} description={t.about.description}>
+  <div class="about-page mx-auto max-w-site px-(--gutter)">
+    <section aria-labelledby="about-title" class="about-hero">
+      <div>
+        <p class="eyebrow"><PlaceholderText text={hero.eyebrow} /></p>
+        <h1 id="about-title" class="about-title mt-3.5 font-bold tracking-[-0.02em]">
+          <PlaceholderText text={hero.title} />
+        </h1>
+        <div class="about-bio">
+          {
+            hero.bio.map((paragraph) => (
+              <p>
+                <PlaceholderText text={paragraph} />
+              </p>
+            ))
+          }
+        </div>
+      </div>
+      <figure class="about-portrait">
+        {
+          photo !== undefined ? (
+            <Image
+              src={photo.src}
+              alt={photo.alt}
+              widths={[240, 320, 480, 640]}
+              sizes="(min-width: 64rem) 320px, 240px"
+              class="about-portrait-image"
+              loading="eager"
+            />
+          ) : (
+            <>
+              <Image
+                src={avatar}
+                alt={hero.portrait.avatarAlt}
+                width={320}
+                height={320}
+                class="about-portrait-image"
+                loading="eager"
+              />
+              <figcaption>
+                <PlaceholderText text={t.about.photoMissing} />
+              </figcaption>
+            </>
+          )
+        }
+      </figure>
+    </section>
+
+    <div class="about-sections">
+      <ValueProps copy={copy.values} />
+      <CircuitDivider />
+
+      <section aria-labelledby="bring-title">
+        <SectionHead id="bring-title" eyebrow={bring.eyebrow} title={bring.title} />
+        <ul class="about-bring reveal-group">
+          {
+            bring.items.map((item) => (
+              <li class="card reveal">
+                <Icon name="check" size={20} class="about-check" />
+                <span>
+                  <PlaceholderText text={item} />
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+      <CircuitDivider flip />
+
+      <section aria-labelledby="stack-title">
+        <SectionHead id="stack-title" eyebrow={stack.eyebrow} title={stack.title} />
+        <div class="about-stack reveal-group">
+          {
+            stack.groups.map((group, index) => (
+              <div class="reveal">
+                <h3 class="about-label">
+                  <PlaceholderText text={group.title} />
+                </h3>
+                <ul class="flex flex-wrap gap-2">
+                  {group.items.map((item) => (
+                    <li>
+                      <Chip variant={index === 0 ? "mint" : "neutral"}>
+                        <PlaceholderText text={item} />
+                      </Chip>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))
+          }
+        </div>
+      </section>
+      <CircuitDivider />
+
+      <section id={ai.id} aria-labelledby="ai-title" class="about-ai">
+        <SectionHead id="ai-title" eyebrow={ai.eyebrow} title={ai.title} class="mb-5! lg:mb-6!" />
+        <p class="about-lead reveal">
+          <PlaceholderText text={ai.lead} />
+        </p>
+        <AiWorkflow copy={ai.workflow} />
+        <div class="about-guardrails card reveal">
+          <h3 class="mb-5 text-[1.15rem] font-semibold lg:text-h3">
+            <PlaceholderText text={ai.guardrails.title} />
+          </h3>
+          <ul class="grid gap-3.5">
+            {
+              ai.guardrails.items.map((item) => (
+                <li class="about-guardrail">
+                  <Icon name="shield" size={20} class="about-check" />
+                  <div>
+                    <p>
+                      <PlaceholderText text={item.text} />
+                    </p>
+                    {item.links !== undefined && (
+                      <ul class="mt-2 flex flex-wrap gap-x-5 gap-y-1">
+                        {item.links.map((link) => (
+                          <li>
+                            <a href={link.href} class="about-link">
+                              <PlaceholderText text={link.label} />
+                              <span class="sr-only">({t.about.externalLink})</span>
+                              <Icon name="external" size={14} />
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </section>
+
+      <section aria-labelledby="closing-title" class="about-closing reveal">
+        <div>
+          <h2 id="closing-title" class="mb-1.5 text-[1.5rem] leading-[1.2] font-bold">
+            <PlaceholderText text={closing.title} />
+          </h2>
+          <p class="font-light text-muted"><PlaceholderText text={closing.text} /></p>
+        </div>
+        {
+          actions.length > 0 && (
+            <div class="flex flex-wrap gap-3">
+              {actions.map((action) => (
+                <Button href={action.href} variant={action.variant} icon="arrow">
+                  {action.label}
+                </Button>
+              ))}
+            </div>
+          )
+        }
+      </section>
+    </div>
+  </div>
+  <ScrollReveal />
+</BaseLayout>
+
+<style>
+  .about-page {
+    padding-top: 32px;
+    padding-bottom: 72px;
+  }
+
+  .about-hero {
+    display: grid;
+    gap: 36px;
+    align-items: center;
+  }
+
+  .about-title {
+    font-size: var(--fs-h1);
+    line-height: 1.08;
+  }
+
+  .about-bio {
+    display: grid;
+    gap: 14px;
+    max-width: 44rem;
+    margin-top: 22px;
+    color: var(--muted);
+    font-size: 1.02rem;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  .about-portrait {
+    display: grid;
+    gap: 14px;
+    justify-items: center;
+  }
+
+  .about-portrait :global(.about-portrait-image) {
+    width: 240px;
+    height: 240px;
+    border: 2px solid rgb(232 211 168 / 0.45);
+    border-radius: 50%;
+    box-shadow: var(--glow-mint);
+    object-fit: cover;
+  }
+
+  :global(:root[data-theme="light"]) .about-portrait :global(.about-portrait-image) {
+    border-color: var(--accent);
+  }
+
+  .about-sections {
+    padding-top: 56px;
+  }
+
+  .about-sections > :global(.divider) {
+    margin-block: 15px;
+  }
+
+  .about-bring {
+    display: grid;
+    gap: 14px;
+  }
+
+  .about-bring li {
+    display: grid;
+    grid-template-columns: 22px 1fr;
+    gap: 12px;
+    padding: 18px 20px;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .about-page :global(.about-check) {
+    margin-top: 2px;
+    color: var(--mint);
+  }
+
+  .about-stack {
+    display: grid;
+    gap: 28px;
+  }
+
+  .about-label {
+    margin-bottom: 12px;
+    color: var(--muted);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  /* The anchor lands with a little room above the section. */
+  .about-ai {
+    scroll-margin-top: 24px;
+  }
+
+  .about-lead {
+    max-width: 46rem;
+    margin-bottom: 40px;
+    color: var(--muted);
+    font-size: 1.02rem;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  .about-guardrails {
+    margin-top: 44px;
+    padding: 26px 22px;
+  }
+
+  .about-guardrail {
+    display: grid;
+    grid-template-columns: 22px 1fr;
+    gap: 12px;
+    line-height: 1.5;
+  }
+
+  .about-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 32px;
+    color: var(--link);
+    font-size: 0.95rem;
+  }
+
+  .about-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .about-closing {
+    display: grid;
+    gap: 24px;
+    align-items: center;
+    justify-items: start;
+    margin-top: 72px;
+    padding: 28px 24px;
+    border: 1px solid rgb(34 192 138 / 0.3);
+    border-radius: var(--r-lg);
+    background: linear-gradient(110deg, rgb(34 192 138 / 0.12), rgb(14 38 47 / 0.8) 60%);
+  }
+
+  :global(:root[data-theme="light"]) .about-closing {
+    border-color: rgb(22 146 122 / 0.35);
+    background: linear-gradient(110deg, rgb(22 146 122 / 0.12), var(--surface-1) 60%);
+  }
+
+  @media (min-width: 48rem) {
+    .about-sections {
+      padding-top: 96px;
+    }
+
+    .about-sections > :global(.divider) {
+      margin-block: 35px;
+    }
+
+    .about-bring {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .about-stack {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 40px;
+    }
+
+    .about-closing {
+      grid-template-columns: 1fr auto;
+      gap: 30px;
+      padding: 34px 44px;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .about-page {
+      padding-top: 40px;
+      padding-bottom: 96px;
+    }
+
+    .about-hero {
+      grid-template-columns: 1.3fr 0.7fr;
+      gap: 60px;
+    }
+
+    .about-bio {
+      font-size: var(--fs-lead);
+    }
+
+    .about-portrait :global(.about-portrait-image) {
+      width: 320px;
+      height: 320px;
+    }
+
+    .about-guardrails {
+      margin-top: 56px;
+      padding: 34px 38px;
+    }
+
+    .about-closing {
+      margin-top: 96px;
+    }
+  }
+</style>
