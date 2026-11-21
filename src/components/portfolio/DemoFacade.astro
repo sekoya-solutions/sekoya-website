@@ -42,6 +42,7 @@ Astro.csp.insertScriptHash(demoFacadeHash);
       decoding="async"
       class="demo-poster"
     />
+    <span class="demo-scrim" aria-hidden="true"></span>
     <a href={url} class="demo-play" data-demo-play data-demo-title={frameTitle}>
       <span class="demo-play-icon"><Icon name="play" size={20} /></span>
       <PlaceholderText text={labels.play} />
@@ -91,11 +92,22 @@ Astro.csp.insertScriptHash(demoFacadeHash);
     border: 0;
   }
 
+  /* A veil over the poster, so the game's own toolbars do not compete with
+     the play button. It goes with the poster when the demo replaces it. */
+  .demo-scrim {
+    position: absolute;
+    inset: 0;
+    display: none;
+    background: rgb(8 28 34 / 0.45);
+  }
+
+  /* In the middle of the poster, where a video's play button is. */
   .demo-play {
     position: absolute;
-    bottom: 24px;
-    left: 24px;
+    top: 50%;
+    left: 50%;
     display: none;
+    transform: translate(-50%, -50%);
     align-items: center;
     gap: 14px;
     padding: 9px 24px 9px 9px;
@@ -172,6 +184,10 @@ Astro.csp.insertScriptHash(demoFacadeHash);
     .demo-frame {
       width: 100%;
       min-height: calc(638px + 2px + 8px);
+    }
+
+    .demo-scrim {
+      display: block;
     }
 
     .demo-play {

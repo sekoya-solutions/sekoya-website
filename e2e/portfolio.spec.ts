@@ -228,10 +228,21 @@ test("the demo loads only after a click, on a desktop browser", async ({
   expect(requests).toEqual([]);
   await expect(page.locator("iframe")).toHaveCount(0);
   await expect(page.locator(".demo-notice")).toBeHidden();
+  // The play button sits in the middle of the poster, above its veil.
+  const [poster, button] = await Promise.all([
+    page.locator(".demo-frame").boundingBox(),
+    page.locator("a[data-demo-play]").boundingBox(),
+  ]);
+  if (poster === null || button === null) throw new Error("Not laid out");
+  expect(Math.abs(button.x + button.width / 2 - (poster.x + poster.width / 2))).toBeLessThan(2);
+  expect(Math.abs(button.y + button.height / 2 - (poster.y + poster.height / 2))).toBeLessThan(2);
+  await expect(page.locator(".demo-scrim")).toBeVisible();
 
   await page.locator("a[data-demo-play]").click();
   const frame = page.locator(".demo-frame iframe");
   await expect(frame).toHaveAttribute("src", demo?.url ?? "");
+  // The veil went with the poster: nothing covers the demo.
+  await expect(page.locator(".demo-scrim")).toHaveCount(0);
   await expect(frame).toHaveAttribute(
     "title",
     `${field("fr", playable, "title")} — ${copy.demo.frameTitle}`,
