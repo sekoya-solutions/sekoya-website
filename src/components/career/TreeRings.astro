@@ -12,7 +12,15 @@
  * `hot` while pointed at or focused, `pinned` while the panel shows it, and
  * draws itself in from `--career-p`, the scroll progress.
  */
-import { centre } from "../../lib/rings-geometry";
+import {
+  barkPhase,
+  barkRadius,
+  barkRoughness,
+  barkWidth,
+  centre,
+  discRadius,
+  ringPath,
+} from "../../lib/rings-geometry";
 import PlaceholderText from "../content/PlaceholderText.astro";
 import type { PositionView } from "./career-view";
 
@@ -58,12 +66,12 @@ const arc = (radius: number) =>
       <filter id="rings-bark" x="-5%" y="-5%" width="110%" height="110%">
         <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="4"
         ></feTurbulence>
-        <feDisplacementMap in="SourceGraphic" scale="7"></feDisplacementMap>
+        <feDisplacementMap in="SourceGraphic" scale={barkRoughness * 2}></feDisplacementMap>
       </filter>
       {labelled.map((position) => <path id={`rings-arc-${position.slug}`} d={arc(position.band.middle + 1)} />)}
     </defs>
 
-    <circle cx={centre} cy={centre} r="392" fill="url(#rings-disc)" aria-hidden="true"></circle>
+    <path d={ringPath(discRadius, barkPhase)} fill="url(#rings-disc)" aria-hidden="true"></path>
 
     {
       positions.map((position) => (
@@ -105,7 +113,12 @@ const arc = (radius: number) =>
 
     <g class="rings-late" aria-hidden="true">
       {current !== undefined && <path class="current-edge" d={current.paths.middle} />}
-      <circle class="bark" cx={centre} cy={centre} r="384" filter="url(#rings-bark)"></circle>
+      <path
+        class="bark"
+        d={ringPath(barkRadius, barkPhase)}
+        stroke-width={barkWidth}
+        filter="url(#rings-bark)"
+      ></path>
       {
         labelled.map((position) => (
           <text
@@ -286,7 +299,6 @@ const arc = (radius: number) =>
     fill: none;
     stroke: var(--wood-bark);
     stroke-opacity: var(--wood-bark-opacity);
-    stroke-width: 15;
   }
 
   .ring-label {

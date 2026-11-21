@@ -5,9 +5,11 @@
  * band is one whole year in that position.
  *
  * Computed at build time, with no randomness: the same career always gives
- * the same drawing. The rings are not perfect circles: each edge is a closed
- * polyline whose radius wavers by about 1 %, by a sum of sines whose phase
- * depends on the ring, so no two edges look alike.
+ * the same drawing. The rings are not perfect circles: they share one
+ * organic trunk shape, whose radius wavers by about 1 %, scaled to each
+ * ring's radius, as a real trunk's rings follow each other; each ring adds a
+ * small variation of its own, of a fixed size, so no two look alike while
+ * the gaps between neighbours stay even. Each ring is a smooth closed curve.
  */
 
 /** The SVG's centre, in its units. */
@@ -28,11 +30,22 @@ export const maxThickness = 130;
 /** The years a position whose dates are still placeholders counts for, visibly. */
 export const placeholderYears = 3;
 
-/** The number of points of each ring's polyline. */
-export const ringPoints = 120;
+/** The bark's radius, at the middle of its 15-unit stroke, and the disc's under it. */
+export const barkRadius = 386;
+export const barkWidth = 15;
+export const discRadius = 392;
 
-/** How much a ring's radius wavers, as a share of its radius. */
+/** The number of points each ring's smooth curve passes through. */
+export const ringPoints = 48;
+
+/** How much the trunk's shape wavers, as a share of a ring's radius. */
 export const wobble = 0.012;
+
+/** The phase of the trunk's shape, shared by every ring. */
+export const trunkPhase = 0.9;
+
+/** How far, in the SVG's units, a ring strays from the shared shape, at most. */
+export const ringVariation = 0.6;
 
 /** A position, as the rings need it, from the oldest to the most recent. */
 export interface RingInput {
@@ -124,20 +137,76 @@ export function hairlinePhase(index: number, line: number): number {
   return edgePhase(index) + (line + 1) * 0.4;
 }
 
-/** A ring's radius at an angle, in radians clockwise from 12 o'clock. */
-export function radiusAt(radius: number, phase: number, angle: number): number {
+/**
+ * The trunk's shape at an angle, in radians clockwise from 12 o'clock: the
+ * share by which every ring's radius wavers there,
+ * a·(sin(2θ+φ) + 0.6·sin(3θ+1.7φ+1) + 0.35·sin(5θ+0.6φ)).
+ */
+export function trunkShape(angle: number): number {
+  const phase = trunkPhase;
   return (
-    radius *
-    (1 +
-      wobble * Math.sin(2 * angle + phase) +
-      0.6 * wobble * Math.sin(3 * angle + 1.7 * phase + 1) +
-      0.35 * wobble * Math.sin(5 * angle + 0.6 * phase))
+    wobble *
+    (Math.sin(2 * angle + phase) +
+      0.6 * Math.sin(3 * angle + 1.7 * phase + 1) +
+      0.35 * Math.sin(5 * angle + 0.6 * phase))
   );
+}
+
+/**
+ * A ring's radius at an angle: the trunk's shape at its radius, and its own
+ * variation, of at most `ringVariation` units, set by its phase.
+ */
+export function radiusAt(radius: number, phase: number, angle: number): number {
+  return radius * (1 + trunkShape(angle)) + ringVariation * Math.sin(4 * angle + phase);
 }
 
 /** A number with one decimal at most, as SVG path data writes it. */
 function short(value: number): string {
   return String(Math.round(value * 10) / 10);
+}
+
+/** The phase of the current band's dashed line, halfway through it. */
+export function currentLinePhase(index: number): number {
+  return edgePhase(index) + 0.65;
+}
+
+/** The phase of the bark. */
+export const barkPhase = 2.2;
+
+/** How far the bark's rough edge (TreeRings.astro's displacement filter) moves it, at most. */
+export const barkRoughness = 1.5;
+
+/** A line the rings draw: its radius and phase, and what it is. */
+export interface RingLine {
+  readonly radius: number;
+  readonly phase: number;
+  readonly kind: "edge" | "hairline" | "current" | "bark";
+}
+
+/**
+ * Every line the rings draw, from the pith outwards: each band's inner edge
+ * for the first, its hairlines, the current band's dashed line, its outer
+ * edge, then the bark's inner side, rough edge included.
+ */
+export function ringLines(all: readonly Band[]): RingLine[] {
+  const lines: RingLine[] = [];
+  const first = all[0];
+  if (first !== undefined) lines.push({ radius: first.inner, phase: edgePhase(-1), kind: "edge" });
+  for (const band of all) {
+    band.hairlines.forEach((radius, line) => {
+      lines.push({ radius, phase: hairlinePhase(band.index, line), kind: "hairline" });
+    });
+    if (band.current) {
+      lines.push({ radius: band.middle, phase: currentLinePhase(band.index), kind: "current" });
+    }
+    lines.push({ radius: band.outer, phase: edgePhase(band.index), kind: "edge" });
+  }
+  lines.push({
+    radius: barkRadius - barkWidth / 2 - barkRoughness,
+    phase: barkPhase,
+    kind: "bark",
+  });
+  return lines;
 }
 
 /** A ring's points, clockwise from 12 o'clock. */
@@ -150,12 +219,24 @@ export function ringPointsOf(radius: number, phase: number): [number, number][] 
 }
 
 /**
- * A ring as SVG path data: a closed polyline drawn clockwise from 12
- * o'clock, so a stroke that draws itself in goes round like a clock's hand.
+ * A ring as SVG path data: a smooth closed curve through its points (each
+ * span a cubic Bézier curve, from the Catmull-Rom spline through them), drawn
+ * clockwise from 12 o'clock, so a stroke that draws itself in goes round like
+ * a clock's hand.
  */
 export function ringPath(radius: number, phase: number): string {
-  const points = ringPointsOf(radius, phase).map(([x, y]) => `${short(x)} ${short(y)}`);
-  return `M${points.join(" ")}Z`;
+  const points = ringPointsOf(radius, phase);
+  const at = (index: number) => points[(index + points.length) % points.length] ?? [0, 0];
+  const pair = (x: number, y: number) => `${short(x)} ${short(y)}`;
+  const spans = points.map((point, index) => {
+    const [before, next, after] = [at(index - 1), at(index + 1), at(index + 2)];
+    return [
+      pair(point[0] + (next[0] - before[0]) / 6, point[1] + (next[1] - before[1]) / 6),
+      pair(next[0] - (after[0] - point[0]) / 6, next[1] - (after[1] - point[1]) / 6),
+      pair(next[0], next[1]),
+    ].join(" ");
+  });
+  return `M${pair(...at(0))}C${spans.join(" ")}Z`;
 }
 
 /**

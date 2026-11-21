@@ -10,10 +10,15 @@ import {
   pastRadius,
   placeholderYears,
   type RingInput,
+  type RingLine,
   radiusAt,
+  ringLines,
   ringPath,
   ringPoints,
   ringPointsOf,
+  ringVariation,
+  trunkPhase,
+  trunkShape,
   wobble,
 } from "./rings-geometry";
 
@@ -100,7 +105,7 @@ describe("the bands", () => {
 });
 
 describe("a ring's outline", () => {
-  it("is a closed polyline of 120 points, starting at 12 o'clock and going clockwise", () => {
+  it("passes through 48 points, starting at 12 o'clock and going clockwise", () => {
     const points = ringPointsOf(200, 0);
     expect(points).toHaveLength(ringPoints);
     const [first, second] = points;
@@ -108,32 +113,39 @@ describe("a ring's outline", () => {
     expect(first?.[1]).toBeLessThan(centre);
     // Clockwise on screen: from 12 o'clock, the next point is to the right.
     expect(second?.[0]).toBeGreaterThan(centre);
+  });
+
+  it("is a smooth closed curve: one cubic Bézier span per point, back to the start", () => {
     const path = ringPath(200, 0);
-    expect(path.startsWith("M")).toBe(true);
+    expect(path).toMatch(/^M[\d.]+ [\d.]+C/);
     expect(path.endsWith("Z")).toBe(true);
-    expect(path.slice(1, -1).split(" ")).toHaveLength(ringPoints * 2);
+    const numbers = path.slice(1, -1).replace("C", " ").split(" ");
+    // The start, then three points (two controls and an end) per span.
+    expect(numbers).toHaveLength(2 + ringPoints * 3 * 2);
+    // The last span ends where the curve starts.
+    expect(numbers.slice(-2)).toEqual(numbers.slice(0, 2));
   });
 
-  it("wavers around its radius by the formula's amplitude at most", () => {
-    const limit = 1 + wobble * (1 + 0.6 + 0.35);
-    for (const [x, y] of ringPointsOf(300, edgePhase(2))) {
-      const distance = Math.hypot(x - centre, y - centre);
-      expect(distance).toBeLessThanOrEqual(300 * limit + 1e-9);
-      expect(distance).toBeGreaterThanOrEqual(300 * (2 - limit) - 1e-9);
-    }
-  });
-
-  it("follows the formula r(θ) = r · (1 + a·sin(2θ+φ) + 0.6a·sin(3θ+1.7φ+1) + 0.35a·sin(5θ+0.6φ))", () => {
-    const phase = 1.3;
+  it("follows the trunk's shared shape, plus a variation of its own of fixed size", () => {
     const angle = 0.7;
-    expect(radiusAt(100, phase, angle)).toBeCloseTo(
-      100 *
-        (1 +
-          wobble * Math.sin(2 * angle + phase) +
-          0.6 * wobble * Math.sin(3 * angle + 1.7 * phase + 1) +
-          0.35 * wobble * Math.sin(5 * angle + 0.6 * phase)),
+    const phase = trunkPhase;
+    const shape =
+      wobble *
+      (Math.sin(2 * angle + phase) +
+        0.6 * Math.sin(3 * angle + 1.7 * phase + 1) +
+        0.35 * Math.sin(5 * angle + 0.6 * phase));
+    expect(trunkShape(angle)).toBeCloseTo(shape, 12);
+    expect(radiusAt(100, 1.3, angle)).toBeCloseTo(
+      100 * (1 + shape) + ringVariation * Math.sin(4 * angle + 1.3),
       12,
     );
+    for (const [x, y] of ringPointsOf(300, edgePhase(2))) {
+      const angleHere = Math.atan2(x - centre, centre - y);
+      const distance = Math.hypot(x - centre, y - centre);
+      expect(Math.abs(distance - 300 * (1 + trunkShape(angleHere)))).toBeLessThanOrEqual(
+        ringVariation + 1e-9,
+      );
+    }
   });
 
   it("differs from one ring to the next", () => {
@@ -145,6 +157,59 @@ describe("a ring's outline", () => {
     if (first === undefined || second === undefined) throw new Error("bands expected");
     expect(annulusPath(second)).toBe(
       `${ringPath(second.outer, edgePhase(1))}${ringPath(first.outer, edgePhase(0))}`,
+    );
+  });
+});
+
+describe("the gaps between neighbouring lines", () => {
+  /** The narrowest and widest gap between two lines, all round the trunk. */
+  function gapRange(inner: RingLine, outer: RingLine): [number, number] {
+    let narrowest = Number.POSITIVE_INFINITY;
+    let widest = 0;
+    for (let step = 0; step < 720; step++) {
+      const angle = (2 * Math.PI * step) / 720;
+      const gap =
+        radiusAt(outer.radius, outer.phase, angle) - radiusAt(inner.radius, inner.phase, angle);
+      narrowest = Math.min(narrowest, gap);
+      widest = Math.max(widest, gap);
+    }
+    return [narrowest, widest];
+  }
+
+  const careers: [string, RingInput[]][] = [
+    ["the page's career", career],
+    [
+      "a long career with many hairlines",
+      [
+        { months: 150, current: false },
+        { months: 30, current: false },
+        { months: 96, current: false },
+        { months: undefined, current: true },
+      ],
+    ],
+  ];
+
+  it.each(careers)("stay even all round the trunk, for %s, so no two lines touch", (_, input) => {
+    const lines = ringLines(bands(input));
+    for (let index = 1; index < lines.length; index++) {
+      const inner = lines[index - 1];
+      const outer = lines[index];
+      if (inner === undefined || outer === undefined) throw new Error("lines expected");
+      const [narrowest, widest] = gapRange(inner, outer);
+      const nominal = outer.radius - inner.radius;
+      // Never closer than 70 % of the drawn gap, nor wider than 130 %, and
+      // never under 3 units: the lines run parallel.
+      expect(
+        narrowest,
+        `${inner.kind} ${inner.radius} → ${outer.kind} ${outer.radius}`,
+      ).toBeGreaterThan(Math.max(3, nominal * 0.7));
+      expect(widest).toBeLessThan(nominal * 1.3);
+    }
+  });
+
+  it("include the current band's dashed line and the bark's inner side", () => {
+    expect(ringLines(bands(career)).map((line) => line.kind)).toEqual(
+      expect.arrayContaining(["current", "bark"]),
     );
   });
 });

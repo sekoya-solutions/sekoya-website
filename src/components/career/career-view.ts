@@ -22,6 +22,7 @@ import {
   annulusPath,
   type Band,
   bands,
+  currentLinePhase,
   type DrawWindow,
   drawLength,
   drawWindow,
@@ -119,7 +120,7 @@ export function careerView(
         surface: annulusPath(band),
         outer: ringPath(band.outer, edgePhase(index)),
         inner: ringPath(band.inner, edgePhase(index - 1)),
-        middle: ringPath(band.middle, edgePhase(index) + 0.65),
+        middle: ringPath(band.middle, currentLinePhase(index)),
         hairlines: band.hairlines.map((radius, line) =>
           ringPath(radius, hairlinePhase(index, line)),
         ),
