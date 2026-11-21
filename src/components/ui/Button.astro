@@ -18,6 +18,8 @@ interface Props {
   leadingIcon?: "github" | "play";
   /** For a link to another site: the hidden words that say so. */
   externalHint?: string;
+  /** For a link in a navigation: its `aria-current` mark. */
+  current?: "page" | "true" | undefined;
   class?: string;
 }
 
@@ -28,10 +30,12 @@ const {
   icon,
   leadingIcon,
   externalHint,
+  current,
   class: className,
 } = Astro.props;
 const Tag = href === undefined ? "button" : "a";
-const attributes = href === undefined ? { type: "submit" as const } : { href };
+const attributes =
+  href === undefined ? { type: "submit" as const } : { href, "aria-current": current };
 ---
 
 <Tag {...attributes} class:list={["button", `button-${variant}`, `button-${size}`, className]}>

@@ -10,6 +10,19 @@ export const fr = frenchTypographyTree({
     skipLink: "Aller au contenu",
     lightTheme: "Thème clair",
     legalNotice: "Mentions légales",
+    /** The header's navigation landmark, read by screen readers only. */
+    navigation: "Navigation principale",
+    /** The button that opens the navigation below 1280 px, read by screen readers only. */
+    menu: "Menu",
+    /** The header's links to the main pages (src/i18n/navigation.ts). */
+    nav: {
+      offers: "Offres",
+      caseStudies: "Réalisations",
+      career: "Parcours",
+      portfolio: "Portfolio",
+      about: "À propos",
+    },
+    contact: "Me contacter",
   },
   home: {
     title: "Sekoya Solutions",
