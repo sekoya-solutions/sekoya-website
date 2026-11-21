@@ -27,4 +27,11 @@ export const en = {
     titleSuffix: "— Case studies — Sekoya Solutions",
     cvMissing: "[TODO: CV (PDF) to provide]",
   },
+  portfolio: {
+    title: "Portfolio — Sekoya Solutions",
+    description:
+      "Public projects you can open, play and read: code, architecture decisions and measurements.",
+    titleSuffix: "— Portfolio — Sekoya Solutions",
+    externalLink: "external site",
+  },
 } satisfies Dictionary;

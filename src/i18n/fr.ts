@@ -30,4 +30,13 @@ export const fr = frenchTypographyTree({
     /** Shown in place of the CV button until the PDF is added (ADR 0007). */
     cvMissing: "[TODO: CV (PDF) à fournir]",
   },
+  portfolio: {
+    title: "Portfolio — Sekoya Solutions",
+    description:
+      "Des projets publics que vous pouvez ouvrir, jouer et lire : code, décisions d'architecture et mesures.",
+    /** After a project's title, in its page's title. */
+    titleSuffix: "— Portfolio — Sekoya Solutions",
+    /** For a link to another site, read by screen readers only. */
+    externalLink: "site externe",
+  },
 });

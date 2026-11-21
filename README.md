@@ -35,9 +35,9 @@ Node.js at the version in [`.node-version`](.node-version), with npm.
 | --- | --- |
 | `src/pages/` | One file per page: French at the root, English under `en/` |
 | `src/layouts/` | The base layout of every page |
-| `src/components/` | Components: the logo, the header and footer shells, the language switch, the theme toggle and its script, the scroll reveal script, the placeholder chip, the shared buttons, chips and icons, the home hero and its animated scene, the home sections, the offer and case study cards, and the page bodies shared by both languages |
+| `src/components/` | Components: the logo, the header and footer shells, the language switch, the theme toggle and its script, the scroll reveal script, the placeholder chip, the shared buttons, chips and icons, the home hero and its animated scene, the home sections, the offer, case study and project cards, the portfolio's filters and the playable demo's facade and script, and the page bodies shared by both languages |
 | `src/i18n/` | The languages, the interface strings of each (`fr.ts`, `en.ts`), the map of translated paths (`routes.ts`) and the reading of the content in a page's language (`content.ts`) |
-| `src/content/` | Long copy, in content collections declared in `src/content.config.ts`: one entry per language (`fr.json`, `en.json`), or one MDX file per case study and language (`case-studies/<language>/<slug>.mdx`), which also makes its page |
+| `src/content/` | Long copy, in content collections declared in `src/content.config.ts`: one entry per language (`fr.json`, `en.json`), or one MDX file per case study or portfolio project and language (`case-studies/<language>/<slug>.mdx`, `projects/<language>/<slug>.mdx`), which also makes its page |
 | `src/lib/` | Pure functions, with their unit tests, and the Markdown plugin that gives MDX bodies French typography and placeholder chips |
 | `src/styles/` | The brand tokens (`tokens.css`), mapped into Tailwind with the base styles, the card and the scroll reveal (`global.css`) |
 | `src/assets/` | Logos, animated logo, portfolio screenshots and font, processed by the build |

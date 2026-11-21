@@ -3,7 +3,8 @@
  * A link styled as a button (the brand's design system): primary (mint, with
  * a glow), ghost (gold outline) or text (mint, with an arrow), in two sizes.
  * Its focus ring is the site's (global.css). A link to another site shows an
- * external-link icon and says so to screen readers (`externalHint`).
+ * external-link icon and says so to screen readers (`externalHint`). A
+ * leading icon (GitHub, play) may come before the label.
  */
 import Icon from "./Icon.astro";
 
@@ -12,15 +13,25 @@ interface Props {
   variant: "primary" | "ghost" | "text";
   size?: "md" | "sm";
   icon?: "arrow" | "external";
+  leadingIcon?: "github" | "play";
   /** For a link to another site: the hidden words that say so. */
   externalHint?: string;
   class?: string;
 }
 
-const { href, variant, size = "md", icon, externalHint, class: className } = Astro.props;
+const {
+  href,
+  variant,
+  size = "md",
+  icon,
+  leadingIcon,
+  externalHint,
+  class: className,
+} = Astro.props;
 ---
 
 <a href={href} class:list={["button", `button-${variant}`, `button-${size}`, className]}>
+  {leadingIcon !== undefined && <Icon name={leadingIcon} size={size === "sm" ? 16 : 18} />}
   <slot />
   {externalHint !== undefined && <span class="sr-only">({externalHint})</span>}
   {icon !== undefined && <Icon name={icon} size={icon === "external" || size === "sm" ? 16 : 18} />}

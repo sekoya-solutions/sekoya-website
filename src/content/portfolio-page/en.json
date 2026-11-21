@@ -1,0 +1,40 @@
+{
+  "eyebrow": "Portfolio",
+  "title": "Projects you can open, play and read.",
+  "lead": "Every project is public: code, architecture decisions and measurements. Nothing to take on trust.",
+  "filters": {
+    "legend": "Filter the projects",
+    "all": "All",
+    "note": "Pure CSS filters (:has and radio buttons), no JavaScript",
+    "categories": { "game": "Game", "ecommerce": "E-commerce", "web": "Web" }
+  },
+  "ghost": {
+    "title": "Next project",
+    "text": "More work is on its way. The grid is built to grow."
+  },
+  "labels": {
+    "view": "View the project",
+    "play": "Play the demo",
+    "site": "Visit the site",
+    "sourceCode": "Source code",
+    "lighthouse": "Lighthouse mobile (median)",
+    "lighthouseSite": "Lighthouse mobile",
+    "lighthousePending": "measurement pending",
+    "figuresAsOf": "Figures published in the repository, as of",
+    "measuredOn": "measured on",
+    "source": "source",
+    "back": "All projects",
+    "figures": "The figures",
+    "stack": "Stack",
+    "demonstrates": "What this project demonstrates",
+    "screenshots": "Screenshots"
+  },
+  "demo": {
+    "title": "The playable demo",
+    "play": "Play in the browser",
+    "frameTitle": "playable demo",
+    "notice": "The demo is made for a desktop browser, with a mouse.",
+    "open": "Open the demo",
+    "fullscreen": "Full screen"
+  }
+}

@@ -1,0 +1,44 @@
+---
+order: 2
+title: Sekoya Parts
+category: ecommerce
+span: 1
+badges:
+  - Personal project
+  - Public on GitHub
+mediaLabel: E-commerce · Next.js
+summary: A spare-parts shop of 100,000 products in ten languages, fast on free hosting plans, with no third-party script.
+cover:
+  src: ../../../assets/portfolio/sekoya-parts-home-desktop.webp
+  alt: "The Sekoya Parts home page on a desktop: the part finder by appliance, then the promotions."
+stats: []
+lighthouse:
+  measuredOn: "2026-11-17"
+  source: https://github.com/sekoya-solutions/sekoya-parts/pull/203
+  scores:
+    - label: Home
+      score: 96
+    - label: Category
+      score: 100
+    - label: Product
+      score: 98
+stack:
+  - Next.js 16
+  - Payload
+  - PostgreSQL
+  - Vercel
+demo:
+  kind: site
+  url: https://sekoya-parts.vercel.app
+repo: https://github.com/sekoya-solutions/sekoya-parts
+screenshots:
+  - src: ../../../assets/portfolio/sekoya-parts-product-desktop.webp
+    alt: "A product page on a desktop: the picture gallery beside the name, price and description."
+---
+
+- **Scale.** 100,000 products, 60 brands and 1,000,000 appliance models, made by a seeded generator that always gives the same catalog.
+- **A product that fits a million appliances.** Its page lists the most popular models, and the rest on numbered pages read straight from an index: the last page is as fast as the first.
+- **Partial refresh.** Each part of a page (price, description, reference list) is cached on its own. Editing a price re-renders the price only.
+- **Ten languages** on one domain, with translated addresses and hreflang tags.
+- **Performance as a merge gate.** Lighthouse measures each pull request's preview, which cannot merge below the set threshold.
+- **A demonstration shop:** the cart, customer accounts and a mock checkout work, but nothing is paid or delivered. No analytics, no third-party script.

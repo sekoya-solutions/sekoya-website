@@ -6,6 +6,7 @@
 import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
 import { z } from "astro/zod";
+import { type ProjectCategory, projectCategories } from "./content/project-categories";
 
 /** A text, which may hold `[TODO: …]` placeholders (ADR 0007). */
 const text = z.string().trim().min(1);
@@ -223,4 +224,121 @@ const caseStudiesPage = defineCollection({
   }),
 });
 
-export const collections = { home, offers, caseStudies, caseStudiesPage };
+/** A link to another site, over HTTPS. */
+const https = z.url({ protocol: /^https$/ });
+
+/** A calendar date, `YYYY-MM-DD`, shown as `DD/MM/YYYY` (src/lib/dates.ts). */
+const date = z.iso.date();
+
+/**
+ * The portfolio's projects (ADR 0004), one MDX file per project and language:
+ * `projects/<locale>/<slug>.mdx`. The frontmatter holds what the card and the
+ * page lay out; the body is what the project demonstrates, in Markdown. Its
+ * figures come from the project's published documentation, each with its
+ * date and its source (ADR 0007). Images are paths relative to the file,
+ * optimised at build time.
+ */
+const projects = defineCollection({
+  loader: glob({ pattern: "*/*.mdx", base: "./src/content/projects" }),
+  schema: ({ image }) =>
+    z
+      .object({
+        /** The project's place in the grid, from 1. */
+        order: z.number().int().positive(),
+        title: text,
+        category: z.enum(projectCategories),
+        /** Columns the card spans from 768 px (one on phones). */
+        span: z.union([z.literal(1), z.literal(2)]),
+        /** The labels above the title, such as "Personal project". */
+        badges: z.array(text).min(1),
+        /** The chip on the card's picture, such as "Game · Unity". */
+        mediaLabel: text,
+        summary: text,
+        /** The card's picture and the demo's poster; without one, the logo on a glow. */
+        cover: z.object({ src: image(), alt: text }).optional(),
+        stats: z.array(z.object({ value: text, measuredOn: date, source: https })),
+        /**
+         * Lighthouse scores, as the project's documentation publishes them, or
+         * `this-site`: this site's own, read from the measurement file once it
+         * exists (#21), and shown as pending until then.
+         */
+        lighthouse: z
+          .union([
+            z.object({
+              measuredOn: date,
+              source: https,
+              scores: z
+                .array(z.object({ label: text, score: z.number().int().min(0).max(100) }))
+                .min(1),
+            }),
+            z.literal("this-site"),
+          ])
+          .optional(),
+        stack: z.array(text).min(1),
+        /**
+         * The project running: a game to play in the page (`play`, embedded
+         * after a click, ADR 0005) or a site to visit (`site`).
+         */
+        demo: z.object({ kind: z.enum(["play", "site"]), url: https }).optional(),
+        repo: https,
+        screenshots: z.array(z.object({ src: image(), alt: text })),
+      })
+      .refine(({ demo, cover }) => demo?.kind !== "play" || cover !== undefined, {
+        message: "A playable demo needs a cover, its poster",
+        path: ["cover"],
+      }),
+});
+
+/** The portfolio's page and the labels of its cards and project pages, one entry per language. */
+const portfolioPage = defineCollection({
+  loader: glob({ pattern: "*.json", base: "./src/content/portfolio-page" }),
+  schema: z.object({
+    eyebrow: text,
+    title: text,
+    lead: text,
+    filters: z.object({
+      legend: text,
+      all: text,
+      note: text,
+      /** A label per category (src/content/project-categories.ts). */
+      categories: z.object({ game: text, ecommerce: text, web: text }) satisfies z.ZodType<
+        Record<ProjectCategory, string>
+      >,
+    }),
+    ghost: z.object({ title: text, text }),
+    labels: z.object({
+      view: text,
+      play: text,
+      site: text,
+      sourceCode: text,
+      lighthouse: text,
+      lighthouseSite: text,
+      lighthousePending: text,
+      figuresAsOf: text,
+      measuredOn: text,
+      source: text,
+      back: text,
+      figures: text,
+      stack: text,
+      demonstrates: text,
+      screenshots: text,
+    }),
+    demo: z.object({
+      title: text,
+      play: text,
+      frameTitle: text,
+      notice: text,
+      open: text,
+      fullscreen: text,
+    }),
+  }),
+});
+
+export const collections = {
+  home,
+  offers,
+  caseStudies,
+  caseStudiesPage,
+  projects,
+  portfolioPage,
+};

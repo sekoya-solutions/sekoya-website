@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { caseStudiesFolder, caseStudySlugs, slugOf } from "./case-study-slugs";
+import { caseStudiesFolder, caseStudySlugs, projectSlugs, projectsFolder, slugOf } from "./slugs";
 
 let root = "";
 
@@ -59,5 +59,23 @@ describe("caseStudySlugs", () => {
 
   it("reads the project's own case studies", () => {
     expect(caseStudySlugs()).toEqual(["atos-bull", "culligan", "sos-accessoire"]);
+  });
+});
+
+describe("projectSlugs", () => {
+  it("lists the projects every language has, and names them in its errors", () => {
+    root = mkdtempSync(join(tmpdir(), "projects-"));
+    for (const [locale, names] of Object.entries({ fr: ["b.mdx", "a.mdx"], en: ["a.mdx"] })) {
+      const folder = join(root, projectsFolder, locale);
+      mkdirSync(folder, { recursive: true });
+      for (const name of names) writeFileSync(join(folder, name), "---\n---\n");
+    }
+    expect(() => projectSlugs(root)).toThrow("The projects differ between fr (a, b) and en (a)");
+    writeFileSync(join(root, projectsFolder, "en", "b.mdx"), "---\n---\n");
+    expect(projectSlugs(root)).toEqual(["a", "b"]);
+  });
+
+  it("reads the project's own portfolio", () => {
+    expect(projectSlugs()).toEqual(["sekoya-parts", "sekoya-transit", "sekoya-website"]);
   });
 });

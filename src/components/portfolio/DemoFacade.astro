@@ -1,0 +1,179 @@
+---
+/**
+ * A playable demo, loaded on demand (ADR 0005): the poster at 16:9 with a
+ * play button, which is a link to the demo. On a desktop browser, the inline
+ * script (demo-facade.ts) replaces the poster with the demo in an iframe on
+ * click; below 1024 px or on a touch screen, a notice and a link replace the
+ * button. Nothing is requested from the demo's host before a click.
+ *
+ * The page's policy gets the script's hash and allows frames from the demo's
+ * origin only. The demo also opens on its own, full screen, from the link
+ * below the frame.
+ */
+import { Picture } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import PlaceholderText from "../content/PlaceholderText.astro";
+import Icon from "../ui/Icon.astro";
+import { demoFacadeHash, demoFacadeScript } from "./demo-facade";
+
+interface Props {
+  url: string;
+  poster: { src: ImageMetadata; alt: string };
+  /** The iframe's accessible name, such as "Sekoya Transit — playable demo". */
+  frameTitle: string;
+  labels: { play: string; notice: string; open: string; fullscreen: string };
+  externalHint: string;
+}
+
+const { url, poster, frameTitle, labels, externalHint } = Astro.props;
+if (Astro.csp === undefined) throw new Error("astro.config.mjs must enable the CSP");
+Astro.csp.insertDirective(`frame-src ${new URL(url).origin}`);
+Astro.csp.insertScriptHash(demoFacadeHash);
+---
+
+<div class="demo">
+  <div class="demo-frame" data-demo-frame>
+    <Picture
+      src={poster.src}
+      alt={poster.alt}
+      formats={["avif", "webp"]}
+      widths={[600, 1000, 1400]}
+      sizes="(min-width: 1280px) 1180px, 100vw"
+      decoding="async"
+      class="demo-poster"
+    />
+    <a href={url} class="demo-play" data-demo-play data-demo-title={frameTitle}>
+      <span class="demo-play-icon"><Icon name="play" size={20} /></span>
+      <PlaceholderText text={labels.play} />
+      <span class="sr-only">({externalHint})</span>
+    </a>
+    <p class="demo-notice">
+      <PlaceholderText text={labels.notice} />
+      <a href={url} class="demo-notice-link">
+        <PlaceholderText text={labels.open} />
+        <span class="sr-only">({externalHint})</span>
+        <Icon name="external" size={15} />
+      </a>
+    </p>
+  </div>
+  <p class="demo-links">
+    <a href={url} class="demo-fullscreen">
+      <PlaceholderText text={labels.fullscreen} />
+      <span class="sr-only">({externalHint})</span>
+      <Icon name="external" size={15} />
+    </a>
+  </p>
+</div>
+<script is:inline set:html={demoFacadeScript}></script>
+
+<style>
+  .demo-frame {
+    position: relative;
+    overflow: clip;
+    aspect-ratio: 16 / 9;
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    background: #0c242c;
+  }
+
+  .demo-poster {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* The iframe the script adds (demo-facade.ts). */
+  .demo-frame :global(.demo-iframe) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  .demo-play {
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+    display: none;
+    align-items: center;
+    gap: 14px;
+    padding: 9px 24px 9px 9px;
+    border: 1px solid rgb(34 192 138 / 0.55);
+    border-radius: var(--r-pill);
+    background: rgb(8 28 34 / 0.88);
+    box-shadow: var(--glow-mint);
+    color: #eef4f6;
+    font-size: 1.05rem;
+    font-weight: 500;
+    transition: box-shadow 220ms var(--ease-out);
+  }
+
+  .demo-play:hover {
+    box-shadow:
+      0 0 0 1px rgb(34 192 138 / 0.45), 0 0 30px rgb(34 192 138 / 0.3),
+      0 0 80px rgb(34 192 138 / 0.14);
+  }
+
+  .demo-play-icon {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--mint);
+    color: #0b2027;
+  }
+
+  .demo-notice {
+    position: absolute;
+    inset: auto 0 0;
+    display: grid;
+    gap: 6px;
+    padding: 16px 18px;
+    background: rgb(8 28 34 / 0.9);
+    color: #eef4f6;
+    font-size: var(--fs-sm);
+  }
+
+  .demo-notice-link,
+  .demo-fullscreen {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--mint);
+    font-weight: 500;
+  }
+
+  .demo-fullscreen {
+    color: var(--link);
+    font-size: var(--fs-sm);
+  }
+
+  .demo-notice-link:hover,
+  .demo-fullscreen:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .demo-links {
+    display: none;
+    justify-content: flex-end;
+    margin-top: 10px;
+  }
+
+  /* Where the demo can be played: the same query as demo-facade.ts. */
+  @media (min-width: 64rem) and (pointer: fine) {
+    .demo-play {
+      display: inline-flex;
+    }
+
+    .demo-notice {
+      display: none;
+    }
+
+    .demo-links {
+      display: flex;
+    }
+  }
+</style>

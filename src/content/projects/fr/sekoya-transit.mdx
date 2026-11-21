@@ -1,0 +1,48 @@
+---
+order: 1
+title: Sekoya Transit
+category: game
+span: 2
+badges:
+  - Projet personnel
+  - Public sur GitHub
+mediaLabel: Jeu · Unity
+summary: Jeu de gestion de transport et de logistique, inspiré de Transport Tycoon. Simulation déterministe en C# pur, équilibrage piloté par les données, et une suite de tests qui garde chaque changement.
+cover:
+  src: ../../../assets/portfolio/sekoya-transit-map-overview.webp
+  alt: "La carte d'une partie en 1935 : réseaux routiers et ferroviaires entre villes et industries, avec les barres d'outils et les contrats en cours."
+stats:
+  - value: 2 632 tests automatisés
+    measuredOn: "2026-11-18"
+    source: https://github.com/sekoya-solutions/sekoya-transit#key-figures
+  - value: 36 décisions d'architecture (ADR)
+    measuredOn: "2026-11-18"
+    source: https://github.com/sekoya-solutions/sekoya-transit#key-figures
+  - value: Démo WebGL de 29,3 Mio
+    measuredOn: "2026-11-18"
+    source: https://github.com/sekoya-solutions/sekoya-transit#key-figures
+stack:
+  - Unity 6.3
+  - C#
+  - .NET 10
+  - WebGL
+  - GitHub Actions
+demo:
+  kind: play
+  url: https://sekoya-solutions.github.io/sekoya-transit/
+repo: https://github.com/sekoya-solutions/sekoya-transit
+screenshots:
+  - src: ../../../assets/portfolio/sekoya-transit-towns-panel.webp
+    alt: "Une ville avec le panneau des villes ouvert : sa population, son niveau de croissance et ses besoins, avec l'approvisionnement du mois dernier."
+  - src: ../../../assets/portfolio/sekoya-transit-routes-window.webp
+    alt: "La fenêtre des lignes : pour chacune, son coût, ses recettes et son bénéfice du mois dernier, ses gares et ses véhicules."
+  - src: ../../../assets/portfolio/sekoya-transit-contracts-panel.webp
+    alt: "Le panneau des contrats : un contrat en cours, un contrat rempli avec sa récompense, et une nouvelle proposition à accepter ou refuser."
+---
+
+- **Une simulation déterministe.** Les règles du jeu sont en C# pur, sans type Unity, et n'évoluent que par les commandes du joueur : la même graine et les mêmes commandes donnent toujours le même monde. Un générateur pseudo-aléatoire à graine, des nombres à virgule fixe et une empreinte de l'état complet le rendent testable.
+- **Des cartes procédurales jusqu'à 512 × 512 cases.** Relief, villes et industries naissent d'un bruit et d'un placement déterministes. La carte est dessinée en blocs de maillage sur mesure, choisis après une mesure des deux approches en WebGL.
+- **L'équilibrage en données, vérifié par simulation.** Véhicules, industries, marchandises et contrats sont décrits en JSON validé. Un outil sans interface joue des parties entières sur le vrai moteur, avec un joueur scripté, pour vérifier le rythme de progression.
+- **Des sauvegardes qui restent lisibles.** Le format est versionné, et les sauvegardes des versions précédentes récentes sont migrées au chargement.
+- **Chaque changement contrôlé.** Chaque pull request compile et teste le moteur en .NET et vérifie le formatage et la documentation. Les tests Unity tournent sur la branche principale, et la démo est republiée après chaque fusion qui touche au jeu.
+- **Deux langues**, anglais et français, et des graphismes originaux.

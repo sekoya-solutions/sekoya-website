@@ -1,0 +1,44 @@
+---
+order: 2
+title: Sekoya Parts
+category: ecommerce
+span: 1
+badges:
+  - Projet personnel
+  - Public sur GitHub
+mediaLabel: E-commerce · Next.js
+summary: Boutique de pièces détachées de 100 000 produits en dix langues, rapide sur des offres d'hébergement gratuites, sans script tiers.
+cover:
+  src: ../../../assets/portfolio/sekoya-parts-home-desktop.webp
+  alt: "La page d'accueil de Sekoya Parts sur ordinateur : la recherche de pièces par appareil, puis les promotions."
+stats: []
+lighthouse:
+  measuredOn: "2026-11-17"
+  source: https://github.com/sekoya-solutions/sekoya-parts/pull/203
+  scores:
+    - label: Accueil
+      score: 96
+    - label: Catégorie
+      score: 100
+    - label: Produit
+      score: 98
+stack:
+  - Next.js 16
+  - Payload
+  - PostgreSQL
+  - Vercel
+demo:
+  kind: site
+  url: https://sekoya-parts.vercel.app
+repo: https://github.com/sekoya-solutions/sekoya-parts
+screenshots:
+  - src: ../../../assets/portfolio/sekoya-parts-product-desktop.webp
+    alt: "Une fiche produit sur ordinateur : la galerie de photos à côté du nom, du prix et de la description."
+---
+
+- **L'échelle.** 100 000 produits, 60 marques et 1 000 000 de modèles d'appareils, générés par un outil à graine qui donne toujours le même catalogue.
+- **Un produit compatible avec un million d'appareils.** Sa page liste les modèles les plus courants, et le reste sur des pages numérotées lues directement dans un index : la dernière page est aussi rapide que la première.
+- **Le rafraîchissement partiel.** Chaque partie d'une page (prix, description, liste des références) est mise en cache à part. Modifier un prix ne recalcule que le prix.
+- **Dix langues** sur un seul domaine, avec des adresses traduites et les balises hreflang.
+- **La performance comme condition de fusion.** Lighthouse mesure l'aperçu de chaque pull request, qui ne peut pas être fusionnée sous le seuil fixé.
+- **Une boutique de démonstration** : panier, comptes clients et paiement fictif fonctionnent, mais rien n'est payé ni livré. Aucune mesure d'audience, aucun script tiers.

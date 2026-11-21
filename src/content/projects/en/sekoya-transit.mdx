@@ -1,0 +1,48 @@
+---
+order: 1
+title: Sekoya Transit
+category: game
+span: 2
+badges:
+  - Personal project
+  - Public on GitHub
+mediaLabel: Game · Unity
+summary: A transport and logistics tycoon game, inspired by Transport Tycoon. A deterministic simulation in plain C#, data-driven balance, and a test suite that guards every change.
+cover:
+  src: ../../../assets/portfolio/sekoya-transit-map-overview.webp
+  alt: "The map of a game in 1935: road and rail networks between towns and industries, with the toolbars and the active contracts."
+stats:
+  - value: 2,632 automated tests
+    measuredOn: "2026-11-18"
+    source: https://github.com/sekoya-solutions/sekoya-transit#key-figures
+  - value: 36 architecture decisions (ADRs)
+    measuredOn: "2026-11-18"
+    source: https://github.com/sekoya-solutions/sekoya-transit#key-figures
+  - value: 29.3 MiB WebGL demo
+    measuredOn: "2026-11-18"
+    source: https://github.com/sekoya-solutions/sekoya-transit#key-figures
+stack:
+  - Unity 6.3
+  - C#
+  - .NET 10
+  - WebGL
+  - GitHub Actions
+demo:
+  kind: play
+  url: https://sekoya-solutions.github.io/sekoya-transit/
+repo: https://github.com/sekoya-solutions/sekoya-transit
+screenshots:
+  - src: ../../../assets/portfolio/sekoya-transit-towns-panel.webp
+    alt: "A town with the Towns panel open: its population, growth level and needs, with last month's supply."
+  - src: ../../../assets/portfolio/sekoya-transit-routes-window.webp
+    alt: "The Routes window: each route with its running cost, revenue and profit of last month, its stations and vehicles."
+  - src: ../../../assets/portfolio/sekoya-transit-contracts-panel.webp
+    alt: "The Contracts panel: a contract in progress, a completed one with its reward, and a new proposal to accept or decline."
+---
+
+- **A deterministic simulation.** The game rules are plain C# with no Unity types, and change only through the player's commands: the same seed and the same commands always give the same world. A seeded random generator, fixed-point numbers and a hash of the full state make that testable.
+- **Procedural maps up to 512 × 512 tiles.** Terrain, towns and industries come from deterministic noise and placement. The map is drawn as custom mesh chunks, chosen after both approaches were measured in WebGL.
+- **Balance as data, checked by simulation.** Vehicles, industries, cargo and contracts are described in validated JSON. A headless tool plays whole games on the real engine, with a scripted player, to check the pace of progression.
+- **Saves that keep working.** The format is versioned, and saves from recent earlier versions are migrated on load.
+- **Every change checked.** Each pull request builds and tests the engine in .NET and checks formatting and documentation. Unity tests run on the main branch, and the demo is published again after each merge that changes the game.
+- **Two languages**, English and French, and original art.
