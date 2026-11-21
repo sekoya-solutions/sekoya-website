@@ -1,6 +1,7 @@
 // @ts-check
 import { satteri } from "@astrojs/markdown-satteri";
 import mdx from "@astrojs/mdx";
+import preact from "@astrojs/preact";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, fontProviders } from "astro/config";
 import { defaultLocale, locales } from "./src/i18n/config.ts";
@@ -57,11 +58,12 @@ export default defineConfig({
       },
     },
   ],
+  // ADR 0005: the quiz is a Preact island, its only framework component.
   // ADR 0004: case studies are MDX. Their bodies get French typography and
   // placeholder chips like the rest of the content
   // (src/lib/content-typography.ts), and keep their punctuation as written,
   // as the JSON collections do: no smart quotes or dashes.
-  integrations: [mdx()],
+  integrations: [mdx(), preact()],
   markdown: {
     processor: satteri({
       hastPlugins: [contentTypography],

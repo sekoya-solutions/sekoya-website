@@ -1,0 +1,151 @@
+---
+/**
+ * The quiz page, in the page's language: src/pages/quiz.astro in French and
+ * src/pages/en/quiz.astro in English. Its copy is in src/content/quiz; each
+ * level's offers come from src/content/offers.
+ *
+ * The page's heading, then a card holding the quiz, a Preact island
+ * (QuizIsland.tsx, ADR 0005) rendered at build time and hydrated once
+ * visible, and the privacy note. Without scripting, the card is hidden and
+ * the page shows the questions as a printable checklist, with the levels'
+ * table: the content is never empty.
+ */
+
+import { translations } from "../../i18n";
+import { pageLocale } from "../../i18n/config";
+import { offersContent, quizContent } from "../../i18n/content";
+import { linkHref } from "../../i18n/routes";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Icon from "../ui/Icon.astro";
+import { icons } from "../ui/icons";
+import QuizIsland, { type QuizLevel } from "./QuizIsland";
+import "./quiz.css";
+
+const locale = pageLocale(Astro.currentLocale);
+const t = translations(locale);
+const copy = await quizContent(locale);
+const offers = await offersContent(locale);
+
+/** A link of the content's to a page that must exist. */
+function href(link: { page: string; hash?: string; subject?: string }): string {
+  const value = linkHref(link, locale);
+  if (value === undefined) throw new Error(`The quiz links to "${link.page}", which does not exist`);
+  return value;
+}
+
+const levels: QuizLevel[] = copy.levels.map(({ offers: recommended, action, ...level }) => ({
+  ...level,
+  offers: recommended.map(({ offer: id, text }) => {
+    const offer = offers.items.find((item) => item.id === id);
+    if (offer === undefined) throw new Error(`The quiz recommends "${id}", which is not an offer`);
+    return {
+      title: offer.title,
+      duration: offer.duration,
+      text,
+      href: href({ page: "offers", hash: offer.id }),
+      icon: icons[offer.icon],
+    };
+  }),
+  action: { label: action.label, href: href(action) },
+}));
+
+const { labels } = copy;
+const checklist = labels.checklist;
+
+/** A label with a `{name}` slot per value. */
+function fill(label: string, values: Record<string, string | number>): string {
+  return label.replace(/\{(\w+)\}/g, (slot, name: string) => String(values[name] ?? slot));
+}
+---
+
+<BaseLayout title={t.quiz.title} description={t.quiz.description}>
+  <div class="quiz-page mx-auto max-w-site px-(--gutter)">
+    <div class="quiz-head">
+      <p class="eyebrow">{copy.eyebrow}</p>
+      <h1 class="quiz-title mt-3.5 font-bold tracking-[-0.02em]">{copy.title}</h1>
+      <p class="mt-4 text-[1.02rem] leading-[1.6] font-light text-muted lg:text-lead">
+        {copy.lead}
+      </p>
+    </div>
+
+    <div class="quiz-card">
+      <QuizIsland
+        client:visible
+        labels={{
+          eyebrow: copy.eyebrow,
+          step: labels.step,
+          previous: labels.previous,
+          next: labels.next,
+          finish: labels.finish,
+          keyboard: labels.keyboard,
+          enterKey: labels.enterKey,
+          result: labels.result,
+        }}
+        questions={copy.questions.map(({ category, question, answers, advice }) => ({
+          category,
+          question,
+          answers,
+          advice,
+        }))}
+        levels={levels}
+        arrow={icons.arrow}
+      />
+      <p class="quiz-privacy">
+        <Icon name="lock" size={16} />
+        {labels.privacy}
+      </p>
+    </div>
+
+    <section aria-labelledby="quiz-checklist-title" class="quiz-checklist">
+      <h2 id="quiz-checklist-title" class="text-h3 font-bold">{checklist.title}</h2>
+      <p class="mt-2 text-muted">{checklist.text}</p>
+      <ol class="checklist-questions">
+        {
+          copy.questions.map((question) => (
+            <li class="checklist-item">
+              <p class="quiz-chip">{question.category}</p>
+              <p class="checklist-question">{question.question}</p>
+              <ul class="checklist-answers">
+                {question.answers.map((answer) => (
+                  <li class="checklist-answer">
+                    <span class="checklist-box" aria-hidden="true" />
+                    {answer.label}{" "}
+                    <span class="text-muted">
+                      (
+                      {fill(answer.score === 1 ? checklist.points.one : checklist.points.other, {
+                        n: answer.score,
+                      })}
+                      )
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ))
+        }
+      </ol>
+      <h3 class="mt-10 text-h4 font-semibold">{checklist.levels}</h3>
+      <table class="checklist-levels">
+        <thead>
+          <tr>
+            <th scope="col">{checklist.range}</th>
+            <th scope="col">{checklist.level}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            copy.levels.map((level) => (
+              <tr class={`level-${level.id}`}>
+                <td>{fill(checklist.rangeValue, { min: level.min, max: level.max })}</td>
+                <td>
+                  <strong>{level.title}</strong>
+                  <p class="text-muted">{level.summary}</p>
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+  </div>
+</BaseLayout>

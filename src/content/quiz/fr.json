@@ -1,0 +1,242 @@
+{
+  "eyebrow": "Auto-diagnostic",
+  "title": "« Votre projet est-il bloqué ? »",
+  "lead": "10 questions, 3 réponses chacune, 2 minutes. Le score additionne 0, 1 ou 2 points par question : plus il est haut, plus le projet est exposé.",
+  "labels": {
+    "step": "Question {n} / {total}",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "finish": "Voir mon résultat",
+    "keyboard": "Au clavier : {keys} pour répondre, {enter} pour continuer.",
+    "enterKey": "Entrée",
+    "privacy": "Le calcul se fait dans votre navigateur. Rien n'est envoyé ni enregistré.",
+    "result": {
+      "eyebrow": "Votre résultat",
+      "scoreLabel": "Score de blocage",
+      "outOf": "{score} sur {max}",
+      "priorities": { "one": "Votre priorité", "other": "Vos {n} priorités" },
+      "priority": "priorité",
+      "watch": "à surveiller",
+      "none": "Aucun point à surveiller : chaque réponse est au vert.",
+      "offer": "L'offre adaptée",
+      "restart": "Refaire le test"
+    },
+    "checklist": {
+      "title": "Le test, à faire sur papier",
+      "text": "Cochez une réponse par question, additionnez les points, puis lisez votre niveau dans le tableau.",
+      "points": { "one": "{n} point", "other": "{n} points" },
+      "levels": "Lire votre score",
+      "range": "Score",
+      "level": "Niveau",
+      "rangeValue": "{min} à {max}"
+    }
+  },
+  "questions": [
+    {
+      "id": "tests",
+      "category": "Tests automatisés",
+      "question": "Quelle part de votre code critique est protégée par des tests automatisés ?",
+      "answers": [
+        { "label": "La majorité, et ils tournent à chaque modification", "score": 0 },
+        { "label": "Quelques tests, rarement lancés", "score": 1 },
+        { "label": "Très peu, voire aucun", "score": 2 }
+      ],
+      "advice": {
+        "2": "Commencez par des tests sur les parcours critiques (paiement, connexion, flux métier) plutôt que de viser la couverture totale. Un filet minimal change tout pour oser faire évoluer le code.",
+        "1": "Faites tourner vos tests à chaque commit et traitez les tests instables : un test que personne ne lance ne protège rien."
+      }
+    },
+    {
+      "id": "ci",
+      "category": "CI/CD",
+      "question": "Que se passe-t-il quand un développeur pousse du code ?",
+      "answers": [
+        { "label": "Build, tests et contrôles qualité se lancent automatiquement", "score": 0 },
+        { "label": "Un build automatique, mais les vérifications restent manuelles", "score": 1 },
+        { "label": "Rien d'automatique : on vérifie à la main", "score": 2 }
+      ],
+      "advice": {
+        "2": "Automatisez d'abord build, tests et lint sur chaque pull request. Une journée de mise en place évite des semaines de régressions.",
+        "1": "Ajoutez les contrôles qualité (tests, lint, analyse des dépendances) au pipeline pour que personne n'ait à y penser."
+      }
+    },
+    {
+      "id": "deploy",
+      "category": "Fréquence de déploiement",
+      "question": "À quelle fréquence mettez-vous en production ?",
+      "answers": [
+        { "label": "Plusieurs fois par semaine, sans stress", "score": 0 },
+        { "label": "Une fois par mois ou moins, de façon planifiée", "score": 1 },
+        { "label": "Rarement, et chaque mise en production est un risque", "score": 2 }
+      ],
+      "advice": {
+        "2": "Réduisez la taille des livraisons et automatisez le déploiement avec un retour arrière en un clic. La peur de déployer vient de la taille des changements.",
+        "1": "Visez des déploiements plus petits et plus fréquents : chaque mise en production devrait devenir banale."
+      }
+    },
+    {
+      "id": "onboarding",
+      "category": "Onboarding",
+      "question": "Combien de temps faut-il à un nouveau développeur pour livrer sa première évolution ?",
+      "answers": [
+        { "label": "Quelques jours", "score": 0 },
+        { "label": "Deux à quatre semaines", "score": 1 },
+        { "label": "Plus d'un mois, ou « ça dépend de qui l'aide »", "score": 2 }
+      ],
+      "advice": {
+        "2": "Un README qui permet de lancer le projet en moins d'une heure, un environnement reproductible (Docker) et un premier ticket guidé raccourcissent l'intégration.",
+        "1": "Documentez le « premier jour » : installation, architecture en une page, conventions. Le gain se répète à chaque arrivée."
+      }
+    },
+    {
+      "id": "debt",
+      "category": "Dette technique",
+      "question": "Comment vivez-vous la dette technique ?",
+      "answers": [
+        { "label": "Elle est identifiée, priorisée et traitée régulièrement", "score": 0 },
+        { "label": "On la connaît, mais on n'a jamais le temps", "score": 1 },
+        { "label": "Elle ralentit presque chaque nouvelle fonctionnalité", "score": 2 }
+      ],
+      "advice": {
+        "2": "Rendez la dette visible (liste priorisée) et réservez une part fixe de chaque cycle pour la rembourser, en commençant par ce qui ralentit le plus.",
+        "1": "Inscrivez la dette dans le backlog avec son coût estimé : ce qui est chiffré finit par être arbitré."
+      }
+    },
+    {
+      "id": "docs",
+      "category": "Documentation",
+      "question": "Où se trouve la connaissance du projet ?",
+      "answers": [
+        { "label": "Documentée et à jour (README, décisions d'architecture)", "score": 0 },
+        { "label": "Partielle, périmée par endroits", "score": 1 },
+        { "label": "Dans la tête de quelques personnes", "score": 2 }
+      ],
+      "advice": {
+        "2": "Écrivez les décisions d'architecture (ADR) et un schéma d'ensemble. Une page à jour vaut mieux que cinquante pages périmées.",
+        "1": "Rapprochez la documentation du code et mettez-la à jour dans la même pull request que le changement."
+      }
+    },
+    {
+      "id": "velocity",
+      "category": "Vélocité de l'équipe",
+      "question": "Vos estimations et vos livraisons sont-elles prévisibles ?",
+      "answers": [
+        { "label": "Oui, on tient en général nos engagements", "score": 0 },
+        { "label": "Avec des dérapages fréquents", "score": 1 },
+        { "label": "Impossible à prédire, les délais explosent", "score": 2 }
+      ],
+      "advice": {
+        "2": "Découpez en livrables plus petits et mesurez le temps de cycle réel : on ne prévoit bien que ce qu'on a mesuré.",
+        "1": "Suivez le temps de cycle (de l'idée à la production) pour repérer où le travail attend."
+      }
+    },
+    {
+      "id": "incidents",
+      "category": "Incidents",
+      "question": "Combien d'incidents en production ces trois derniers mois ?",
+      "answers": [
+        { "label": "Rares, résolus vite et analysés ensuite", "score": 0 },
+        { "label": "Plusieurs, résolus dans l'urgence", "score": 1 },
+        { "label": "Fréquents et récurrents : on éteint des incendies", "score": 2 }
+      ],
+      "advice": {
+        "2": "Mettez en place supervision, alertes utiles et post-mortems sans recherche de coupable. Chaque incident doit produire une correction durable, pas seulement un correctif.",
+        "1": "Formalisez l'analyse après incident : cause racine, action corrective, responsable."
+      }
+    },
+    {
+      "id": "busfactor",
+      "category": "Dépendance aux personnes",
+      "question": "Si votre développeur clé part demain, que se passe-t-il ?",
+      "answers": [
+        { "label": "L'équipe continue sans difficulté", "score": 0 },
+        { "label": "Un gros ralentissement", "score": 1 },
+        { "label": "Le projet s'arrête", "score": 2 }
+      ],
+      "advice": {
+        "2": "Répartissez la connaissance : pair programming, revues croisées, documentation des zones critiques. Le départ d'une personne ne doit pas arrêter le projet.",
+        "1": "Identifiez les zones qu'une seule personne maîtrise et organisez leur transfert."
+      }
+    },
+    {
+      "id": "decisions",
+      "category": "Revue de code et décisions",
+      "question": "Comment sont prises les décisions techniques ?",
+      "answers": [
+        { "label": "Revues de code systématiques, décisions tracées", "score": 0 },
+        { "label": "Revues occasionnelles", "score": 1 },
+        { "label": "Chacun fait à sa façon, sans ligne directrice", "score": 2 }
+      ],
+      "advice": {
+        "2": "Posez quelques conventions partagées (structure, nommage, revue obligatoire) et tracez les décisions. L'autonomie fonctionne mieux avec des garde-fous.",
+        "1": "Rendez les revues de code systématiques : elles diffusent les bonnes pratiques et attrapent les erreurs tôt."
+      }
+    }
+  ],
+  "levels": [
+    {
+      "id": "low",
+      "min": 0,
+      "max": 6,
+      "short": "sain",
+      "title": "Un projet sain",
+      "summary": "Les fondamentaux sont là. Un regard extérieur peut encore vous faire gagner du temps sur quelques points précis.",
+      "offers": [
+        {
+          "offer": "audit",
+          "text": "En version allégée : un regard extérieur ciblé sur les quelques points à surveiller."
+        }
+      ],
+      "action": {
+        "label": "Discuter d'un audit léger",
+        "page": "contact",
+        "subject": "audit",
+        "variant": "primary"
+      }
+    },
+    {
+      "id": "mid",
+      "min": 7,
+      "max": 13,
+      "short": "frictions",
+      "title": "Des frictions qui coûtent cher",
+      "summary": "Rien n'est cassé, mais l'équipe perd du temps chaque semaine. Quelques actions ciblées peuvent relancer la vitesse de livraison.",
+      "offers": [
+        {
+          "offer": "audit",
+          "text": "Un état des lieux factuel et un plan d'action priorisé sur ces points."
+        }
+      ],
+      "action": {
+        "label": "Planifier un audit technique",
+        "page": "contact",
+        "subject": "audit",
+        "variant": "primary"
+      }
+    },
+    {
+      "id": "high",
+      "min": 14,
+      "max": 20,
+      "short": "en tension",
+      "title": "Un projet en tension",
+      "summary": "Plusieurs signaux convergent : le projet est exposé à un blocage, à un incident majeur ou à un départ clé. Il vaut mieux agir maintenant.",
+      "offers": [
+        {
+          "offer": "sauvetage",
+          "text": "Reprendre la main sur un projet qui dérape : stabiliser, puis relancer les livraisons."
+        },
+        {
+          "offer": "tech-lead",
+          "text": "Prendre le rôle de Tech Lead dans l'équipe, le temps de remettre le projet sur ses rails."
+        }
+      ],
+      "action": {
+        "label": "Parlons-en cette semaine",
+        "page": "contact",
+        "subject": "sauvetage",
+        "variant": "primary"
+      }
+    }
+  ]
+}

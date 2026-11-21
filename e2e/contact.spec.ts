@@ -44,17 +44,22 @@ for (const locale of locales) {
     const scripts = await page.locator("script").allTextContents();
     expect(scripts).toHaveLength(1);
     expect(scripts[0]).toContain("data-theme-toggle");
-    // The quiz band appears with the quiz.
-    await expect(page.locator(".contact-quiz")).toHaveCount(0);
+    // The quiz band links to the quiz.
+    await expect(page.locator(".contact-quiz").getByRole("link")).toHaveAttribute(
+      "href",
+      pathOf("quiz", locale),
+    );
   });
 }
 
-test("every page's footer links to the legal notice", async ({ page }) => {
+test("every page's footer links to the quiz and the legal notice", async ({ page }) => {
   for (const locale of locales) {
-    for (const key of ["home", "contact", "legal"] as const) {
+    for (const key of ["home", "contact", "legal", "quiz"] as const) {
       await page.goto(pathOf(key, locale));
-      const link = page.getByRole("contentinfo").getByRole("link");
-      await expect(link).toHaveAttribute("href", pathOf("legal", locale));
+      const links = page.getByRole("contentinfo").getByRole("link");
+      await expect(links).toHaveCount(2);
+      await expect(links.nth(0)).toHaveAttribute("href", pathOf("quiz", locale));
+      await expect(links.nth(1)).toHaveAttribute("href", pathOf("legal", locale));
     }
   }
 });

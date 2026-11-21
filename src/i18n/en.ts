@@ -9,6 +9,8 @@ export const en = {
     skipLink: "Skip to content",
     lightTheme: "Light theme",
     legalNotice: "Legal notice",
+    /** The footer's link to the quiz. */
+    quiz: "Self-assessment",
     navigation: "Main navigation",
     menu: "Menu",
     nav: {
@@ -62,6 +64,11 @@ export const en = {
     description:
       "Let's talk about your project: by email, on Malt, LinkedIn or GitHub. I reply personally.",
     externalLink: "external site",
+  },
+  quiz: {
+    title: "Is your project stuck? — Sekoya Solutions",
+    description:
+      "A 10-question self-assessment: a blocking score and your three priorities. Everything is computed in your browser.",
   },
   legal: {
     title: "Legal notice — Sekoya Solutions",

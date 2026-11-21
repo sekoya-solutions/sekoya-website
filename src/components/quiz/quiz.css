@@ -1,0 +1,720 @@
+/*
+ * The quiz page (Quiz.astro) and its island (QuizIsland.tsx). Global, since
+ * the island's markup is not Astro's: every class starts with `quiz-` or
+ * `checklist-`. Each level has its colour: mint (low), gold (mid), the
+ * danger red (high). Motion stops under reduced motion.
+ */
+
+@property --n {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+.quiz-page {
+  padding-top: 32px;
+  padding-bottom: 72px;
+}
+
+.quiz-title {
+  font-size: var(--fs-h1);
+  line-height: 1.08;
+}
+
+.quiz-head {
+  max-width: 760px;
+}
+
+/* The card holding the quiz: shown only with scripting, where it works. */
+.quiz-card {
+  display: none;
+  max-width: 680px;
+  margin: 40px auto 0;
+  padding: 32px 22px 22px;
+  border: 1px solid var(--line-strong);
+  border-radius: 18px;
+  background:
+    radial-gradient(ellipse 70% 40% at 80% 0, rgb(34 192 138 / 0.1), transparent 70%), var(--bg);
+  box-shadow: 0 30px 80px rgb(0 0 0 / 0.35);
+}
+
+:root[data-theme="light"] .quiz-card {
+  background:
+    radial-gradient(ellipse 70% 40% at 80% 0, rgb(22 146 122 / 0.08), transparent 70%),
+    var(--surface-1);
+  box-shadow: 0 20px 60px rgb(14 38 47 / 0.08);
+}
+
+.quiz-panel {
+  scroll-margin-top: 96px;
+}
+
+.quiz-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.quiz-count {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.quiz-count strong {
+  color: var(--ink);
+}
+
+.quiz-progress {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 5px;
+  margin: 14px 0 32px;
+}
+
+.quiz-progress li {
+  height: 5px;
+  border-radius: 3px;
+  background: rgb(157 189 204 / 0.2);
+  transition:
+    background-color 240ms var(--ease-out),
+    box-shadow 240ms var(--ease-out);
+}
+
+.quiz-progress .done,
+.quiz-progress .current {
+  background: var(--mint);
+}
+
+.quiz-progress .current {
+  box-shadow: 0 0 12px var(--mint);
+}
+
+.quiz-step fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.quiz-step legend {
+  padding: 0;
+}
+
+.quiz-chip {
+  display: inline-flex;
+  padding: 4px 11px;
+  border: 1px solid rgb(34 192 138 / 0.4);
+  border-radius: var(--r-pill);
+  background: rgb(34 192 138 / 0.07);
+  color: var(--link);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+:root[data-theme="light"] .quiz-chip {
+  border-color: rgb(15 107 90 / 0.4);
+  background: rgb(15 107 90 / 0.06);
+}
+
+.quiz-question {
+  margin: 18px 0 28px;
+  font-size: clamp(1.4rem, 1.1rem + 1.2vw, 1.85rem);
+  font-weight: 600;
+  line-height: 1.22;
+  letter-spacing: -0.01em;
+}
+
+.quiz-answers {
+  display: grid;
+  gap: 12px;
+}
+
+/* An answer: a native radio button, hidden visually but kept focusable,
+   inside a card that shows its state. */
+.quiz-answer {
+  position: relative;
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 16px;
+  align-items: center;
+  padding: 16px 18px;
+  border: 1px solid var(--line-strong);
+  border-radius: 14px;
+  background: rgb(14 38 47 / 0.55);
+  cursor: pointer;
+  font-size: 1.02rem;
+  line-height: 1.4;
+  transition:
+    border-color 160ms var(--ease-out),
+    box-shadow 160ms var(--ease-out);
+}
+
+:root[data-theme="light"] .quiz-answer {
+  background: var(--surface-1);
+}
+
+.quiz-answer input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.quiz-answer:hover {
+  border-color: rgb(34 192 138 / 0.55);
+}
+
+.quiz-answer:has(input:focus-visible) {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.quiz-answer:has(input:checked) {
+  border-color: var(--mint);
+  background: rgb(34 192 138 / 0.09);
+  box-shadow: var(--glow-mint);
+}
+
+.quiz-letter {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 50%;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.quiz-answer:has(input:checked) .quiz-letter {
+  border-color: var(--mint);
+  background: var(--mint);
+  color: var(--bg);
+  font-weight: 700;
+}
+
+:root[data-theme="light"] .quiz-answer:has(input:checked) .quiz-letter {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--primary-text);
+}
+
+.quiz-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+/* Next stays on the right when Previous is not shown. */
+.quiz-nav .button {
+  margin-left: auto;
+}
+
+.quiz-nav .button:disabled {
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.quiz-previous,
+.quiz-restart {
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 500;
+}
+
+.quiz-previous:hover,
+.quiz-restart:hover {
+  color: var(--ink);
+}
+
+.quiz-keys {
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+/* No keyboard hint on a touch screen. */
+@media (hover: none) and (pointer: coarse) {
+  .quiz-keys {
+    display: none;
+  }
+}
+
+.quiz-keys kbd {
+  padding: 1px 6px;
+  border: 1px solid var(--line-strong);
+  border-radius: 5px;
+  color: var(--gold);
+  font: 500 0.72rem var(--font);
+}
+
+:root[data-theme="light"] .quiz-keys kbd {
+  color: var(--ink);
+}
+
+.quiz-privacy {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 36px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.quiz-privacy svg {
+  flex: none;
+}
+
+/* The result: its level's colour, then the gauge, the scale, the
+   priorities, the offers and the calls to action. */
+.level-low {
+  --level: var(--mint);
+}
+
+.level-mid {
+  --level: var(--gold);
+}
+
+.level-high {
+  --level: var(--danger);
+}
+
+/* Deep gold is for strokes only on sand: text in the level's colour stays ink. */
+:root[data-theme="light"] .level-mid {
+  --level-text: var(--ink);
+}
+
+.quiz-result {
+  text-align: center;
+}
+
+/* The headings focus moves to are not controls: no focus ring. */
+.quiz-question:focus,
+.quiz-result-title:focus {
+  outline: none;
+}
+
+.quiz-gauge {
+  position: relative;
+  width: 230px;
+  margin: 22px auto 0;
+}
+
+.quiz-gauge svg {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+
+.quiz-gauge path {
+  fill: none;
+  stroke-width: 9;
+  stroke-linecap: round;
+}
+
+.quiz-gauge-track {
+  stroke: rgb(157 189 204 / 0.2);
+}
+
+.quiz-gauge-score {
+  stroke: var(--level);
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - var(--ratio));
+}
+
+.quiz-gauge-dial {
+  position: relative;
+}
+
+.quiz-gauge-value {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  font-size: 3.4rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.quiz-gauge-value span:last-child {
+  color: var(--muted);
+  font-size: 1.6rem;
+  font-weight: 400;
+}
+
+/* The score's number, from a counter so CSS alone can count it up. */
+.quiz-gauge-number {
+  --n: var(--score);
+  counter-reset: n var(--n);
+}
+
+.quiz-gauge-number::before {
+  content: counter(n);
+}
+
+.quiz-gauge figcaption {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.quiz-level {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 18px;
+  padding: 8px 18px;
+  border: 1px solid color-mix(in srgb, var(--level) 55%, transparent);
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--level) 8%, transparent);
+  color: var(--level-text, var(--level));
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.quiz-level span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--level);
+  box-shadow: 0 0 10px var(--level);
+}
+
+.quiz-scale {
+  max-width: 360px;
+  margin: 20px auto 0;
+}
+
+.quiz-scale-track {
+  position: relative;
+  display: flex;
+  gap: 4px;
+}
+
+.quiz-scale-track span {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--level);
+}
+
+/* The score's marker, at its place on the scale. */
+.quiz-scale-track::after {
+  position: absolute;
+  top: -6px;
+  left: calc(var(--ratio) * 100%);
+  width: 3px;
+  height: 18px;
+  border-radius: 2px;
+  background: var(--ink);
+  content: "";
+  translate: -50%;
+}
+
+.quiz-scale ul {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.quiz-summary {
+  max-width: 460px;
+  margin: 18px auto 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.quiz-priorities-title {
+  margin-top: 30px;
+  text-align: left;
+}
+
+.quiz-none {
+  margin-top: 24px;
+}
+
+.quiz-priorities {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+  text-align: left;
+}
+
+.quiz-priorities li {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgb(14 38 47 / 0.6);
+}
+
+:root[data-theme="light"] .quiz-priorities li {
+  background: var(--surface-2);
+}
+
+.quiz-rank {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--gold);
+  color: var(--bg);
+  font-weight: 700;
+}
+
+.watch .quiz-rank {
+  background: rgb(232 211 168 / 0.25);
+  color: var(--gold);
+}
+
+:root[data-theme="light"] .quiz-rank {
+  background: var(--accent);
+  color: var(--primary-text);
+}
+
+:root[data-theme="light"] .watch .quiz-rank {
+  background: rgb(168 137 63 / 0.18);
+  color: var(--ink);
+}
+
+.quiz-priority-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.quiz-priorities p:last-child {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.quiz-tag {
+  padding: 1px 9px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+}
+
+.priority .quiz-tag {
+  border-color: rgb(232 211 168 / 0.5);
+  color: var(--gold);
+}
+
+:root[data-theme="light"] .priority .quiz-tag {
+  border-color: var(--accent);
+  color: var(--ink);
+}
+
+.quiz-offers {
+  display: grid;
+  gap: 10px;
+  margin-top: 24px;
+  text-align: left;
+}
+
+.quiz-offer {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 14px;
+  align-items: center;
+  padding: 16px 18px;
+  border: 1px solid rgb(34 192 138 / 0.45);
+  border-radius: 16px;
+  background: linear-gradient(120deg, rgb(34 192 138 / 0.12), rgb(14 38 47 / 0.6));
+  transition: box-shadow 220ms var(--ease-out);
+}
+
+:root[data-theme="light"] .quiz-offer {
+  border-color: rgb(22 146 122 / 0.45);
+  background: linear-gradient(120deg, rgb(22 146 122 / 0.1), var(--surface-1));
+}
+
+.quiz-offer:hover {
+  box-shadow: var(--glow-mint);
+}
+
+.quiz-offer-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgb(34 192 138 / 0.5);
+  border-radius: 12px;
+  color: var(--link);
+}
+
+.quiz-offer strong {
+  display: block;
+  font-weight: 600;
+}
+
+.quiz-offer strong + span {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.quiz-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  align-items: center;
+  margin-top: 24px;
+}
+
+/* The checklist, shown without scripting, and printable. */
+.quiz-checklist {
+  max-width: 760px;
+  margin-top: 40px;
+}
+
+.checklist-questions {
+  display: grid;
+  gap: 24px;
+  margin-top: 28px;
+  counter-reset: question;
+}
+
+.checklist-item {
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  break-inside: avoid;
+}
+
+.checklist-question {
+  margin-top: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.checklist-answers {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.checklist-answer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  align-items: baseline;
+}
+
+.checklist-box {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid currentcolor;
+  border-radius: 3px;
+  translate: 0 2px;
+}
+
+.checklist-levels {
+  width: 100%;
+  margin-top: 14px;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.checklist-levels th,
+.checklist-levels td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.checklist-levels td:first-child {
+  border-left: 3px solid var(--level);
+  white-space: nowrap;
+}
+
+/* With scripting, the quiz itself; the checklist is its fallback. */
+@media (scripting: enabled) {
+  .quiz-card {
+    display: block;
+  }
+
+  .quiz-checklist {
+    display: none;
+  }
+}
+
+@media (min-width: 48rem) {
+  .quiz-card {
+    padding: 44px 52px 26px;
+  }
+
+  .quiz-answer {
+    padding: 18px 20px;
+  }
+}
+
+@media (min-width: 64rem) {
+  .quiz-page {
+    padding-top: 40px;
+    padding-bottom: 96px;
+  }
+}
+
+/* Motion: the new step slides in, the gauge draws itself and its number
+   counts up. Nothing moves under reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .quiz-step,
+  .quiz-result {
+    animation: quiz-in 260ms var(--ease-out) both;
+  }
+
+  .quiz-gauge-score {
+    animation: quiz-gauge 900ms var(--ease-draw) both;
+  }
+
+  .quiz-gauge-number {
+    animation: quiz-count 900ms var(--ease-draw) both;
+  }
+}
+
+@keyframes quiz-in {
+  from {
+    opacity: 0;
+    translate: 12px 0;
+  }
+}
+
+@keyframes quiz-gauge {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+
+@keyframes quiz-count {
+  from {
+    --n: 0;
+  }
+}

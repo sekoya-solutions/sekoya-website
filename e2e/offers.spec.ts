@@ -105,12 +105,13 @@ test("each offer links to the contact page with its subject preselected", async 
       .getByRole("main")
       .getByRole("link")
       .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
-    // The quiz button appears with its page.
-    expect(hrefs).toEqual(
-      ["audit", "tech-lead", "sauvetage"].map(
+    // Then the quiz band's button.
+    expect(hrefs).toEqual([
+      ...["audit", "tech-lead", "sauvetage"].map(
         (subject) => `${pathOf("contact", locale)}?sujet=${subject}`,
       ),
-    );
+      pathOf("quiz", locale),
+    ]);
   }
 });
 
