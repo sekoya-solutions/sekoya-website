@@ -1,0 +1,88 @@
+{
+  "eyebrow": "Parcours",
+  "title": "[TODO: années d'expérience] de croissance, anneau après anneau.",
+  "lead": "Chaque anneau est un poste. Plus il est proche de l'écorce, plus il est récent. Un anneau fin correspond à une année.",
+  "initial": "sos-accessoire",
+  "labels": {
+    "rings": "Le parcours en anneaux : un anneau par poste, le plus ancien au centre",
+    "list": "Les postes, du plus récent au plus ancien",
+    "legend": "Les anneaux",
+    "selected": "Anneau sélectionné",
+    "ringNumber": "Anneau n° {n} depuis le centre",
+    "ringName": "{company}, {role}, {period}",
+    "period": "de {start} à {end}",
+    "since": "depuis {start}",
+    "scrollHint": "Faites défiler : les anneaux poussent",
+    "present": "aujourd'hui",
+    "readCaseStudy": "Lire l'étude de cas",
+    "years": { "one": "an", "other": "ans" },
+    "months": { "one": "mois", "other": "mois" }
+  },
+  "positions": [
+    {
+      "slug": "sekoya-solutions",
+      "company": "Sekoya Solutions",
+      "role": "Tech Lead freelance",
+      "summary": "audit, mission et sauvetage de projet",
+      "start": "[TODO: mois de création de Sekoya Solutions]",
+      "end": null,
+      "highlights": [
+        "Audit technique, mission Tech Lead / Lead Dev, sauvetage de projet.",
+        "Des projets publics : Sekoya Transit, Sekoya Parts et ce site."
+      ],
+      "stack": ["Next.js", "Astro", "Payload CMS", "PostgreSQL", "Unity", "C#"]
+    },
+    {
+      "slug": "sos-accessoire",
+      "company": "SOS Accessoire",
+      "role": "Lead Dev",
+      "summary": "e-commerce et système d'information",
+      "start": "2022-05",
+      "end": "2025-09",
+      "highlights": [
+        "Reconstruction de la boutique e-commerce en Next.js.",
+        "Intégration au SI : Sage X3, Salesforce, Speed WMS, PrestaShop, Blueway, Talend.",
+        "Mise en place d'AWS, de la CI/CD et de Docker."
+      ],
+      "stack": [
+        "Next.js",
+        "Sage X3",
+        "Salesforce",
+        "Speed WMS",
+        "PrestaShop",
+        "Blueway",
+        "Talend",
+        "AWS",
+        "Docker",
+        "CI/CD"
+      ],
+      "caseStudy": "sos-accessoire"
+    },
+    {
+      "slug": "culligan",
+      "company": "Culligan",
+      "role": "[TODO: rôle]",
+      "summary": "intégration, CRM sur mesure et application iPad",
+      "start": "[TODO: début]",
+      "end": "[TODO: fin]",
+      "highlights": [
+        "Intégration Salesforce / Talend et CRM sur mesure.",
+        "Application iPad.",
+        "Migration vers AWS."
+      ],
+      "stack": ["Salesforce", "Talend", "AWS"],
+      "caseStudy": "culligan"
+    },
+    {
+      "slug": "atos-bull",
+      "company": "Atos / Bull",
+      "role": "[TODO: rôle]",
+      "summary": "solutions de sécurité et plateformes IoT",
+      "start": "[TODO: début]",
+      "end": "[TODO: fin]",
+      "highlights": ["Développement Java / PHP.", "Solutions de sécurité.", "Plateformes IoT."],
+      "stack": ["Java", "PHP"],
+      "caseStudy": "atos-bull"
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "eyebrow": "Career",
+  "title": "[TODO: years of experience] of growth, ring after ring.",
+  "lead": "Each ring is a position. The closer it is to the bark, the more recent it is. A thin ring stands for one year.",
+  "initial": "sos-accessoire",
+  "labels": {
+    "rings": "The career as rings: one ring per position, the oldest at the centre",
+    "list": "The positions, the most recent first",
+    "legend": "The rings",
+    "selected": "Selected ring",
+    "ringNumber": "Ring {n} from the centre",
+    "ringName": "{company}, {role}, {period}",
+    "period": "from {start} to {end}",
+    "since": "since {start}",
+    "scrollHint": "Scroll to grow the rings",
+    "present": "today",
+    "readCaseStudy": "Read the case study",
+    "years": { "one": "year", "other": "years" },
+    "months": { "one": "month", "other": "months" }
+  },
+  "positions": [
+    {
+      "slug": "sekoya-solutions",
+      "company": "Sekoya Solutions",
+      "role": "Freelance Tech Lead",
+      "summary": "audits, engagements and project rescues",
+      "start": "[TODO: month Sekoya Solutions was founded]",
+      "end": null,
+      "highlights": [
+        "Technical audit, Tech Lead / Lead Dev engagement, project rescue.",
+        "Public projects: Sekoya Transit, Sekoya Parts and this site."
+      ],
+      "stack": ["Next.js", "Astro", "Payload CMS", "PostgreSQL", "Unity", "C#"]
+    },
+    {
+      "slug": "sos-accessoire",
+      "company": "SOS Accessoire",
+      "role": "Lead Dev",
+      "summary": "e-commerce and information system",
+      "start": "2022-05",
+      "end": "2025-09",
+      "highlights": [
+        "Rebuilt the e-commerce shop in Next.js.",
+        "Integrated with the information system: Sage X3, Salesforce, Speed WMS, PrestaShop, Blueway, Talend.",
+        "Set up AWS, CI/CD and Docker."
+      ],
+      "stack": [
+        "Next.js",
+        "Sage X3",
+        "Salesforce",
+        "Speed WMS",
+        "PrestaShop",
+        "Blueway",
+        "Talend",
+        "AWS",
+        "Docker",
+        "CI/CD"
+      ],
+      "caseStudy": "sos-accessoire"
+    },
+    {
+      "slug": "culligan",
+      "company": "Culligan",
+      "role": "[TODO: role]",
+      "summary": "integration, custom CRM and iPad app",
+      "start": "[TODO: start]",
+      "end": "[TODO: end]",
+      "highlights": [
+        "Salesforce / Talend integration and a custom CRM.",
+        "iPad app.",
+        "Migration to AWS."
+      ],
+      "stack": ["Salesforce", "Talend", "AWS"],
+      "caseStudy": "culligan"
+    },
+    {
+      "slug": "atos-bull",
+      "company": "Atos / Bull",
+      "role": "[TODO: role]",
+      "summary": "security solutions and IoT platforms",
+      "start": "[TODO: start]",
+      "end": "[TODO: end]",
+      "highlights": ["Java / PHP development.", "Security solutions.", "IoT platforms."],
+      "stack": ["Java", "PHP"],
+      "caseStudy": "atos-bull"
+    }
+  ]
+}

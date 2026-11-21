@@ -4,6 +4,7 @@
  * get French typography.
  */
 import { type CollectionEntry, getCollection, getEntry } from "astro:content";
+import { careerDifferences } from "../content/career-parity";
 import { caseStudyDifferences } from "../content/case-study-parity";
 import { projectDifferences } from "../content/project-parity";
 import { frenchTypographyDeep } from "../lib/french-typography";
@@ -134,6 +135,22 @@ export async function caseStudy(locale: Locale, slug: string): Promise<CaseStudy
   if (found === undefined)
     throw new Error(`src/content/case-studies/${locale}/${slug}.mdx is missing`);
   return found;
+}
+
+/**
+ * The career page's copy and positions in a language (#18). A position with
+ * a case study must agree with it (src/content/career-parity.ts), or the
+ * build fails.
+ */
+export async function careerContent(locale: Locale) {
+  const entry = await getEntry("career", locale);
+  if (entry === undefined) throw new Error(`src/content/career/${locale}.json is missing`);
+  const data: CollectionEntry<"career">["data"] = entry.data;
+  const differences = careerDifferences(data.positions, await caseStudiesAsWritten(locale));
+  if (differences.length > 0) {
+    throw new Error(`The ${locale} career and case studies differ: ${differences.join("; ")}`);
+  }
+  return locale === "fr" ? frenchTypographyDeep(data) : data;
 }
 
 /** The portfolio's copy and the labels of its cards and project pages in a language. */

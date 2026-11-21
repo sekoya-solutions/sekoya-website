@@ -8,6 +8,7 @@ import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 import { type ContactSubject, contactSubjects } from "./content/contact-subjects";
 import { type ProjectCategory, projectCategories } from "./content/project-categories";
+import { isPlaceholder } from "./lib/career";
 import { contactChannels } from "./lib/contact-channels";
 
 /** A text, which may hold `[TODO: …]` placeholders (ADR 0007). */
@@ -500,8 +501,135 @@ const legal = defineCollection({
   }),
 });
 
+/** A month, `YYYY-MM`, or a placeholder until it is provided (ADR 0007). */
+const month = z.union([z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/), placeholder]);
+
+/** A label with `{name}` slots, which the page fills (src/lib/career.ts). */
+const template = (...slots: string[]) =>
+  text.refine((value) => slots.every((slot) => value.includes(`{${slot}}`)), {
+    message: `A label with the slots ${slots.map((slot) => `{${slot}}`).join(", ")}`,
+  });
+
+/** The words for a number of years or months, by plural category. */
+const unitWords = z.object({ one: text, other: text });
+
+/**
+ * The career page (#18), one entry per language: its copy and labels, and
+ * the positions, the most recent first. A position's dates are months; the
+ * current position has no end, and only the most recent one can be current.
+ * A position with a case study must agree with it (src/content/career-parity.ts).
+ */
+const career = defineCollection({
+  loader: glob({ pattern: "*.json", base: "./src/content/career" }),
+  schema: z
+    .object({
+      eyebrow: text,
+      title: text,
+      lead: text,
+      /** The position the panel shows first: one of the positions' slugs. */
+      initial: anchor,
+      labels: z.object({
+        /** The rings' accessible name. */
+        rings: text,
+        /** The list's accessible name: the positions, the most recent first. */
+        list: text,
+        /** The legend's accessible name. */
+        legend: text,
+        /** The panel's eyebrow. */
+        selected: text,
+        /** The ring's place from the pith, in the panel. */
+        ringNumber: template("n"),
+        /** A band's accessible name: its company, role and period. */
+        ringName: template("company", "role", "period"),
+        /** A period, as read aloud. */
+        period: template("start", "end"),
+        /** The current position's period, as read aloud. */
+        since: template("start"),
+        /** Under the rings, while they draw themselves in: the page scrolls on. */
+        scrollHint: text,
+        /** The current position's end, as shown. */
+        present: text,
+        readCaseStudy: text,
+        years: unitWords,
+        months: unitWords,
+      }),
+      positions: z
+        .array(
+          z.object({
+            /** The position's id on the page. */
+            slug: anchor,
+            company: text,
+            role: text,
+            /** What the position was about, after the role in the panel. */
+            summary: text,
+            start: month,
+            /** `null` for the current position. */
+            end: month.nullable(),
+            highlights: z.array(text).min(1),
+            stack: z.array(text).min(1),
+            /** The position's case study, by its slug, linked from the panel. */
+            caseStudy: anchor.optional(),
+          }),
+        )
+        .min(1),
+    })
+    .superRefine((data, context) => {
+      const slugs = data.positions.map((position) => position.slug);
+      if (new Set(slugs).size !== slugs.length) {
+        context.addIssue({
+          code: "custom",
+          message: "Two positions have the same slug",
+          path: ["positions"],
+        });
+      }
+      if (!slugs.includes(data.initial)) {
+        context.addIssue({
+          code: "custom",
+          message: "`initial` is not a position's slug",
+          path: ["initial"],
+        });
+      }
+      data.positions.forEach((position, index) => {
+        if (position.end === null && index !== 0) {
+          context.addIssue({
+            code: "custom",
+            message: "Only the most recent position can be the current one",
+            path: ["positions", index, "end"],
+          });
+        }
+        // Months written YYYY-MM compare as text; a placeholder waits for its date.
+        if (
+          position.end !== null &&
+          !isPlaceholder(position.start) &&
+          !isPlaceholder(position.end) &&
+          position.end <= position.start
+        ) {
+          context.addIssue({
+            code: "custom",
+            message: "A position ends after it starts",
+            path: ["positions", index, "end"],
+          });
+        }
+        const older = data.positions[index + 1];
+        if (
+          older !== undefined &&
+          !isPlaceholder(position.start) &&
+          !isPlaceholder(older.start) &&
+          older.start > position.start
+        ) {
+          context.addIssue({
+            code: "custom",
+            message: "The positions are listed the most recent first",
+            path: ["positions", index + 1, "start"],
+          });
+        }
+      });
+    }),
+});
+
 export const collections = {
   about,
+  career,
   company,
   contact,
   legal,

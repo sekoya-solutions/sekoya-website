@@ -15,6 +15,7 @@ const pages = {
   home: { fr: "/", en: "/en" },
   offers: { fr: "/offres", en: "/en/services" },
   caseStudies: { fr: "/realisations", en: "/en/case-studies" },
+  career: { fr: "/parcours", en: "/en/career" },
   portfolio: { fr: "/portfolio", en: "/en/portfolio" },
   about: { fr: "/a-propos", en: "/en/about" },
   contact: { fr: "/contact", en: "/en/contact" },

@@ -45,6 +45,11 @@ export const en = {
     titleSuffix: "— Portfolio — Sekoya Solutions",
     externalLink: "external site",
   },
+  career: {
+    title: "Career — Sekoya Solutions",
+    description:
+      "My career as the rings of a tree trunk: one ring per position, from the oldest to the most recent.",
+  },
   about: {
     title: "About — Sekoya Solutions",
     description:

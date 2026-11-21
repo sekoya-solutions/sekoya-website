@@ -54,8 +54,8 @@ for (const locale of locales) {
     for (const [index, key] of builtPages.entries()) {
       await expect(links.nth(index)).toHaveAttribute("href", pathOf(key, locale));
     }
-    // The career page is not built yet, so it has no link.
-    await expect(nav.getByRole("link", { name: t.nav.career })).toHaveCount(0);
+    // Every main page is built, now that the career page is too.
+    expect(builtPages).toEqual([...navigationPages]);
     const contact = page.getByRole("banner").getByRole("link", { name: t.contact });
     await expect(contact).toBeVisible();
     await expect(contact).toHaveAttribute("href", pathOf("contact", locale));

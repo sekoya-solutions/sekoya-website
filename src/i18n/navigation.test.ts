@@ -14,17 +14,17 @@ describe("the header's navigation", () => {
     }
   });
 
+  it("links every main page, now that they all exist", () => {
+    expect(navigationLinks({ key: "home", locale: "fr" }).map((link) => link.page)).toEqual([
+      ...navigationPages,
+    ]);
+  });
+
   it("leaves out a page that is not built yet", () => {
-    // The career page comes with its own issue: until it is in the route
-    // map, it has no link.
-    expect(isRouteKey("career")).toBe(false);
-    expect(navigationLinks({ key: "home", locale: "fr" }).map((link) => link.page)).not.toContain(
-      "career",
-    );
     const withoutAbout = (page: string): page is RouteKey => page !== "about" && isRouteKey(page);
     expect(
       navigationLinks({ key: "home", locale: "fr" }, withoutAbout).map((link) => link.page),
-    ).toEqual(["offers", "caseStudies", "portfolio"]);
+    ).toEqual(["offers", "caseStudies", "career", "portfolio"]);
   });
 
   it("marks the page shown, and nothing on a page outside the navigation", () => {

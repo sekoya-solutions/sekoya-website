@@ -1,0 +1,409 @@
+---
+/**
+ * The career as a trunk's cross-section (#18): one band per position, the
+ * oldest at the pith, with a hairline per whole year, the boundaries in gold,
+ * a few cracks, the bark and each past band's name on its top arc, which
+ * appears as its band draws itself in. The current position is the thin band
+ * under the bark, its edge dashed. The bands come in the Tab order from the
+ * pith outwards, as the career goes.
+ *
+ * Each band is a button (`role="button"`, Tab, Enter, Space) whose accessible
+ * name is its company, role and period; everything else is decoration, hidden
+ * from screen readers. The tooltips are positioned by the page's script
+ * (career-rings.ts). Every state is drawn by CSS (Career.astro): a band is
+ * `hot` while pointed at or focused, `pinned` while the panel shows it, and
+ * draws itself in from `--career-p`, the scroll progress.
+ */
+import {
+  barkPhase,
+  barkRadius,
+  barkWidth,
+  centre,
+  discRadius,
+  ringPath,
+} from "../../lib/rings-geometry";
+import PlaceholderText from "../content/PlaceholderText.astro";
+import type { PositionView } from "./career-view";
+
+interface Props {
+  positions: readonly PositionView[];
+  initial: string;
+  label: string;
+}
+
+const { positions, initial, label } = Astro.props;
+/** The cracks, as angles clockwise from 12 o'clock, from radius 40 to 360. */
+const cracks = [24, 152, 238, 318].map((degrees) => {
+  const angle = (degrees * Math.PI) / 180;
+  const at = (radius: number) =>
+    `${Math.round((centre + radius * Math.sin(angle)) * 10) / 10} ${Math.round((centre - radius * Math.cos(angle)) * 10) / 10}`;
+  return `M${at(40)}L${at(360)}`;
+});
+const oldestFirst = [...positions].reverse();
+const labelled = positions.filter((position) => !position.current);
+const current = positions.find((position) => position.current);
+const arc = (radius: number) =>
+  `M${centre - radius} ${centre}A${radius} ${radius} 0 0 1 ${centre + radius} ${centre}`;
+---
+
+<div class="rings-figure">
+  {/* biome-ignore lint/a11y/useSemanticElements: an SVG has no fieldset; role="group" names the bands together */}
+  <svg viewBox="0 0 800 800" class="rings" data-rings role="group" aria-label={label}>
+    <defs>
+      <radialGradient id="rings-disc">
+        <stop offset="0" class="rings-disc-in"></stop>
+        <stop offset="1" class="rings-disc-out"></stop>
+      </radialGradient>
+      <radialGradient id="rings-pith">
+        <stop offset="0" class="rings-pith-in"></stop>
+        <stop offset="1" class="rings-pith-out"></stop>
+      </radialGradient>
+      <filter id="rings-glow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="5" result="blur"></feGaussianBlur>
+        <feMerge>
+          <feMergeNode in="blur"></feMergeNode>
+          <feMergeNode in="SourceGraphic"></feMergeNode>
+        </feMerge>
+      </filter>
+      {labelled.map((position) => <path id={`rings-arc-${position.slug}`} d={arc(position.band.middle + 1)} />)}
+    </defs>
+
+    <path d={ringPath(discRadius, barkPhase)} fill="url(#rings-disc)" aria-hidden="true"></path>
+
+    {
+      oldestFirst.map((position) => (
+        // biome-ignore lint/a11y/useSemanticElements: SVG has no button element; each band is a shaped button
+        <path
+          class:list={["band", { current: position.current, pinned: position.slug === initial }]}
+          d={position.paths.surface}
+          fill-rule="evenodd"
+          role="button"
+          tabindex="0"
+          aria-pressed={position.slug === initial ? "true" : "false"}
+          aria-label={position.name}
+          aria-controls="career-panel"
+          data-select={position.slug}
+          data-ring={position.slug}
+          data-r={position.band.middle}
+          data-start={position.draw.start}
+          data-end={position.draw.end}
+          data-placeholder={position.band.placeholder ? "" : undefined}
+        />
+      ))
+    }
+
+    <g class="rings-lines" aria-hidden="true">
+      {
+        positions.map((position) => (
+          <g
+            class:list={["ring-lines", { current: position.current, pinned: position.slug === initial }]}
+            data-ring={position.slug}
+          >
+            {position.paths.hairlines.map((d) => (
+              <path class="hairline" d={d} pathLength="1" />
+            ))}
+            <path class="ring-edge ring-inner" d={position.paths.inner} pathLength="1" />
+            <path class="ring-edge ring-outer" d={position.paths.outer} pathLength="1" />
+          </g>
+        ))
+      }
+      {cracks.map((d) => <path class="crack" d={d} />)}
+    </g>
+
+    <g class="rings-late" aria-hidden="true">
+      {current !== undefined && <path class="current-edge" d={current.paths.middle} />}
+      <path class="bark" d={ringPath(barkRadius, barkPhase)} stroke-width={barkWidth}></path>
+    </g>
+
+    <g class="rings-labels" aria-hidden="true">
+      {
+        labelled.map((position) => (
+          <text
+            class:list={["ring-label", { pinned: position.slug === initial }]}
+            data-ring={position.slug}
+            dominant-baseline="middle"
+          >
+            <textPath href={`#rings-arc-${position.slug}`} startOffset="50%" text-anchor="middle">
+              {position.company}
+            </textPath>
+          </text>
+        ))
+      }
+    </g>
+
+    <g aria-hidden="true">
+      <circle cx={centre} cy={centre} r="30" fill="url(#rings-pith)"></circle>
+      <circle class="pith-heart" cx={centre} cy={centre} r="12"></circle>
+    </g>
+  </svg>
+
+  {
+    positions.map((position) => (
+      <div class="tip" data-tip={position.slug} aria-hidden="true" hidden>
+        <b>{position.company}</b>
+        <span>
+          <PlaceholderText text={position.role} /> ·{" "}
+          <span class="tip-period">
+            <PlaceholderText text={position.period} />
+          </span>
+        </span>
+        <span>{position.stack.slice(0, 3).join(" · ")}</span>
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .rings-figure {
+    position: relative;
+  }
+
+  .rings {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .rings-disc-in {
+    stop-color: var(--wood-disc-in);
+  }
+
+  .rings-disc-out {
+    stop-color: var(--wood-disc-out);
+  }
+
+  .rings-pith-in {
+    stop-color: var(--wood-pith-in);
+  }
+
+  .rings-pith-out {
+    stop-color: var(--wood-pith-out);
+  }
+
+  .pith-heart {
+    fill: var(--wood-disc-out);
+    fill-opacity: 0.35;
+  }
+
+  /* Each band's progress, from 0 to 1, as the page scrolls (Career.astro). */
+  [data-ring] {
+    --ring-k: clamp(0, (var(--career-p) - var(--ring-start, 0)) / var(--ring-length, 0.35), 1);
+  }
+
+  .band {
+    fill: color-mix(in oklab, var(--wood-old), var(--wood-new) calc(var(--ring-shade, 1) * 100%));
+    opacity: var(--ring-k);
+    cursor: pointer;
+    transition: fill 160ms var(--ease-out);
+  }
+
+  .band.current {
+    fill: var(--wood-current);
+  }
+
+  .band:is(.hot, .pinned) {
+    fill: color-mix(
+      in oklab,
+      color-mix(in oklab, var(--wood-old), var(--wood-new) calc(var(--ring-shade, 1) * 100%)),
+      var(--wood-hot) 14%
+    );
+  }
+
+  .band.current:is(.hot, .pinned) {
+    fill: color-mix(in oklab, var(--wood-current), var(--wood-hot) 14%);
+  }
+
+  /* A browser outlines a focused SVG shape with a rectangle round its
+     bounding box, even after a click: the band draws its own focus ring
+     instead, its two edges in the focus colour, on top of the hot style it
+     gets while focused, for keyboard focus. */
+  .band {
+    outline: none;
+  }
+
+  .band:focus-visible {
+    stroke: var(--focus);
+    stroke-width: 2.5;
+  }
+
+  /* A band not drawn in yet cannot be pointed at (the script also takes it
+     out of the Tab order). */
+  .band[data-undrawn] {
+    pointer-events: none;
+  }
+
+  .rings-lines,
+  .rings-late,
+  .rings-labels {
+    pointer-events: none;
+  }
+
+  .ring-lines path {
+    fill: none;
+    stroke-dasharray: 1;
+    stroke-dashoffset: calc(1 - var(--ring-k));
+    transition:
+      stroke 160ms var(--ease-out),
+      stroke-opacity 160ms var(--ease-out);
+  }
+
+  .hairline {
+    stroke: var(--wood-line);
+    stroke-opacity: var(--wood-line-opacity);
+    stroke-width: 1.2;
+  }
+
+  .ring-outer {
+    stroke: var(--wood-edge);
+    stroke-opacity: 0.75;
+    stroke-width: 2.2;
+  }
+
+  /* A band's inner edge is its neighbour's outer edge: drawn only to light
+     the band up. */
+  .ring-inner {
+    stroke: var(--wood-hot);
+    stroke-opacity: 0;
+    stroke-width: 2.4;
+  }
+
+  .ring-lines:is(.hot, .pinned) .hairline {
+    stroke-opacity: calc(var(--wood-line-opacity) * 1.9);
+  }
+
+  .ring-lines:is(.hot, .pinned) .ring-outer {
+    stroke: var(--wood-hot);
+    stroke-opacity: 1;
+    stroke-width: 3;
+    filter: url(#rings-glow);
+  }
+
+  .ring-lines:is(.hot, .pinned) .ring-inner {
+    stroke-opacity: 0.9;
+    filter: url(#rings-glow);
+  }
+
+  .crack {
+    stroke: var(--wood-edge);
+    stroke-opacity: 0.07;
+    stroke-width: 1.4;
+  }
+
+  /* The bark and the current band's dashed edge appear last. */
+  .rings-late {
+    opacity: clamp(0, (var(--career-p) - var(--ring-late, 0.92)) / (1 - var(--ring-late, 0.92)), 1);
+  }
+
+  .current-edge {
+    fill: none;
+    stroke: var(--wood-hot);
+    stroke-opacity: 0.9;
+    stroke-width: 2.4;
+    stroke-dasharray: 3 7;
+    stroke-linecap: round;
+  }
+
+  .bark {
+    fill: none;
+    stroke: var(--wood-bark);
+    stroke-opacity: var(--wood-bark-opacity);
+  }
+
+  /* A band's name appears as the band draws itself in. */
+  .ring-label {
+    opacity: var(--ring-k);
+    fill: var(--wood-label);
+    font-family: var(--font);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 3.2px;
+    text-transform: uppercase;
+    transition: fill 160ms var(--ease-out);
+  }
+
+  .ring-label:is(.hot, .pinned) {
+    fill: var(--wood-label-hot);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .current-edge {
+      animation: rings-pulse 4s ease-in-out infinite alternate;
+    }
+  }
+
+  @keyframes rings-pulse {
+    from {
+      stroke-opacity: 0.55;
+    }
+  }
+
+  .tip {
+    position: absolute;
+    z-index: 3;
+    width: max-content;
+    max-width: 260px;
+    padding: 12px 15px;
+    border: 1px solid rgb(34 192 138 / 0.55);
+    border-radius: var(--r-md);
+    background: rgb(10 29 36 / 0.94);
+    box-shadow: var(--glow-mint);
+    font-size: 0.8rem;
+    line-height: 1.45;
+    pointer-events: none;
+    transform: translate(-50%, calc(-100% - 16px));
+  }
+
+  .tip:not([hidden]) {
+    display: grid;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .tip:not([hidden]) {
+      animation: tip-in 160ms var(--ease-out);
+    }
+  }
+
+  @keyframes tip-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  .tip::after {
+    position: absolute;
+    bottom: -8px;
+    left: calc(50% - 7px);
+    width: 14px;
+    height: 14px;
+    border-right: inherit;
+    border-bottom: inherit;
+    background: inherit;
+    content: "";
+    transform: rotate(45deg);
+  }
+
+  .tip b {
+    color: var(--ink);
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .tip span {
+    color: var(--muted);
+  }
+
+  .tip .tip-period {
+    color: var(--gold);
+  }
+
+  :global(:root[data-theme="light"]) .tip {
+    border-color: rgb(22 146 122 / 0.55);
+    background: rgb(255 255 255 / 0.97);
+  }
+
+  /* Deep gold is for strokes only on sand: the text stays ink. */
+  :global(:root[data-theme="light"]) .tip .tip-period {
+    color: var(--ink);
+  }
+</style>
