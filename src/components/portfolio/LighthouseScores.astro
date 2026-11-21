@@ -2,17 +2,24 @@
 /**
  * A project's Lighthouse scores (ADR 0007): each score in a ring with what
  * it measures, under a label with the measurement date, and its source on a
- * project's page. For this site (`this-site`), its own scores, which the
- * measurement file brings (#21): until then, the label says the measurement
- * is pending, and no number is shown.
+ * project's page. For this site (`this-site`), its own figure in each
+ * category, from src/data/lighthouse.json, whose source is that file in the
+ * repository: with no file, the label says the measurement is pending, and
+ * no number is shown.
  */
+import { translations } from "../../i18n";
+import { pageLocale } from "../../i18n/config";
 import type { Project } from "../../i18n/content";
 import { numericDate } from "../../lib/dates";
+import { categories, measurementSource } from "../../lib/lighthouse";
+import { siteMeasurement } from "../../lib/site-measurement";
 import PlaceholderText from "../content/PlaceholderText.astro";
 import Icon from "../ui/Icon.astro";
 
 interface Props {
   lighthouse: NonNullable<Project["data"]["lighthouse"]>;
+  /** The project's repository, where this site's measurement file is. */
+  repo: string;
   labels: {
     lighthouse: string;
     lighthouseSite: string;
@@ -23,12 +30,28 @@ interface Props {
   externalHint?: string;
 }
 
-const { lighthouse, labels, externalHint } = Astro.props;
+const { lighthouse: written, repo, labels, externalHint } = Astro.props;
+const names = translations(pageLocale(Astro.currentLocale)).layout.scores.categories;
+const measured = siteMeasurement;
+/** The scores to show, or `undefined` while this site's measurement is pending. */
+const lighthouse =
+  written !== "this-site"
+    ? written
+    : measured === undefined
+      ? undefined
+      : {
+          measuredOn: measured.measuredOn,
+          source: measurementSource(repo),
+          scores: categories.map((category) => ({
+            label: names[category],
+            score: measured.summary[category],
+          })),
+        };
 ---
 
 <div class="scores">
   {
-    lighthouse === "this-site" ? (
+    lighthouse === undefined ? (
       <p class="scores-label">
         <PlaceholderText text={labels.lighthouseSite} /> ·{" "}
         <PlaceholderText text={labels.lighthousePending} />

@@ -56,10 +56,10 @@ test("every page's footer links to the quiz and the legal notice", async ({ page
   for (const locale of locales) {
     for (const key of ["home", "contact", "legal", "quiz"] as const) {
       await page.goto(pathOf(key, locale));
-      const links = page.getByRole("contentinfo").getByRole("link");
-      await expect(links).toHaveCount(2);
-      await expect(links.nth(0)).toHaveAttribute("href", pathOf("quiz", locale));
-      await expect(links.nth(1)).toHaveAttribute("href", pathOf("legal", locale));
+      const footer = page.getByRole("contentinfo");
+      for (const target of ["quiz", "legal"] as const) {
+        await expect(footer.locator(`a[href="${pathOf(target, locale)}"]`)).toHaveCount(1);
+      }
     }
   }
 });

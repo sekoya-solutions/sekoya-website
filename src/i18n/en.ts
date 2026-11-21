@@ -21,6 +21,26 @@ export const en = {
       about: "About",
     },
     contact: "Contact me",
+    scores: {
+      title: "This site, measured",
+      source: "Lighthouse mobile",
+      pending: "measurement pending",
+      categories: {
+        performance: "Perf.",
+        accessibility: "Access.",
+        bestPractices: "Practices",
+        seo: "SEO",
+      },
+      categoryNames: {
+        performance: "Performance",
+        accessibility: "Accessibility",
+        bestPractices: "Best practices",
+        seo: "SEO",
+      },
+      builtWith: "Built with",
+      sourceCode: "Source code",
+      externalLink: "external site",
+    },
   },
   home: {
     title: "Sekoya Solutions",

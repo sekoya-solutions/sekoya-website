@@ -1,13 +1,10 @@
-import { fileURLToPath } from "node:url";
 import { defineConfig, devices } from "@playwright/test";
 import { formTestPort } from "./scripts/form-test.ts";
+import { browsersPath } from "./scripts/playwright-browsers.ts";
 
-/**
- * Playwright's browsers live in the git-ignored .tools folder (ADR 0006),
- * installed there by `npm run e2e:install`. The test workers, which launch
- * the browsers, inherit this variable from the runner.
- */
-export const browsersPath = fileURLToPath(new URL("./.tools/ms-playwright", import.meta.url));
+// Playwright's browsers, in .tools/ms-playwright (scripts/playwright-browsers.ts).
+// The test workers, which launch the browsers, inherit this variable from
+// the runner.
 process.env.PLAYWRIGHT_BROWSERS_PATH = browsersPath;
 
 const port = 4321;

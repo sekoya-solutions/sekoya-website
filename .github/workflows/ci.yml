@@ -168,3 +168,30 @@ jobs:
           name: playwright-traces
           path: test-results/
           retention-days: 7
+
+  # The Lighthouse gate (ADR 0006): the same measurement as
+  # `npm run lighthouse`, on the same pages, which fails when a page's median
+  # is below 95 in any category on mobile, and writes nothing.
+  lighthouse:
+    name: Lighthouse
+    needs: changes
+    if: ${{ !cancelled() && needs.changes.outputs.docs_only != 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - run: npm run e2e:install -- --with-deps
+      # The font's size-adjusted fallback, as in the end-to-end job: without
+      # Roboto, the layout shift Lighthouse measures is an unadjusted one.
+      - name: Install Roboto
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends fonts-roboto
+      - run: npm run lighthouse -- --check

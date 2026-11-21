@@ -1,7 +1,7 @@
 # ADR 0007: Measured figures and placeholders
 
 - Status: Accepted
-- Date: 2026-11-20
+- Date: 2026-11-20, amended 2026-11-21 (the pages measured and the site's figure)
 - Deciders: Owner
 
 ## Context
@@ -27,6 +27,7 @@ The site proves its claims rather than stating them. Two rules follow:
 
 Chosen: **option 2 for the figures, and the build guard.**
 
+- The main templates are one French page per template (the English pages share them), and the site's figure in each category is the lowest of the pages' medians (owner decision, 2026-11-21), so it never shows more than the weakest page scores.
 - If the file is missing, the footer says the measurement is pending; it never shows a number.
 - The list of open placeholders is generated from the repository (a search for `[TODO`), not kept by hand.
 

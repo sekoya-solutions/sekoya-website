@@ -115,7 +115,7 @@ const statDates = [...new Set(data.stats.map(({ measuredOn }) => numericDate(mea
       )
     }
 
-    {data.lighthouse !== undefined && <LighthouseScores lighthouse={data.lighthouse} labels={labels} />}
+    {data.lighthouse !== undefined && <LighthouseScores lighthouse={data.lighthouse} repo={data.repo} labels={labels} />}
 
     <ul class="flex flex-wrap gap-1.5">
       {
