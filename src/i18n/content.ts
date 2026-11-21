@@ -18,7 +18,8 @@ type PageCollection =
   | "portfolioPage"
   | "about"
   | "contact"
-  | "legal";
+  | "legal"
+  | "quiz";
 
 /** A page's copy in a language; a missing entry fails the build. */
 async function pageContent<C extends PageCollection>(
@@ -54,6 +55,11 @@ export async function companyFacts() {
   const entry = await getEntry("company", "company");
   if (entry === undefined) throw new Error("src/content/company/company.json is missing");
   return entry.data;
+}
+
+/** The quiz's copy, questions and levels in a language. */
+export function quizContent(locale: Locale) {
+  return pageContent("quiz", locale);
 }
 
 /** The offers page's copy in a language. */

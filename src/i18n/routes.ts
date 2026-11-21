@@ -20,6 +20,7 @@ const pages = {
   about: { fr: "/a-propos", en: "/en/about" },
   contact: { fr: "/contact", en: "/en/contact" },
   legal: { fr: "/mentions-legales", en: "/en/legal" },
+  quiz: { fr: "/quiz", en: "/en/quiz" },
 } as const satisfies Record<string, Record<Locale, string>>;
 
 /** A case study's page: `caseStudy/<slug>`, under the case studies' path. */

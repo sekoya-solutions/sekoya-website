@@ -69,7 +69,7 @@ describe("alternates", () => {
 describe("isRouteKey", () => {
   it("accepts a page of the map and rejects one that does not exist yet", () => {
     expect(isRouteKey("home")).toBe(true);
-    expect(isRouteKey("quiz")).toBe(false);
+    expect(isRouteKey("testimonials")).toBe(false);
     expect(isRouteKey("toString")).toBe(false);
   });
 });
@@ -84,7 +84,7 @@ describe("linkHref", () => {
   });
 
   it("gives no address to a page that does not exist yet", () => {
-    expect(linkHref({ page: "quiz" }, "fr")).toBeUndefined();
+    expect(linkHref({ page: "testimonials" }, "fr")).toBeUndefined();
   });
 });
 

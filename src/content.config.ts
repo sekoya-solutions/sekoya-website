@@ -10,6 +10,7 @@ import { type ContactSubject, contactSubjects } from "./content/contact-subjects
 import { type ProjectCategory, projectCategories } from "./content/project-categories";
 import { isPlaceholder } from "./lib/career";
 import { contactChannels } from "./lib/contact-channels";
+import { levelsCover, maxScore } from "./lib/quiz";
 
 /** A text, which may hold `[TODO: …]` placeholders (ADR 0007). */
 const text = z.string().trim().min(1);
@@ -627,9 +628,111 @@ const career = defineCollection({
     }),
 });
 
+/** An answer's points: 0, 1 or 2, 2 being the most exposed (src/lib/quiz.ts). */
+const points = z.union([z.literal(0), z.literal(1), z.literal(2)]);
+
+/**
+ * The self-assessment quiz (#19), one entry per language: its copy and
+ * labels, the questions in the order they are asked, each with one answer
+ * per number of points and the advice for 1 and 2 points, and the levels,
+ * which cover every score once. A level's offers are offers' ids
+ * (src/content/offers), shown with their title and duration; its call to
+ * action preselects the contact page's subject.
+ */
+const quiz = defineCollection({
+  loader: glob({ pattern: "*.json", base: "./src/content/quiz" }),
+  schema: z
+    .object({
+      eyebrow: text,
+      title: text,
+      lead: text,
+      labels: z.object({
+        step: template("n", "total"),
+        previous: text,
+        next: text,
+        finish: text,
+        keyboard: template("keys", "enter"),
+        enterKey: text,
+        privacy: text,
+        result: z.object({
+          eyebrow: text,
+          scoreLabel: text,
+          /** The score, as read aloud. */
+          outOf: template("score", "max"),
+          priorities: z.object({ one: text, other: template("n") }),
+          priority: text,
+          watch: text,
+          /** In place of the priorities, when every answer is worth 0. */
+          none: text,
+          offer: text,
+          restart: text,
+        }),
+        /** The checklist shown without scripting. */
+        checklist: z.object({
+          title: text,
+          text,
+          points: z.object({ one: template("n"), other: template("n") }),
+          levels: text,
+          range: text,
+          level: text,
+          rangeValue: template("min", "max"),
+        }),
+      }),
+      questions: z
+        .array(
+          z.object({
+            id: anchor,
+            category: text,
+            question: text,
+            answers: z
+              .array(z.object({ label: text, score: points }))
+              .length(3)
+              .refine((answers) => new Set(answers.map(({ score }) => score)).size === 3, {
+                message: "Each question has one answer worth 0, 1 and 2 points",
+              }),
+            advice: z.object({ "1": text, "2": text }),
+          }),
+        )
+        .length(10),
+      levels: z
+        .array(
+          z.object({
+            id: z.enum(["low", "mid", "high"]),
+            min: z.number().int().nonnegative(),
+            max: z.number().int().nonnegative(),
+            /** The level's name on the score's scale, after its lowest score. */
+            short: text,
+            title: text,
+            summary: text,
+            offers: z.array(z.object({ offer: anchor, text })).min(1),
+            action,
+          }),
+        )
+        .length(3),
+    })
+    .superRefine((data, context) => {
+      const ids = data.questions.map(({ id }) => id);
+      if (new Set(ids).size !== ids.length) {
+        context.addIssue({
+          code: "custom",
+          message: "Two questions have the same id",
+          path: ["questions"],
+        });
+      }
+      if (!levelsCover(data.levels, maxScore(data.questions.length))) {
+        context.addIssue({
+          code: "custom",
+          message: "The levels cover every score from 0 to the maximum once, in order",
+          path: ["levels"],
+        });
+      }
+    }),
+});
+
 export const collections = {
   about,
   career,
+  quiz,
   company,
   contact,
   legal,

@@ -1,10 +1,13 @@
 {
   "extends": "astro/tsconfigs/strict",
   "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist"],
+  "exclude": ["dist", "dist-form"],
   "compilerOptions": {
     // The scripts run directly in Node.js, which only strips type syntax.
     "erasableSyntaxOnly": true,
-    "types": ["node"]
+    "types": ["node"],
+    // The quiz island (ADR 0005) is written in Preact.
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact"
   }
 }

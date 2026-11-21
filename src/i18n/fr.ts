@@ -10,6 +10,8 @@ export const fr = frenchTypographyTree({
     skipLink: "Aller au contenu",
     lightTheme: "Thème clair",
     legalNotice: "Mentions légales",
+    /** The footer's link to the quiz. */
+    quiz: "Auto-diagnostic",
     /** The header's navigation landmark, read by screen readers only. */
     navigation: "Navigation principale",
     /** The button that opens the navigation below 1280 px, read by screen readers only. */
@@ -73,6 +75,11 @@ export const fr = frenchTypographyTree({
       "Parlons de votre projet : par email, sur Malt, LinkedIn ou GitHub. Je réponds personnellement.",
     /** For a link to another site, read by screen readers only. */
     externalLink: "site externe",
+  },
+  quiz: {
+    title: "Votre projet est-il bloqué ? — Sekoya Solutions",
+    description:
+      "Un auto-diagnostic en 10 questions : un score de blocage et vos trois priorités. Tout se calcule dans votre navigateur.",
   },
   legal: {
     title: "Mentions légales — Sekoya Solutions",

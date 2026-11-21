@@ -1,0 +1,242 @@
+{
+  "eyebrow": "Self-assessment",
+  "title": "“Is your project stuck?”",
+  "lead": "10 questions, 3 answers each, 2 minutes. The score adds 0, 1 or 2 points per question: the higher it is, the more exposed the project.",
+  "labels": {
+    "step": "Question {n} / {total}",
+    "previous": "Previous",
+    "next": "Next",
+    "finish": "See my result",
+    "keyboard": "With the keyboard: {keys} to answer, {enter} to continue.",
+    "enterKey": "Enter",
+    "privacy": "The score is computed in your browser. Nothing is sent or stored.",
+    "result": {
+      "eyebrow": "Your result",
+      "scoreLabel": "Blocking score",
+      "outOf": "{score} out of {max}",
+      "priorities": { "one": "Your priority", "other": "Your {n} priorities" },
+      "priority": "priority",
+      "watch": "to watch",
+      "none": "Nothing to watch: every answer is green.",
+      "offer": "The matching offer",
+      "restart": "Take the test again"
+    },
+    "checklist": {
+      "title": "The test, on paper",
+      "text": "Tick one answer per question, add up the points, then read your level in the table.",
+      "points": { "one": "{n} point", "other": "{n} points" },
+      "levels": "Reading your score",
+      "range": "Score",
+      "level": "Level",
+      "rangeValue": "{min} to {max}"
+    }
+  },
+  "questions": [
+    {
+      "id": "tests",
+      "category": "Automated tests",
+      "question": "How much of your critical code is covered by automated tests?",
+      "answers": [
+        { "label": "Most of it, and they run on every change", "score": 0 },
+        { "label": "A few tests, rarely run", "score": 1 },
+        { "label": "Very few, or none", "score": 2 }
+      ],
+      "advice": {
+        "2": "Start with tests on the critical paths (payment, sign-in, business flows) rather than aiming for full coverage. A minimal safety net changes everything when you need to change the code.",
+        "1": "Run your tests on every commit and deal with the flaky ones: a test nobody runs protects nothing."
+      }
+    },
+    {
+      "id": "ci",
+      "category": "CI/CD",
+      "question": "What happens when a developer pushes code?",
+      "answers": [
+        { "label": "Build, tests and quality checks run automatically", "score": 0 },
+        { "label": "An automatic build, but the checks stay manual", "score": 1 },
+        { "label": "Nothing automatic: we check by hand", "score": 2 }
+      ],
+      "advice": {
+        "2": "First automate build, tests and lint on every pull request. A day of setup saves weeks of regressions.",
+        "1": "Add the quality checks (tests, lint, dependency analysis) to the pipeline so nobody has to think about them."
+      }
+    },
+    {
+      "id": "deploy",
+      "category": "Deployment frequency",
+      "question": "How often do you release to production?",
+      "answers": [
+        { "label": "Several times a week, without stress", "score": 0 },
+        { "label": "Once a month or less, as a planned event", "score": 1 },
+        { "label": "Rarely, and every release is a risk", "score": 2 }
+      ],
+      "advice": {
+        "2": "Shrink the size of releases and automate deployment with a one-click rollback. The fear of deploying comes from the size of the changes.",
+        "1": "Aim for smaller, more frequent deployments: every release should become routine."
+      }
+    },
+    {
+      "id": "onboarding",
+      "category": "Onboarding",
+      "question": "How long does it take a new developer to ship their first change?",
+      "answers": [
+        { "label": "A few days", "score": 0 },
+        { "label": "Two to four weeks", "score": 1 },
+        { "label": "More than a month, or “it depends on who helps”", "score": 2 }
+      ],
+      "advice": {
+        "2": "A README that gets the project running in under an hour, a reproducible environment (Docker) and a guided first ticket shorten onboarding.",
+        "1": "Document “day one”: setup, the architecture on one page, conventions. The gain repeats with every new arrival."
+      }
+    },
+    {
+      "id": "debt",
+      "category": "Technical debt",
+      "question": "How do you live with technical debt?",
+      "answers": [
+        { "label": "It is identified, prioritised and dealt with regularly", "score": 0 },
+        { "label": "We know it, but never have the time", "score": 1 },
+        { "label": "It slows down almost every new feature", "score": 2 }
+      ],
+      "advice": {
+        "2": "Make the debt visible (a prioritised list) and set aside a fixed share of each cycle to pay it back, starting with what slows you down most.",
+        "1": "Put the debt in the backlog with its estimated cost: what has a figure ends up being weighed."
+      }
+    },
+    {
+      "id": "docs",
+      "category": "Documentation",
+      "question": "Where does the project's knowledge live?",
+      "answers": [
+        { "label": "Documented and up to date (README, architecture decisions)", "score": 0 },
+        { "label": "Partly, out of date in places", "score": 1 },
+        { "label": "In a few people's heads", "score": 2 }
+      ],
+      "advice": {
+        "2": "Write down the architecture decisions (ADRs) and an overall diagram. One up-to-date page beats fifty outdated ones.",
+        "1": "Bring the documentation closer to the code and update it in the same pull request as the change."
+      }
+    },
+    {
+      "id": "velocity",
+      "category": "Team velocity",
+      "question": "Are your estimates and deliveries predictable?",
+      "answers": [
+        { "label": "Yes, we usually keep our commitments", "score": 0 },
+        { "label": "With frequent slippage", "score": 1 },
+        { "label": "Impossible to predict, deadlines blow up", "score": 2 }
+      ],
+      "advice": {
+        "2": "Split the work into smaller deliverables and measure the real cycle time: you only forecast well what you have measured.",
+        "1": "Track the cycle time (from idea to production) to see where work waits."
+      }
+    },
+    {
+      "id": "incidents",
+      "category": "Incidents",
+      "question": "How many production incidents in the last three months?",
+      "answers": [
+        { "label": "Rare, fixed quickly and analysed afterwards", "score": 0 },
+        { "label": "Several, fixed in a rush", "score": 1 },
+        { "label": "Frequent and recurring: we are fighting fires", "score": 2 }
+      ],
+      "advice": {
+        "2": "Set up monitoring, useful alerts and blameless post-mortems. Every incident should lead to a lasting correction, not just a patch.",
+        "1": "Formalise the post-incident review: root cause, corrective action, owner."
+      }
+    },
+    {
+      "id": "busfactor",
+      "category": "Reliance on people",
+      "question": "If your key developer leaves tomorrow, what happens?",
+      "answers": [
+        { "label": "The team carries on without trouble", "score": 0 },
+        { "label": "A big slowdown", "score": 1 },
+        { "label": "The project stops", "score": 2 }
+      ],
+      "advice": {
+        "2": "Spread the knowledge: pair programming, cross reviews, documentation of the critical areas. One person leaving must not stop the project.",
+        "1": "Find the areas only one person masters and organise their handover."
+      }
+    },
+    {
+      "id": "decisions",
+      "category": "Code review and decisions",
+      "question": "How are technical decisions made?",
+      "answers": [
+        { "label": "Systematic code reviews, recorded decisions", "score": 0 },
+        { "label": "Occasional reviews", "score": 1 },
+        { "label": "Everyone does it their own way, with no guideline", "score": 2 }
+      ],
+      "advice": {
+        "2": "Set a few shared conventions (structure, naming, mandatory review) and record the decisions. Autonomy works better with guardrails.",
+        "1": "Make code reviews systematic: they spread good practice and catch mistakes early."
+      }
+    }
+  ],
+  "levels": [
+    {
+      "id": "low",
+      "min": 0,
+      "max": 6,
+      "short": "healthy",
+      "title": "A healthy project",
+      "summary": "The fundamentals are in place. An outside view can still save you time on a few specific points.",
+      "offers": [
+        {
+          "offer": "audit",
+          "text": "In a lighter form: an outside view focused on the few points to watch."
+        }
+      ],
+      "action": {
+        "label": "Discuss a light audit",
+        "page": "contact",
+        "subject": "audit",
+        "variant": "primary"
+      }
+    },
+    {
+      "id": "mid",
+      "min": 7,
+      "max": 13,
+      "short": "friction",
+      "title": "Costly friction",
+      "summary": "Nothing is broken, but the team loses time every week. A few targeted actions can bring the delivery pace back.",
+      "offers": [
+        {
+          "offer": "audit",
+          "text": "A factual assessment and a prioritised action plan on these points."
+        }
+      ],
+      "action": {
+        "label": "Plan a technical audit",
+        "page": "contact",
+        "subject": "audit",
+        "variant": "primary"
+      }
+    },
+    {
+      "id": "high",
+      "min": 14,
+      "max": 20,
+      "short": "under strain",
+      "title": "A project under strain",
+      "summary": "Several signals point the same way: the project is exposed to a standstill, a major incident or a key departure. Better to act now.",
+      "offers": [
+        {
+          "offer": "rescue",
+          "text": "Take back control of a project that is slipping: stabilise it, then get releases going again."
+        },
+        {
+          "offer": "tech-lead",
+          "text": "Take on the Tech Lead role in the team, for the time it takes to get the project back on track."
+        }
+      ],
+      "action": {
+        "label": "Let's talk this week",
+        "page": "contact",
+        "subject": "sauvetage",
+        "variant": "primary"
+      }
+    }
+  ]
+}

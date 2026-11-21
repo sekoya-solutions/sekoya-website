@@ -102,14 +102,15 @@ test.describe("the home sections", () => {
         pathOf(project.page, locale),
       );
       // The hero's contact and offers buttons, the offers teaser, the featured
-      // case study, the portfolio's projects, the contact band's button, then
-      // the other sites; the quiz's link appears with its page.
+      // case study, the portfolio's projects, the quiz teaser, the contact
+      // band's button, then the other sites.
       expect(hrefs).toEqual([
         pathOf("contact", locale),
         pathOf("offers", locale),
         ...offers,
         pathOf(caseStudyKey("sos-accessoire"), locale),
         ...projects,
+        pathOf("quiz", locale),
         pathOf("contact", locale),
         "https://www.malt.fr/profile/fabricereynaud",
         "https://github.com/sekoya-solutions",
