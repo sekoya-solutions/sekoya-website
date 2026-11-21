@@ -17,4 +17,9 @@ export const fr = frenchTypographyTree({
     measuredOn: "mesuré le",
     externalLink: "site externe",
   },
+  offers: {
+    title: "Offres — Sekoya Solutions",
+    description:
+      "Trois offres pour remettre un projet en mouvement : audit technique, mission Tech Lead ou Lead Dev, sauvetage de projet.",
+  },
 });

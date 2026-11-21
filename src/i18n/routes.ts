@@ -9,6 +9,7 @@ import { defaultLocale, type Locale, locales } from "./config";
 
 export const routes = {
   home: { fr: "/", en: "/en" },
+  offers: { fr: "/offres", en: "/en/services" },
 } as const satisfies Record<string, Record<Locale, string>>;
 
 export type RouteKey = keyof typeof routes;

@@ -1,0 +1,72 @@
+{
+  "eyebrow": "Offers",
+  "title": "Three ways to get your project moving again.",
+  "lead": "Clear offers, each with a deliverable at the end. No price list online: we scope the need together, then I send you a proposal.",
+  "labels": { "forWho": "Who it is for", "deliverables": "What you get" },
+  "items": [
+    {
+      "id": "audit",
+      "icon": "search",
+      "title": "Technical audit",
+      "duration": "≈ 5 days",
+      "forWho": "You feel things are dragging without knowing why, or you are preparing a rebuild, a fundraising or an acquisition and need an independent view.",
+      "deliverables": [
+        "A clear report: architecture, code quality, tests, CI/CD, security, debt",
+        "A map of the risks, prioritised",
+        "A 30 / 60 / 90-day roadmap",
+        "A one-hour debrief with the team"
+      ],
+      "action": { "label": "Talk about an audit", "page": "contact", "variant": "primary" }
+    },
+    {
+      "id": "tech-lead",
+      "icon": "layers",
+      "title": "Tech Lead / Lead Dev engagement",
+      "duration": "3 to 12 months · full or part time",
+      "forWho": "Your team lacks a technical lead, or needs more rigour without slowing its delivery.",
+      "deliverables": [
+        "A technical framework: architecture, conventions, code reviews",
+        "CI/CD and tests that secure every release",
+        "Code delivered, and a team that grows",
+        "Documented decisions (ADRs) and a clean handover"
+      ],
+      "action": { "label": "Talk about an engagement", "page": "contact", "variant": "primary" }
+    },
+    {
+      "id": "rescue",
+      "icon": "rescue",
+      "title": "Project rescue",
+      "duration": "4 to 12 weeks",
+      "forWho": "Your project is late, unstable, or taken over from a contractor, and every release to production is a worry.",
+      "deliverables": [
+        "Quick stabilisation: incidents, fixes, monitoring",
+        "A realistic recovery plan, agreed with you",
+        "Reliable, repeatable deployments",
+        "A documented handover to your team"
+      ],
+      "action": { "label": "Talk about a rescue", "page": "contact", "variant": "primary" }
+    }
+  ],
+  "steps": {
+    "title": "How we get started",
+    "items": [
+      {
+        "title": "We talk",
+        "text": "30 minutes to understand your situation and your constraints."
+      },
+      {
+        "title": "I scope the need",
+        "text": "A written proposal: scope, deliverables, duration."
+      },
+      {
+        "title": "We start",
+        "text": "Remote by default, travel possible in [TODO: region]."
+      }
+    ]
+  },
+  "quiz": {
+    "title": "Not sure what you need?",
+    "text": "Take the “Is your project stuck?” test: 2 minutes, a score, concrete next steps.",
+    "action": { "label": "Take the test", "page": "quiz", "variant": "ghost" }
+  }
+}

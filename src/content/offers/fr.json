@@ -1,0 +1,72 @@
+{
+  "eyebrow": "Offres",
+  "title": "Trois façons de remettre votre projet en mouvement.",
+  "lead": "Des offres claires, avec un livrable à la fin de chacune. Pas de grille tarifaire en ligne : on cadre ensemble le besoin, puis je vous fais une proposition.",
+  "labels": { "forWho": "Pour qui", "deliverables": "Ce que vous obtenez" },
+  "items": [
+    {
+      "id": "audit",
+      "icon": "search",
+      "title": "Audit technique",
+      "duration": "≈ 5 jours",
+      "forWho": "Vous sentez que « ça rame » sans savoir pourquoi, ou vous préparez une refonte, une levée ou un rachat et avez besoin d'un regard indépendant.",
+      "deliverables": [
+        "Un rapport clair : architecture, qualité du code, tests, CI/CD, sécurité, dette",
+        "Une cartographie des risques, priorisée",
+        "Une feuille de route à 30 / 60 / 90 jours",
+        "Une restitution orale d'une heure avec l'équipe"
+      ],
+      "action": { "label": "Parler d'un audit", "page": "contact", "variant": "primary" }
+    },
+    {
+      "id": "tech-lead",
+      "icon": "layers",
+      "title": "Mission Tech Lead / Lead Dev",
+      "duration": "3 à 12 mois · temps plein ou partiel",
+      "forWho": "Votre équipe manque d'un référent technique, ou doit monter en rigueur sans ralentir sa livraison.",
+      "deliverables": [
+        "Un cadre technique : architecture, conventions, revues de code",
+        "Une CI/CD et des tests qui sécurisent chaque livraison",
+        "Du code livré, et une équipe qui progresse",
+        "Des décisions documentées (ADR) et une passation propre"
+      ],
+      "action": { "label": "Parler d'une mission", "page": "contact", "variant": "primary" }
+    },
+    {
+      "id": "sauvetage",
+      "icon": "rescue",
+      "title": "Sauvetage de projet",
+      "duration": "4 à 12 semaines",
+      "forWho": "Votre projet est en retard, instable, ou repris à un prestataire, et chaque mise en production fait peur.",
+      "deliverables": [
+        "Une stabilisation rapide : incidents, correctifs, supervision",
+        "Un plan de redressement réaliste, validé avec vous",
+        "Des déploiements fiables et reproductibles",
+        "Une passation documentée à votre équipe"
+      ],
+      "action": { "label": "Parler d'un sauvetage", "page": "contact", "variant": "primary" }
+    }
+  ],
+  "steps": {
+    "title": "Comment on démarre",
+    "items": [
+      {
+        "title": "On échange",
+        "text": "30 minutes pour comprendre votre situation et vos contraintes."
+      },
+      {
+        "title": "Je cadre le besoin",
+        "text": "Une proposition écrite : périmètre, livrables, durée."
+      },
+      {
+        "title": "On démarre",
+        "text": "Remote par défaut, déplacements possibles en [TODO: région]."
+      }
+    ]
+  },
+  "quiz": {
+    "title": "Pas sûr de ce qu'il vous faut ?",
+    "text": "Faites le test « Votre projet est-il bloqué ? » : 2 minutes, un score, des pistes concrètes.",
+    "action": { "label": "Faire le test", "page": "quiz", "variant": "ghost" }
+  }
+}

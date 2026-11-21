@@ -16,4 +16,9 @@ export const en = {
     measuredOn: "measured on",
     externalLink: "external site",
   },
+  offers: {
+    title: "Services — Sekoya Solutions",
+    description:
+      "Three offers to get a project moving again: technical audit, Tech Lead or Lead Dev engagement, project rescue.",
+  },
 } satisfies Dictionary;

@@ -24,11 +24,12 @@ Everything the pages build on.
 
 ## [Epic #17](https://github.com/sekoya-solutions/sekoya-website/issues/17): Content pages
 
-- [#12](https://github.com/sekoya-solutions/sekoya-website/issues/12) Offers page: the three offers from the `offers` collection, the three steps and the quiz band.
+- [#12](https://github.com/sekoya-solutions/sekoya-website/issues/12) Offers page: at `/offres` and `/en/services`, the three offers from the `offers` collection in cards aligned row by row with CSS subgrid, each at the anchor the home teaser links to, then the three steps to start and the quiz band, each call to action shown once its page exists; and a test that finds no currency symbol or code on any built page.
 - [#13](https://github.com/sekoya-solutions/sekoya-website/issues/13) Case studies: the `caseStudies` collection in MDX, the index and detail template, the metrics component and the CV link.
 - [#14](https://github.com/sekoya-solutions/sekoya-website/issues/14) Portfolio: the `projects` collection, the grid with spans and the ghost card, CSS-only filters, detail pages, and the click-to-load facade for the playable demo.
 - [#15](https://github.com/sekoya-solutions/sekoya-website/issues/15) About page and working with AI: who, values, what clients get, stack groups, and how the work is done with AI, with its workflow and guardrails.
 - [#16](https://github.com/sekoya-solutions/sekoya-website/issues/16) Contact page and legal notice: contact links, the optional form switched off by default, the subject prefill from the quiz, and the French legal notice.
+- [#37](https://github.com/sekoya-solutions/sekoya-website/issues/37) Header navigation: the links to the main pages and the contact button, each shown once its page exists, and a mobile menu that works without JavaScript.
 
 ## [Epic #20](https://github.com/sekoya-solutions/sekoya-website/issues/20): Interactive features
 
