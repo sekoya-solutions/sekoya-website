@@ -17,9 +17,7 @@ function aboutCopy(locale: string) {
 
 /** French typography turns the space before : ; ? ! » and after « into a no-break space. */
 function typeset(text: string, locale: string): string {
-  return locale === "fr"
-    ? text.replace(/ (?=[:;?!»])/g, " ").replace(/(?<=«) /g, " ")
-    : text;
+  return locale === "fr" ? text.replace(/ (?=[:;?!»])/g, " ").replace(/(?<=«) /g, " ") : text;
 }
 
 for (const locale of locales) {
