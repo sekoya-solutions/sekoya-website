@@ -93,6 +93,8 @@ const home = defineCollection({
               image: z.enum(["sekoya-transit", "sekoya-parts", "logo"]),
               alt: z.string(),
               stack: z.array(text).min(1),
+              /** The project's page, `project/<slug>`: the card links there once it exists. */
+              page: z.string().min(1),
             })
             .refine((project) => project.image === "logo" || project.alt.trim() !== "", {
               message: "A screenshot needs its alternative text",

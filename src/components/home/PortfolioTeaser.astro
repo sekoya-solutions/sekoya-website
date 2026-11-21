@@ -1,7 +1,9 @@
 ---
 /**
  * The portfolio teaser: three cards, each with a screenshot (or, for this
- * site, its logo on a glow), a title, one line and its stack. A measured
+ * site, its logo on a glow), a title, one line and its stack. Once the
+ * project's page exists, the whole card links to it, through the title's
+ * link stretched over the card. A measured
  * figure carries its measurement date (ADR 0007). The screenshots are
  * optimised at build time and load lazily, at a fixed size, so they shift no
  * layout.
@@ -13,6 +15,7 @@ import sekoyaParts from "../../assets/portfolio/sekoya-parts.jpg";
 import sekoyaTransit from "../../assets/portfolio/sekoya-transit.jpg";
 import { translations } from "../../i18n";
 import type { Locale } from "../../i18n/config";
+import { isRouteKey, pathOf } from "../../i18n/routes";
 import { numericDate } from "../../lib/dates";
 import LogoIcon from "../brand/LogoIcon.astro";
 import PlaceholderText from "../content/PlaceholderText.astro";
@@ -34,7 +37,7 @@ const screenshots = { "sekoya-transit": sekoyaTransit, "sekoya-parts": sekoyaPar
   <ul class="reveal-group grid gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
     {
       copy.projects.map((project) => (
-        <li class="card reveal">
+        <li class="card project-card reveal">
           {project.image === "logo" ? (
             <div class="project-shot project-logo">
               <LogoIcon class="h-[150px] w-auto" />
@@ -53,7 +56,13 @@ const screenshots = { "sekoya-transit": sekoyaTransit, "sekoya-parts": sekoyaPar
           )}
           <div class="grid gap-2 px-6 pt-5.5 pb-6.5">
             <h3 class="text-[1.25rem] font-semibold">
-              <PlaceholderText text={project.title} />
+              {isRouteKey(project.page) ? (
+                <a href={pathOf(project.page, locale)} class="project-link">
+                  <PlaceholderText text={project.title} />
+                </a>
+              ) : (
+                <PlaceholderText text={project.title} />
+              )}
             </h3>
             <p class="text-[0.95rem] text-muted">
               <PlaceholderText text={project.text} />
@@ -83,6 +92,23 @@ const screenshots = { "sekoya-transit": sekoyaTransit, "sekoya-parts": sekoyaPar
 </section>
 
 <style>
+  /* The link covers the card, which shows the focus ring. */
+  .project-link::after {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    content: "";
+  }
+
+  .project-link:focus-visible {
+    outline: none;
+  }
+
+  .project-card:has(.project-link:focus-visible) {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+  }
+
   .project-shot {
     display: block;
     width: 100%;
