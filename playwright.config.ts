@@ -1,5 +1,6 @@
 import { fileURLToPath } from "node:url";
 import { defineConfig, devices } from "@playwright/test";
+import { formTestPort } from "./scripts/form-test.ts";
 
 /**
  * Playwright's browsers live in the git-ignored .tools folder (ADR 0006),
@@ -15,6 +16,8 @@ const isCI = process.env.CI !== undefined && process.env.CI !== "";
 // The tests run against the production build in dist/, served by
 // `wrangler dev`, Cloudflare's local emulation of the Worker, with its
 // configuration and headers files (ADR 0002): run `npm run build` first.
+// The contact form's tests run against the test build with the form on, in
+// dist-form/ on its own port: run `npm run build:form-test` first too.
 export default defineConfig({
   testDir: "e2e",
   forbidOnly: isCI,
@@ -28,12 +31,17 @@ export default defineConfig({
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },
     { name: "mobile", use: { ...devices["Pixel 7"] } },
   ],
-  webServer: {
-    command: `npm run preview -- --port ${port}`,
-    // No usage data is sent from the local Worker server.
+  webServer: [
+    { command: `npm run preview -- --port ${port}`, url: `http://localhost:${port}` },
+    {
+      command: `npm run preview -- --config e2e/wrangler.form-test.jsonc --port ${formTestPort}`,
+      url: `http://localhost:${formTestPort}`,
+    },
+  ].map((server) => ({
+    ...server,
+    // No usage data is sent from the local Worker servers.
     env: { WRANGLER_SEND_METRICS: "false" },
-    url: `http://localhost:${port}`,
     reuseExistingServer: !isCI,
     timeout: 60_000,
-  },
+  })),
 });

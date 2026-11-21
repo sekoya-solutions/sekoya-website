@@ -101,14 +101,16 @@ test.describe("the home sections", () => {
       const projects = homeCopy(locale).portfolio.projects.map((project: { page: RouteKey }) =>
         pathOf(project.page, locale),
       );
-      // The hero's offers button, the offers teaser, the featured case study,
-      // the portfolio's projects, then the other sites; the other pages' links
-      // appear with their pages.
+      // The hero's contact and offers buttons, the offers teaser, the featured
+      // case study, the portfolio's projects, the contact band's button, then
+      // the other sites; the quiz's link appears with its page.
       expect(hrefs).toEqual([
+        pathOf("contact", locale),
         pathOf("offers", locale),
         ...offers,
         pathOf(caseStudyKey("sos-accessoire"), locale),
         ...projects,
+        pathOf("contact", locale),
         "https://www.malt.fr/profile/fabricereynaud",
         "https://github.com/sekoya-solutions",
       ]);

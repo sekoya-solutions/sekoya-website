@@ -7,6 +7,7 @@
  * base layout fails the build otherwise), and an end-to-end test visits every
  * entry in both languages.
  */
+import { subjectParameter } from "../content/contact-subjects";
 import { caseStudySlugs, projectSlugs } from "../content/slugs";
 import { defaultLocale, type Locale, locales } from "./config";
 
@@ -16,6 +17,8 @@ const pages = {
   caseStudies: { fr: "/realisations", en: "/en/case-studies" },
   portfolio: { fr: "/portfolio", en: "/en/portfolio" },
   about: { fr: "/a-propos", en: "/en/about" },
+  contact: { fr: "/contact", en: "/en/contact" },
+  legal: { fr: "/mentions-legales", en: "/en/legal" },
 } as const satisfies Record<string, Record<Locale, string>>;
 
 /** A case study's page: `caseStudy/<slug>`, under the case studies' path. */
@@ -85,6 +88,21 @@ export function routeOf(pathname: string): PageRoute {
     }
   }
   throw new Error(`The page ${pathname} is missing from src/i18n/routes.ts`);
+}
+
+/**
+ * The address of a link from the content (src/content.config.ts) in a
+ * language: its page, then the subject to preselect on the contact page and
+ * the anchor. `undefined` until the page exists, so the link is not shown.
+ */
+export function linkHref(
+  link: { page: string; hash?: string; subject?: string },
+  locale: Locale,
+): string | undefined {
+  if (!isRouteKey(link.page)) return undefined;
+  const query = link.subject === undefined ? "" : `?${subjectParameter}=${link.subject}`;
+  const hash = link.hash === undefined ? "" : `#${link.hash}`;
+  return `${pathOf(link.page, locale)}${query}${hash}`;
 }
 
 /** The path of a route in a language; a case study or project missing from the map throws. */

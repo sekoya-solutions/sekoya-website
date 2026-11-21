@@ -6,7 +6,9 @@
 import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
 import { z } from "astro/zod";
+import { type ContactSubject, contactSubjects } from "./content/contact-subjects";
 import { type ProjectCategory, projectCategories } from "./content/project-categories";
+import { contactChannels } from "./lib/contact-channels";
 
 /** A text, which may hold `[TODO: …]` placeholders (ADR 0007). */
 const text = z.string().trim().min(1);
@@ -16,24 +18,25 @@ const anchor = z.string().regex(/^[a-z0-9-]+$/);
 
 /**
  * A link to a page of the site: `page` is a key of src/i18n/routes.ts, and
- * `hash` an optional anchor on that page. Until the page exists, the link is
- * not shown.
+ * `hash` an optional anchor on that page. A link to the contact page may
+ * preselect a subject (src/content/contact-subjects.ts). Until the page
+ * exists, the link is not shown.
  */
 const pageLink = z.object({
   page: z.string().min(1),
   hash: anchor.optional(),
+  subject: z.enum(contactSubjects).optional(),
 });
+
+/** A placeholder alone, `[TODO: …]`, for a fact still to provide (ADR 0007). */
+const placeholder = z.string().regex(/^\[TODO:[^\]]*\]$/);
+
+/** A link to another site, over HTTPS. */
+const https = z.url({ protocol: /^https$/ });
 
 /** A call to action to a page of the site, shown once that page exists. */
 const action = pageLink.extend({
   label: text,
-  variant: z.enum(["primary", "ghost"]),
-});
-
-/** A call to action to another site, shown with an external-link icon. */
-const externalAction = z.object({
-  label: text,
-  href: z.url({ protocol: /^https$/ }),
   variant: z.enum(["primary", "ghost"]),
 });
 
@@ -122,16 +125,10 @@ const home = defineCollection({
       ...sectionHead,
       lead: text,
       action,
-      external: externalAction,
-      links: z
-        .array(
-          z.object({
-            icon: z.enum(["email", "github", "linkedin"]),
-            label: text,
-            href: z.url({ protocol: /^(https|mailto)$/ }).optional(),
-          }),
-        )
-        .min(1),
+      /** The Malt profile, from src/content/company. */
+      malt: z.object({ label: text, variant: z.enum(["primary", "ghost"]) }),
+      /** The direct links, from src/content/company. */
+      links: z.array(z.enum(["email", "github", "linkedin"])).min(1),
     }),
   }),
 });
@@ -225,9 +222,6 @@ const caseStudiesPage = defineCollection({
     closing: z.object({ title: text, text, actions: z.array(action).min(1) }),
   }),
 });
-
-/** A link to another site, over HTTPS. */
-const https = z.url({ protocol: /^https$/ });
 
 /** A calendar date, `YYYY-MM-DD`, shown as `DD/MM/YYYY` (src/lib/dates.ts). */
 const date = z.iso.date();
@@ -390,8 +384,127 @@ const about = defineCollection({
     }),
 });
 
+/**
+ * The company's facts, the same in every language, in one entry
+ * (`company/company.json`): its legal details, the ways to reach it, and its
+ * host (ADR 0002). The contact links, the contact page and the legal notice
+ * read them here. A fact not yet provided is a placeholder (ADR 0007).
+ */
+const company = defineCollection({
+  loader: glob({ pattern: "*.json", base: "./src/content/company" }),
+  schema: z.object({
+    name: text,
+    /** The director of publication, named by the legal notice. */
+    director: text,
+    capital: text,
+    registration: text,
+    vat: text,
+    address: text,
+    phone: text,
+    email: z.union([placeholder, z.email()]),
+    malt: z.union([placeholder, https]),
+    linkedin: z.union([placeholder, https]),
+    github: z.union([placeholder, https]),
+    host: z.object({ name: text, address: text, phone: text, website: https }),
+  }),
+});
+
+/** A field of the contact form: its label, and the message shown when it is invalid. */
+const formField = z.object({ label: text, error: text });
+
+/**
+ * The contact page (ADR 0008), one entry per language: the direct links, the
+ * subjects, the form (rendered only when it is on, src/lib/contact-form.ts)
+ * and the quiz band, shown once the quiz exists.
+ */
+const contact = defineCollection({
+  loader: glob({ pattern: "*.json", base: "./src/content/contact" }),
+  schema: z.object({
+    eyebrow: text,
+    title: text,
+    lead: text,
+    channels: z.object({
+      title: text,
+      items: z.array(z.object({ channel: z.enum(contactChannels), label: text })).min(1),
+    }),
+    /** A label per subject (src/content/contact-subjects.ts). */
+    subjects: z.object({
+      audit: text,
+      "tech-lead": text,
+      sauvetage: text,
+      autre: text,
+    }) satisfies z.ZodType<Record<ContactSubject, string>>,
+    form: z.object({
+      title: text,
+      note: text,
+      optional: text,
+      name: formField,
+      email: formField,
+      company: z.object({ label: text }),
+      subject: formField.extend({ choose: text }),
+      message: formField,
+      consent: formField,
+      honeypot: text,
+      submit: text,
+      privacy: z.object({ text, link: text }),
+    }),
+    quiz: z.object({ title: text, text, action }),
+  }),
+});
+
+/** A paragraph of the legal notice, with its links to other sites. */
+const legalParagraph = z.object({
+  text,
+  links: z.array(z.object({ label: text, href: https })).optional(),
+});
+
+/**
+ * The legal notice (ADR 0008), one entry per language: the labels of the
+ * publisher's and the host's facts, which come from src/content/company, then
+ * the privacy statement and the credits. The section on the contact form is
+ * shown only when the form is on, and names the service that receives the
+ * messages (src/lib/contact-form.ts).
+ */
+const legal = defineCollection({
+  loader: glob({ pattern: "*.json", base: "./src/content/legal" }),
+  schema: z.object({
+    eyebrow: text,
+    title: text,
+    lead: text,
+    publisher: z.object({
+      title: text,
+      legalForm: text,
+      labels: z.object({
+        name: text,
+        legalForm: text,
+        capital: text,
+        address: text,
+        registration: text,
+        vat: text,
+        phone: text,
+        email: text,
+        director: text,
+      }),
+    }),
+    host: z.object({
+      title: text,
+      labels: z.object({ name: text, address: text, phone: text, website: text }),
+    }),
+    privacy: z.object({ title: text, items: z.array(legalParagraph).min(1) }),
+    form: z.object({
+      title: text,
+      processor: text,
+      items: z.array(legalParagraph).min(1),
+    }),
+    credits: z.object({ title: text, items: z.array(legalParagraph).min(1) }),
+  }),
+});
+
 export const collections = {
   about,
+  company,
+  contact,
+  legal,
   home,
   offers,
   caseStudies,

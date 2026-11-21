@@ -10,7 +10,7 @@
  */
 import type { CollectionEntry } from "astro:content";
 import type { Locale } from "../../i18n/config";
-import { isRouteKey, pathOf } from "../../i18n/routes";
+import { linkHref } from "../../i18n/routes";
 import PlaceholderText from "../content/PlaceholderText.astro";
 import Button from "../ui/Button.astro";
 import Icon from "../ui/Icon.astro";
@@ -25,7 +25,7 @@ interface Props {
 
 const { offer, labels, locale } = Astro.props;
 const { action } = offer;
-const href = isRouteKey(action.page) ? pathOf(action.page, locale) : undefined;
+const href = linkHref(action, locale);
 ---
 
 <li id={offer.id} class="card offer reveal">

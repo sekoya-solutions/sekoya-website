@@ -1,0 +1,90 @@
+{
+  "eyebrow": "Legal information",
+  "title": "Legal notice",
+  "lead": "Who publishes this site, who hosts it, and what it does with your data: almost nothing.",
+  "publisher": {
+    "title": "Publisher",
+    "legalForm": "Simplified joint-stock company with a single shareholder (SASU)",
+    "labels": {
+      "name": "Company name",
+      "legalForm": "Legal form",
+      "capital": "Share capital",
+      "address": "Registered office",
+      "registration": "Registration",
+      "vat": "EU VAT number",
+      "phone": "Phone",
+      "email": "Email",
+      "director": "Director of publication"
+    }
+  },
+  "host": {
+    "title": "Host",
+    "labels": {
+      "name": "Company",
+      "address": "Address",
+      "phone": "Phone",
+      "website": "Website"
+    }
+  },
+  "privacy": {
+    "title": "Your data",
+    "items": [
+      {
+        "text": "This site sets no cookie and uses no audience measurement tool and no third-party script. Its font is served by the site itself."
+      },
+      {
+        "text": "If you choose the light theme, that choice is saved in your browser (local storage) for the next pages. It is never sent anywhere; you can erase it by deleting the site's data in your browser."
+      },
+      {
+        "text": "To serve you the pages, the host, Cloudflare, processes technical connection data, including your IP address, under its own privacy policy.",
+        "links": [
+          {
+            "label": "Cloudflare's privacy policy",
+            "href": "https://www.cloudflare.com/privacypolicy/"
+          }
+        ]
+      },
+      {
+        "text": "The playable demo of Sekoya Transit, on its portfolio page, is hosted by GitHub Pages. It loads only after a click on its button; GitHub then receives your IP address.",
+        "links": [
+          {
+            "label": "GitHub's privacy statement",
+            "href": "https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement"
+          }
+        ]
+      },
+      {
+        "text": "If you write to me, your message is used only to reply to you; it is never sold, transferred or shared."
+      },
+      {
+        "text": "You can access the data about you, have it corrected or erased, by writing to the address given in the Publisher section. You can also lodge a complaint with the CNIL, the French data protection authority.",
+        "links": [{ "label": "CNIL", "href": "https://www.cnil.fr" }]
+      }
+    ]
+  },
+  "form": {
+    "title": "The contact form",
+    "processor": "[TODO: form service, with its address]",
+    "items": [
+      {
+        "text": "Messages sent with the contact form go through this service, which forwards them to me. They hold your name, your email, your company if you give it, the subject and your message, and are used only to reply to you."
+      },
+      { "text": "They are kept for [TODO: how long messages are kept]." }
+    ]
+  },
+  "credits": {
+    "title": "Intellectual property",
+    "items": [
+      {
+        "text": "The source code of this site is public, under the MIT licence. The name, logos and images of Sekoya Solutions remain its property: all rights reserved.",
+        "links": [
+          {
+            "label": "Source code on GitHub",
+            "href": "https://github.com/sekoya-solutions/sekoya-website"
+          }
+        ]
+      },
+      { "text": "The Outfit font is distributed under the SIL Open Font License 1.1." }
+    ]
+  }
+}

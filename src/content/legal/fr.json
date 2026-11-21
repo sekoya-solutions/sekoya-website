@@ -1,0 +1,90 @@
+{
+  "eyebrow": "Informations légales",
+  "title": "Mentions légales",
+  "lead": "Qui publie ce site, qui l'héberge, et ce qu'il fait de vos données : presque rien.",
+  "publisher": {
+    "title": "Éditeur",
+    "legalForm": "Société par actions simplifiée unipersonnelle (SASU)",
+    "labels": {
+      "name": "Dénomination",
+      "legalForm": "Forme",
+      "capital": "Capital social",
+      "address": "Siège social",
+      "registration": "Immatriculation",
+      "vat": "TVA intracommunautaire",
+      "phone": "Téléphone",
+      "email": "Email",
+      "director": "Directeur de la publication"
+    }
+  },
+  "host": {
+    "title": "Hébergeur",
+    "labels": {
+      "name": "Société",
+      "address": "Adresse",
+      "phone": "Téléphone",
+      "website": "Site"
+    }
+  },
+  "privacy": {
+    "title": "Vos données",
+    "items": [
+      {
+        "text": "Ce site ne dépose aucun cookie et n'utilise ni outil de mesure d'audience, ni script tiers. Sa police de caractères est servie par le site lui-même."
+      },
+      {
+        "text": "Si vous choisissez le thème clair, ce choix est enregistré dans votre navigateur (stockage local) pour les pages suivantes. Il n'est jamais transmis ; vous pouvez l'effacer en supprimant les données du site dans votre navigateur."
+      },
+      {
+        "text": "Pour vous servir les pages, l'hébergeur Cloudflare traite des données techniques de connexion, dont votre adresse IP, selon sa propre politique de confidentialité.",
+        "links": [
+          {
+            "label": "Politique de confidentialité de Cloudflare",
+            "href": "https://www.cloudflare.com/privacypolicy/"
+          }
+        ]
+      },
+      {
+        "text": "La démo jouable de Sekoya Transit, sur sa page du portfolio, est hébergée par GitHub Pages. Elle ne se charge qu'après un clic sur son bouton ; GitHub reçoit alors votre adresse IP.",
+        "links": [
+          {
+            "label": "Déclaration de confidentialité de GitHub",
+            "href": "https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement"
+          }
+        ]
+      },
+      {
+        "text": "Si vous m'écrivez, votre message sert uniquement à vous répondre ; il n'est ni vendu, ni cédé, ni partagé."
+      },
+      {
+        "text": "Vous pouvez accéder aux données qui vous concernent, les faire rectifier ou effacer, en écrivant à l'adresse indiquée dans la section Éditeur. Vous pouvez aussi adresser une réclamation à la CNIL.",
+        "links": [{ "label": "CNIL", "href": "https://www.cnil.fr" }]
+      }
+    ]
+  },
+  "form": {
+    "title": "Le formulaire de contact",
+    "processor": "[TODO: service du formulaire, avec son adresse]",
+    "items": [
+      {
+        "text": "Les messages envoyés par le formulaire de contact transitent par ce service, qui me les transmet. Ils contiennent votre nom, votre email, votre entreprise si vous l'indiquez, le sujet et votre message, et servent uniquement à vous répondre."
+      },
+      { "text": "Ils sont conservés [TODO: durée de conservation des messages]." }
+    ]
+  },
+  "credits": {
+    "title": "Propriété intellectuelle",
+    "items": [
+      {
+        "text": "Le code source de ce site est public, sous licence MIT. Le nom, les logos et les images de Sekoya Solutions restent sa propriété : tous droits réservés.",
+        "links": [
+          {
+            "label": "Code source sur GitHub",
+            "href": "https://github.com/sekoya-solutions/sekoya-website"
+          }
+        ]
+      },
+      { "text": "La police Outfit est distribuée sous licence SIL Open Font License 1.1." }
+    ]
+  }
+}

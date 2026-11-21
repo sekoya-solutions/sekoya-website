@@ -98,11 +98,19 @@ test("the offer cards stack at 390 px, with no horizontal scroll", async ({ page
   expect(overflow).toBe(0);
 });
 
-test("the offers page links to no page that does not exist yet", async ({ page }) => {
+test("each offer links to the contact page with its subject preselected", async ({ page }) => {
   for (const locale of locales) {
     await page.goto(pathOf("offers", locale));
-    // The contact and quiz buttons appear with their pages.
-    await expect(page.getByRole("main").getByRole("link")).toHaveCount(0);
+    const hrefs = await page
+      .getByRole("main")
+      .getByRole("link")
+      .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+    // The quiz button appears with its page.
+    expect(hrefs).toEqual(
+      ["audit", "tech-lead", "sauvetage"].map(
+        (subject) => `${pathOf("contact", locale)}?sujet=${subject}`,
+      ),
+    );
   }
 });
 

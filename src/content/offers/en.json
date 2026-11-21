@@ -16,7 +16,12 @@
         "A 30 / 60 / 90-day roadmap",
         "A one-hour debrief with the team"
       ],
-      "action": { "label": "Talk about an audit", "page": "contact", "variant": "primary" }
+      "action": {
+        "label": "Talk about an audit",
+        "page": "contact",
+        "subject": "audit",
+        "variant": "primary"
+      }
     },
     {
       "id": "tech-lead",
@@ -30,7 +35,12 @@
         "Code delivered, and a team that grows",
         "Documented decisions (ADRs) and a clean handover"
       ],
-      "action": { "label": "Talk about an engagement", "page": "contact", "variant": "primary" }
+      "action": {
+        "label": "Talk about an engagement",
+        "page": "contact",
+        "subject": "tech-lead",
+        "variant": "primary"
+      }
     },
     {
       "id": "rescue",
@@ -44,7 +54,12 @@
         "Reliable, repeatable deployments",
         "A documented handover to your team"
       ],
-      "action": { "label": "Talk about a rescue", "page": "contact", "variant": "primary" }
+      "action": {
+        "label": "Talk about a rescue",
+        "page": "contact",
+        "subject": "sauvetage",
+        "variant": "primary"
+      }
     }
   ],
   "steps": {

@@ -10,7 +10,14 @@ import { frenchTypographyDeep } from "../lib/french-typography";
 import { type Locale, locales } from "./config";
 
 /** The collections that hold one page's copy, one entry per language. */
-type PageCollection = "home" | "offers" | "caseStudiesPage" | "portfolioPage" | "about";
+type PageCollection =
+  | "home"
+  | "offers"
+  | "caseStudiesPage"
+  | "portfolioPage"
+  | "about"
+  | "contact"
+  | "legal";
 
 /** A page's copy in a language; a missing entry fails the build. */
 async function pageContent<C extends PageCollection>(
@@ -26,6 +33,26 @@ async function pageContent<C extends PageCollection>(
 /** The home page's copy in a language. */
 export function homeContent(locale: Locale) {
   return pageContent("home", locale);
+}
+
+/** The contact page's copy in a language. */
+export function contactContent(locale: Locale) {
+  return pageContent("contact", locale);
+}
+
+/** The legal notice's copy in a language. */
+export function legalContent(locale: Locale) {
+  return pageContent("legal", locale);
+}
+
+/**
+ * The company's facts (src/content/company), the same in every language:
+ * names, numbers and addresses, so no French typography.
+ */
+export async function companyFacts() {
+  const entry = await getEntry("company", "company");
+  if (entry === undefined) throw new Error("src/content/company/company.json is missing");
+  return entry.data;
 }
 
 /** The offers page's copy in a language. */

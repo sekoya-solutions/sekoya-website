@@ -1,13 +1,33 @@
 ---
 /**
- * The footer shell: the copyright line. Its columns (brand, navigation and
- * the measured Lighthouse scores) come with their own issues.
+ * The footer shell: the copyright line and the link to the legal notice,
+ * which French law requires on every page. Its columns (brand, navigation
+ * and the measured Lighthouse scores) come with their own issues.
  */
+import { translations } from "../../i18n";
+import { pageLocale } from "../../i18n/config";
+import { pathOf } from "../../i18n/routes";
+
+const locale = pageLocale(Astro.currentLocale);
+const t = translations(locale);
 const year = new Date().getFullYear();
 ---
 
 <footer class="mt-24 border-t border-line">
-  <div class="mx-auto max-w-site px-(--gutter) py-8 text-sm text-muted">
+  <div
+    class="mx-auto flex max-w-site flex-wrap items-center gap-x-6 gap-y-2 px-(--gutter) py-8 text-sm text-muted"
+  >
     <p>© {year} Sekoya Solutions</p>
+    <a href={pathOf("legal", locale)} class="footer-link hover:text-ink">{t.layout.legalNotice}</a>
   </div>
 </footer>
+
+<style>
+  .footer-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+</style>

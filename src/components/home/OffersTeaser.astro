@@ -7,7 +7,7 @@
  */
 import type { CollectionEntry } from "astro:content";
 import type { Locale } from "../../i18n/config";
-import { isRouteKey, pathOf } from "../../i18n/routes";
+import { linkHref } from "../../i18n/routes";
 import PlaceholderText from "../content/PlaceholderText.astro";
 import Chip from "../ui/Chip.astro";
 import Icon from "../ui/Icon.astro";
@@ -21,9 +21,7 @@ interface Props {
 const { copy, locale } = Astro.props;
 const offers = copy.items.map((item) => ({
   ...item,
-  href: isRouteKey(item.link.page)
-    ? `${pathOf(item.link.page, locale)}${item.link.hash === undefined ? "" : `#${item.link.hash}`}`
-    : undefined,
+  href: linkHref(item.link, locale),
 }));
 ---
 

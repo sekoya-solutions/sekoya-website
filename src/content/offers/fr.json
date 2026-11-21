@@ -16,7 +16,12 @@
         "Une feuille de route à 30 / 60 / 90 jours",
         "Une restitution orale d'une heure avec l'équipe"
       ],
-      "action": { "label": "Parler d'un audit", "page": "contact", "variant": "primary" }
+      "action": {
+        "label": "Parler d'un audit",
+        "page": "contact",
+        "subject": "audit",
+        "variant": "primary"
+      }
     },
     {
       "id": "tech-lead",
@@ -30,7 +35,12 @@
         "Du code livré, et une équipe qui progresse",
         "Des décisions documentées (ADR) et une passation propre"
       ],
-      "action": { "label": "Parler d'une mission", "page": "contact", "variant": "primary" }
+      "action": {
+        "label": "Parler d'une mission",
+        "page": "contact",
+        "subject": "tech-lead",
+        "variant": "primary"
+      }
     },
     {
       "id": "sauvetage",
@@ -44,7 +54,12 @@
         "Des déploiements fiables et reproductibles",
         "Une passation documentée à votre équipe"
       ],
-      "action": { "label": "Parler d'un sauvetage", "page": "contact", "variant": "primary" }
+      "action": {
+        "label": "Parler d'un sauvetage",
+        "page": "contact",
+        "subject": "sauvetage",
+        "variant": "primary"
+      }
     }
   ],
   "steps": {
