@@ -9,6 +9,16 @@ export const en = {
     skipLink: "Skip to content",
     lightTheme: "Light theme",
     legalNotice: "Legal notice",
+    navigation: "Main navigation",
+    menu: "Menu",
+    nav: {
+      offers: "Services",
+      caseStudies: "Case studies",
+      career: "Career",
+      portfolio: "Portfolio",
+      about: "About",
+    },
+    contact: "Contact me",
   },
   home: {
     title: "Sekoya Solutions",

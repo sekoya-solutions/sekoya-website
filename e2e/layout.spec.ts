@@ -47,12 +47,19 @@ test("the font is preloaded, swapped, and has size-adjusted fallbacks", async ({
   expect(await page.evaluate(outfitStatus)).toBe("loaded");
 });
 
-// The page shows no shift through a real swap from a size-adjusted fallback
+// The page barely shifts through a real swap from a size-adjusted fallback
 // to Outfit. Those fallbacks resize fonts installed on the visitor's machine
 // (for system-ui: BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue or
 // Arial), so one of them must be installed where the test runs; CI installs
 // Roboto. Without one, the page starts in an unadjusted font and shifts.
-test("swapping the fallback for the font shifts no layout", async ({ page }) => {
+// `size-adjust` matches the average width only, so a row of short labels
+// aligned from the right or the centre (the header's navigation and its
+// contact button, from 1280 px) still moves by a few pixels: the owner allows
+// that, up to `maxFontSwapShift`, a hundredth of Google's 0.1 "good" limit
+// for the whole page.
+const maxFontSwapShift = 0.001;
+
+test("swapping the fallback for the font barely shifts the layout", async ({ page }) => {
   // Every layout shift, recorded from before the page's first byte.
   await page.addInitScript(() => {
     const state = window as { shifts?: number[]; shiftObserver?: PerformanceObserver };
@@ -106,7 +113,8 @@ test("swapping the fallback for the font shifts no layout", async ({ page }) => 
     ];
   });
   expect(await page.evaluate(outfitStatus)).toBe("loaded");
-  expect(shifts).toEqual([]);
+  const total = shifts.reduce((sum, shift) => sum + shift, 0);
+  expect(total, `layout shifts: ${shifts.join(", ")}`).toBeLessThanOrEqual(maxFontSwapShift);
 });
 
 test("the page has a header, a main region and a footer", async ({ page }) => {
@@ -135,8 +143,9 @@ test("keyboard focus shows a 2 px ring in the focus colour, in both themes", asy
   // Gold in the dark theme; in the light one, the dark green, since deep
   // gold is below 3:1 on sand.
   for (const colour of ["rgb(232, 211, 168)", "rgb(15, 107, 90)"]) {
-    await page.locator("main").focus();
-    await page.keyboard.press("Shift+Tab");
+    // The toggle comes right after the language switch.
+    await page.getByRole("banner").getByRole("link", { name: "EN English" }).focus();
+    await page.keyboard.press("Tab");
     await expect(toggle).toBeFocused();
     await expect(toggle).toHaveCSS("outline-style", "solid");
     await expect(toggle).toHaveCSS("outline-width", "2px");

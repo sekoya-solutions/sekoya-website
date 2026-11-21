@@ -1,11 +1,19 @@
 ---
 /**
- * The header shell: the logo, linking to the home page in the page's
- * language, the language switch and the theme toggle. The navigation comes
- * with its pages.
+ * The header: the logo, linking to the home page in the page's language, the
+ * navigation (src/i18n/navigation.ts), the language switch, the theme toggle
+ * and the contact button. From 1280 px, the links and the button sit in one
+ * row. Below, they move into a menu built on `<details>`, with no script
+ * (ADR 0005): its button opens and closes it with a click, Enter or Space,
+ * and Tab moves through its links and out, with no trap. Only one of the two
+ * navigations is displayed at a time, so one landmark is exposed.
  */
-import { type PageRoute, pathOf } from "../../i18n/routes";
+import { translations } from "../../i18n";
+import { currentOf, navigationLinks } from "../../i18n/navigation";
+import { isRouteKey, type PageRoute, pathOf } from "../../i18n/routes";
 import Logo from "../brand/Logo.astro";
+import Button from "../ui/Button.astro";
+import Icon from "../ui/Icon.astro";
 import LanguageSwitch from "./LanguageSwitch.astro";
 import ThemeToggle from "./ThemeToggle.astro";
 
@@ -14,14 +22,207 @@ interface Props {
 }
 
 const { route } = Astro.props;
+const t = translations(route.locale);
+const links = navigationLinks(route);
+const contact = isRouteKey("contact")
+  ? { href: pathOf("contact", route.locale), current: currentOf("contact", route) }
+  : undefined;
 ---
 
-<header class="relative z-10 mx-auto flex h-21 max-w-site items-center justify-between px-(--gutter)">
-  <a href={pathOf("home", route.locale)} class="-ml-2.5 rounded-md">
+<header class="relative z-10 mx-auto flex h-21 max-w-site items-center justify-between gap-6 px-(--gutter)">
+  <a href={pathOf("home", route.locale)} class="-ml-2.5 shrink-0 rounded-md">
     <Logo class="h-14 w-auto" />
   </a>
+  <nav aria-label={t.layout.navigation} class="nav-row">
+    <ul class="flex items-center gap-7.5 text-sm">
+      {
+        links.map((link) => (
+          <li>
+            <a href={link.href} class="nav-row-link" aria-current={link.current}>
+              {t.layout.nav[link.page]}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
   <div class="flex items-center gap-3">
     <LanguageSwitch route={route} />
     <ThemeToggle />
+    {
+      contact !== undefined && (
+        <div class="nav-row">
+          <Button href={contact.href} variant="primary" size="sm" current={contact.current}>
+            {t.layout.contact}
+          </Button>
+        </div>
+      )
+    }
+    <details class="menu">
+      <summary
+        class="menu-button grid size-11 cursor-pointer place-items-center rounded-pill border border-line-strong text-grey hover:text-ink"
+      >
+        <span class="sr-only">{t.layout.menu}</span>
+        <Icon name="menu" size={20} class="menu-open-icon" />
+        <Icon name="close" size={20} class="menu-close-icon" />
+      </summary>
+      <nav aria-label={t.layout.navigation} class="menu-panel border-b border-line-strong bg-surface-1">
+        <div class="mx-auto max-w-site px-(--gutter) pt-2 pb-8">
+          <ul class="text-lead">
+            {
+              links.map((link) => (
+                <li class="border-b border-line">
+                  <a href={link.href} class="menu-link" aria-current={link.current}>
+                    {t.layout.nav[link.page]}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+          {
+            contact !== undefined && (
+              <Button
+                href={contact.href}
+                variant="primary"
+                current={contact.current}
+                class="mt-6 w-full"
+              >
+                {t.layout.contact}
+              </Button>
+            )
+          }
+        </div>
+      </nav>
+    </details>
   </div>
 </header>
+
+<style>
+  /* The row from 1280 px, the menu below. */
+  .nav-row {
+    display: none;
+  }
+
+  @media (width >= 80rem) {
+    .nav-row {
+      display: block;
+    }
+
+    .menu {
+      display: none;
+    }
+  }
+
+  .nav-row-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--grey);
+  }
+
+  .nav-row-link:hover,
+  .nav-row-link[aria-current] {
+    color: var(--ink);
+  }
+
+  /* The active underline: 2 px of mint with a soft glow, which slides in on
+     hover and stays on the current page or section. */
+  .nav-row-link::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 4px;
+    left: 0;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--mint);
+    box-shadow: 0 0 10px rgb(34 192 138 / 0.6);
+    transform: scaleX(0);
+  }
+
+  .nav-row-link:hover::after,
+  .nav-row-link[aria-current]::after {
+    transform: scaleX(1);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .nav-row-link::after {
+      transition: transform 180ms var(--ease-out);
+    }
+  }
+
+  :global(:root[data-theme="light"]) .nav-row-link::after {
+    box-shadow: none;
+  }
+
+  /* The menu's button: no disclosure triangle, a cross once open. */
+  .menu-button {
+    list-style: none;
+  }
+
+  .menu-button::-webkit-details-marker {
+    display: none;
+  }
+
+  .menu[open] .menu-button {
+    color: var(--ink);
+  }
+
+  .menu :global(.menu-close-icon),
+  .menu[open] :global(.menu-open-icon) {
+    display: none;
+  }
+
+  .menu[open] :global(.menu-close-icon) {
+    display: block;
+  }
+
+  /* The panel drops under the header, over the page, and scrolls on a short
+     screen. The header is its containing block. */
+  .menu-panel {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    max-height: calc(100dvh - 100%);
+    overflow-y: auto;
+    /* A scrim dims the page around and under the panel, so the open menu
+       reads as a layer: a shadow spread over the whole screen, clipped so
+       it never covers the header bar above. A shadow takes no clicks. */
+    box-shadow: 0 0 0 100vmax var(--menu-scrim);
+    clip-path: inset(0 -100vmax -100vmax -100vmax);
+  }
+
+  /* While the menu is open, the header bar takes the panel's surface, so
+     the bar and the panel form one sheet over the dimmed page. */
+  header:has(.menu[open]) {
+    background: var(--surface-1);
+  }
+
+  header {
+    --menu-scrim: rgb(4 14 18 / 0.66);
+  }
+
+  :global(:root[data-theme="light"]) header {
+    --menu-scrim: rgb(10 29 36 / 0.4);
+  }
+
+  .menu-link {
+    display: flex;
+    align-items: center;
+    min-height: 56px;
+    border-left: 2px solid transparent;
+    padding-left: 14px;
+    color: var(--grey);
+  }
+
+  .menu-link:hover,
+  .menu-link[aria-current] {
+    color: var(--ink);
+  }
+
+  .menu-link[aria-current] {
+    border-left-color: var(--mint);
+  }
+</style>
