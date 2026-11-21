@@ -5,6 +5,7 @@ A summary of the epics and their issues, and what each delivers. Status is kept 
 ## Outside the epics
 
 - [#1](https://github.com/sekoya-solutions/sekoya-website/issues/1) Record the initial architecture decisions: the first nine [Architecture Decision Records (ADRs)](adr/README.md), from the framework to the repository and its licences, written before any code.
+- [#46](https://github.com/sekoya-solutions/sekoya-website/issues/46) Reserve all rights on the whole repository: ADR 0009 records the change from MIT, and `LICENSE`, the README and the legal page say that the code is public to be read, not reused.
 
 ## [Epic #8](https://github.com/sekoya-solutions/sekoya-website/issues/8): Foundation
 
@@ -12,7 +13,7 @@ Everything the pages build on.
 
 - [#3](https://github.com/sekoya-solutions/sekoya-website/issues/3) Set up the repository and tooling: the Astro project (static output, TypeScript strict, Tailwind CSS 4) with an empty home page; Biome, Vitest, Playwright with axe, and the Markdown checks; a CI workflow that runs only the Markdown checks when every changed file is Markdown; the project rules in `AGENTS.md`, the README, the licences and this roadmap.
 - [#4](https://github.com/sekoya-solutions/sekoya-website/issues/4) Host the site on Cloudflare Workers with previews: the repository connected to a Worker with static assets, built by Workers Builds, with production from `main` on `workers.dev` until launch and a preview per branch, both kept out of search engines; security headers, cache lifetimes and a per-page Content Security Policy; the end-to-end tests served by `wrangler dev`; and the [hosting setup](hosting.md) for the owner.
-- [#5](https://github.com/sekoya-solutions/sekoya-website/issues/5) Add the brand assets: the logos for dark and light backgrounds, the themeable animated logo, the favicons and app icons, and the Outfit font with its licence, as provided, with `LICENSE-ASSETS.md` listing where they are.
+- [#5](https://github.com/sekoya-solutions/sekoya-website/issues/5) Add the brand assets: the logos for dark and light backgrounds, the themeable animated logo, the favicons and app icons, and the Outfit font with its licence, as provided.
 - [#6](https://github.com/sekoya-solutions/sekoya-website/issues/6) Design tokens, fonts, base layout and theme: the brand tokens as CSS variables mapped into Tailwind, the self-hosted font, the base layout with header and footer shells, and the theme toggle.
 - [#7](https://github.com/sekoya-solutions/sekoya-website/issues/7) Language scaffolding: French at the root and English under `/en/`, with the map of translated paths, the interface dictionaries, the FR | EN language switch, `hreflang` alternates with `x-default` on every page, the French typography helper, and a test that visits every route in both languages.
 - [#29](https://github.com/sekoya-solutions/sekoya-website/issues/29) Keep the design references outside the repository: ADR 0009 records that the page mockups are never committed.
