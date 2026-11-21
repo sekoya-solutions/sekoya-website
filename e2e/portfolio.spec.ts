@@ -250,12 +250,12 @@ test("the demo loads only after a click, on a desktop browser", async ({
   await expect(page.frameLocator(".demo-frame iframe").getByText("Demo stand-in")).toBeVisible();
 });
 
-test("below 1024 px or on a touch screen, a notice and a link replace the demo", async ({
+test("below 1280 px or on a touch screen, a notice and a link replace the demo", async ({
   page,
   context,
 }, testInfo) => {
   const requests = await stubDemo(context);
-  if (testInfo.project.name !== "mobile") await page.setViewportSize({ width: 1000, height: 900 });
+  if (testInfo.project.name !== "mobile") await page.setViewportSize({ width: 1270, height: 900 });
   await page.goto(pathOf(projectKey(playable), "fr"));
   await expect(page.locator("a[data-demo-play]")).toBeHidden();
   const notice = page.locator(".demo-notice");
@@ -280,16 +280,24 @@ test("only a page with a playable demo allows frames, from the demo's origin", a
   }
 });
 
-test("the demo's frame fits the page from 1024 px", async ({ page }, testInfo) => {
+test("from 1280 px, the demo's frame fits the demo and the page", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name === "mobile", "Checked at desktop widths.");
-  for (const width of [1024, 1280, 1440]) {
+  // A classic page scrollbar, as on Windows, takes this much of the width; the
+  // test browser may draw none, so it is counted here.
+  const scrollbar = 17;
+  for (const width of [1280, 1440, 1920]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto(pathOf(projectKey(playable), "fr"));
     const layout = await page.locator(".demo-frame").evaluate((frame) => ({
+      width: frame.clientWidth,
       height: frame.clientHeight,
+      drawnScrollbar: window.innerWidth - document.documentElement.clientWidth,
       pageScrolls: document.documentElement.scrollWidth > window.innerWidth,
     }));
     expect(layout.pageScrolls).toBe(false);
     expect(layout.height).toBeGreaterThanOrEqual(demoSize.height);
+    expect(layout.width - (scrollbar - layout.drawnScrollbar)).toBeGreaterThanOrEqual(
+      demoSize.width,
+    );
   }
 });

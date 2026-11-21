@@ -34,7 +34,7 @@ Chosen: **a Preact island for the quiz (quiz 1)**, since the budget allows it an
 
 - Scoring and the "top three priorities" live in `src/lib/quiz.ts`, a pure function covered by unit tests.
 - Every animation stops under `prefers-reduced-motion: reduce`, showing the final state.
-- The demo facade is an inline script of about 1 KB, on the pages of projects that have a playable demo only, allowed by its hash. Without JavaScript, its play button is a plain link to the demo. On a click, from 1024 px wide with a mouse, it replaces the poster with the iframe; below 1024 px or on a touch screen, CSS shows a notice and a link instead, and the script never adds the iframe. Those pages' policy allows frames from the demo's origin only.
+- The demo facade is an inline script of about 1 KB, on the pages of projects that have a playable demo only, allowed by its hash. Without JavaScript, its play button is a plain link to the demo. On a click, from 1280 px wide with a mouse, where the frame is comfortably wider than the demo, it replaces the poster with the iframe; below 1280 px or on a touch screen, CSS shows a notice and a link instead, and the script never adds the iframe. Those pages' policy allows frames from the demo's origin only.
 - Without JavaScript: the quiz page shows the questions as a printable checklist; the career page shows the vertical timeline.
 
 ## Consequences

@@ -3,7 +3,7 @@
  * A playable demo, loaded on demand (ADR 0005): the poster at 16:9 with a
  * play button, which is a link to the demo. On a desktop browser, the inline
  * script (demo-facade.ts) replaces the poster with the demo in an iframe on
- * click; below 1024 px or on a touch screen, a notice and a link replace the
+ * click; below 1280 px or on a touch screen, a notice and a link replace the
  * button. Nothing is requested from the demo's host before a click.
  *
  * The page's policy gets the script's hash and allows frames from the demo's
@@ -163,7 +163,7 @@ Astro.csp.insertScriptHash(demoFacadeHash);
   }
 
   /* Where the demo can be played: the same query as demo-facade.ts. */
-  @media (min-width: 64rem) and (pointer: fine) {
+  @media (min-width: 80rem) and (pointer: fine) {
     /* The demo's page has a fixed size (demoSize, demo-facade.ts): a 960 × 600
        canvas and a 38 px footer. The frame is never shorter, borders and a few
        pixels of slack included, so the demo shows no scrollbar. Its width is

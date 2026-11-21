@@ -1,7 +1,7 @@
 /**
  * The playable demo's facade (ADR 0005): a poster with a play button, which
  * is a plain link to the demo, so the page works without JavaScript. On a
- * desktop browser (from 1024 px wide, with a mouse), a click replaces the
+ * desktop browser (from 1280 px wide, with a mouse), a click replaces the
  * poster with the demo in an iframe, so its download starts only then.
  * Elsewhere, CSS hides the button and shows a notice with a link
  * (DemoFacade.astro), and the script never adds the iframe.
@@ -18,8 +18,11 @@ import { createHash } from "node:crypto";
 /**
  * Where the demo can be played: the same media query as DemoFacade.astro's
  * styles, which show the play button there and the notice elsewhere.
+ * From 1280 px, a common laptop width, the frame is comfortably wider than
+ * the demo (`demoSize`), even with the page's 40 px gutters, the frame's
+ * border and a 17 px page scrollbar, which a media query's width includes.
  */
-export const desktopQuery = "(min-width: 64rem) and (pointer: fine)";
+export const desktopQuery = "(min-width: 80rem) and (pointer: fine)";
 
 /**
  * The space the demo's page needs, in CSS pixels: Unity's desktop template
