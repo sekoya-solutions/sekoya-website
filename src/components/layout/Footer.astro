@@ -103,7 +103,26 @@ const year = new Date().getFullYear();
     font-weight: 600;
   }
 
-  .footer-nav-link,
+  /* The links in two columns, read down the first, then the second, at
+     every width: the column is then no taller than the measured scores, so
+     the footer keeps its height, and the career page's pinned rings still
+     end with the footer coming up under them. 36 px targets, above the
+     24 px of WCAG 2.2. */
+  .footer-navigation ul {
+    columns: 2;
+    column-gap: 24px;
+  }
+
+  .footer-navigation li {
+    break-inside: avoid;
+  }
+
+  .footer-nav-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 36px;
+  }
+
   .footer-link {
     display: inline-flex;
     align-items: center;

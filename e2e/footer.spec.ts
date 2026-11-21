@@ -100,6 +100,32 @@ for (const locale of locales) {
   });
 }
 
+// The links sit in two columns, so the navigation is no taller than the
+// measured scores: the footer keeps its height, and the career page's pinned
+// rings still end with the footer coming up under them.
+for (const [name, viewport] of Object.entries({ "1440 px": wide, "390 px": narrow })) {
+  test(`the navigation's links sit in two columns at ${name}`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+    await page.goto(pathOf("career", "fr"));
+    const links = page.locator("footer .footer-navigation a");
+    const lefts = await links.evaluateAll((elements) =>
+      elements.map((element) => Math.round(element.getBoundingClientRect().left)),
+    );
+    expect(new Set(lefts).size).toBe(2);
+    // Read down the first column, then the second.
+    expect(lefts).toEqual([...lefts].sort((a, b) => a - b));
+    if (viewport === wide) {
+      const height = (selector: string) =>
+        page
+          .locator(`footer ${selector}`)
+          .evaluate((element) => element.getBoundingClientRect().height);
+      expect(await height(".footer-navigation")).toBeLessThanOrEqual(
+        await height(".footer-scores"),
+      );
+    }
+  });
+}
+
 // Axe on the footer of every route, in both languages, at both widths and in
 // both themes (the whole pages are checked in routes.spec.ts).
 for (const [name, viewport] of Object.entries({ "1440 px": wide, "390 px": narrow })) {
