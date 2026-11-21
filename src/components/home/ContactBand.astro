@@ -1,14 +1,16 @@
 ---
 /**
  * The contact band, centred: a title, one line, the link to the contact page
- * once it exists and the external profile, then the direct contact links. A
- * link whose address is still a placeholder is shown as its placeholder chip,
- * with no link.
+ * once it exists and the Malt profile, then the direct contact links. The
+ * addresses come from src/content/company: one still to provide is shown as
+ * its placeholder chip, with no link.
  */
 import type { CollectionEntry } from "astro:content";
 import { translations } from "../../i18n";
 import type { Locale } from "../../i18n/config";
+import { companyFacts } from "../../i18n/content";
 import { isRouteKey, pathOf } from "../../i18n/routes";
+import { channelLink } from "../../lib/contact-channels";
 import PlaceholderText from "../content/PlaceholderText.astro";
 import Button from "../ui/Button.astro";
 import Icon from "../ui/Icon.astro";
@@ -21,6 +23,12 @@ interface Props {
 const { copy, locale } = Astro.props;
 const t = translations(locale);
 const href = isRouteKey(copy.action.page) ? pathOf(copy.action.page, locale) : undefined;
+const company = await companyFacts();
+const malt = channelLink("malt", company.malt);
+const links = copy.links.map((channel) => ({
+  icon: channel,
+  ...channelLink(channel, company[channel]),
+}));
 ---
 
 <section aria-labelledby="contact-title" class="reveal text-center">
@@ -39,28 +47,32 @@ const href = isRouteKey(copy.action.page) ? pathOf(copy.action.page, locale) : u
         </Button>
       )
     }
-    <Button
-      href={copy.external.href}
-      variant={copy.external.variant}
-      icon="external"
-      externalHint={t.home.externalLink}
-    >
-      {copy.external.label}
-    </Button>
+    {
+      malt.href !== undefined && (
+        <Button
+          href={malt.href}
+          variant={copy.malt.variant}
+          icon="external"
+          externalHint={t.home.externalLink}
+        >
+          {copy.malt.label}
+        </Button>
+      )
+    }
   </div>
   <ul class="mt-8.5 flex flex-wrap justify-center gap-x-6.5 gap-y-3 text-sm text-muted">
     {
-      copy.links.map((link) => (
+      links.map((link) => (
         <li>
           {link.href === undefined ? (
             <span class="contact-link">
               <Icon name={link.icon} size={18} />
-              <PlaceholderText text={link.label} />
+              <PlaceholderText text={link.display} />
             </span>
           ) : (
             <a href={link.href} class="contact-link hover:text-ink">
               <Icon name={link.icon} size={18} />
-              <PlaceholderText text={link.label} />
+              <PlaceholderText text={link.display} />
             </a>
           )}
         </li>

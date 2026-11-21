@@ -146,19 +146,7 @@
     "title": "A project that's stalling? Let's talk.",
     "lead": "A first conversation to understand your situation, with no commitment.",
     "action": { "label": "Contact me", "page": "contact", "variant": "primary" },
-    "external": {
-      "label": "Malt profile",
-      "href": "https://www.malt.fr/profile/fabricereynaud",
-      "variant": "ghost"
-    },
-    "links": [
-      { "icon": "email", "label": "[TODO: email]" },
-      {
-        "icon": "github",
-        "label": "github.com/sekoya-solutions",
-        "href": "https://github.com/sekoya-solutions"
-      },
-      { "icon": "linkedin", "label": "[TODO: LinkedIn URL]" }
-    ]
+    "malt": { "label": "Malt profile", "variant": "ghost" },
+    "links": ["email", "github", "linkedin"]
   }
 }

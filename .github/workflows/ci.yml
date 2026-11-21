@@ -138,6 +138,9 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      # The contact form is off on the site; its tests run on a second
+      # build with a test address (scripts/form-test.ts).
+      - run: npm run build:form-test
       # The placeholder guard (ADR 0007) lists the placeholders left and the
       # missing files, such as the CV. It only reports until the launch makes
       # it a gate on the production build.

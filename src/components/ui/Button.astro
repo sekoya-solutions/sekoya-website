@@ -4,12 +4,14 @@
  * a glow), ghost (gold outline) or text (mint, with an arrow), in two sizes.
  * Its focus ring is the site's (global.css). A link to another site shows an
  * external-link icon and says so to screen readers (`externalHint`). A
- * leading icon (GitHub, play) may come before the label.
+ * leading icon (GitHub, play) may come before the label. Without `href`, it
+ * is a form's submit button.
  */
 import Icon from "./Icon.astro";
 
 interface Props {
-  href: string;
+  /** The link's address; without one, a submit button. */
+  href?: string;
   variant: "primary" | "ghost" | "text";
   size?: "md" | "sm";
   icon?: "arrow" | "external";
@@ -28,14 +30,16 @@ const {
   externalHint,
   class: className,
 } = Astro.props;
+const Tag = href === undefined ? "button" : "a";
+const attributes = href === undefined ? { type: "submit" as const } : { href };
 ---
 
-<a href={href} class:list={["button", `button-${variant}`, `button-${size}`, className]}>
+<Tag {...attributes} class:list={["button", `button-${variant}`, `button-${size}`, className]}>
   {leadingIcon !== undefined && <Icon name={leadingIcon} size={size === "sm" ? 16 : 18} />}
   <slot />
   {externalHint !== undefined && <span class="sr-only">({externalHint})</span>}
   {icon !== undefined && <Icon name={icon} size={icon === "external" || size === "sm" ? 16 : 18} />}
-</a>
+</Tag>
 
 <style>
   .button {
@@ -49,6 +53,12 @@ const {
     line-height: 1;
     white-space: nowrap;
     transition: box-shadow 220ms var(--ease-out);
+  }
+
+  button.button {
+    cursor: pointer;
+    font: inherit;
+    font-weight: 500;
   }
 
   .button-md {

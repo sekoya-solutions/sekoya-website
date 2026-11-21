@@ -85,9 +85,10 @@ for (const locale of locales) {
   test(`the About page links to no page that does not exist yet in ${locale}`, async ({ page }) => {
     await page.goto(pathOf("about", locale));
     const closing = page.locator(".about-closing");
-    // The offers button; the contact one appears with its page (#16).
-    await expect(closing.getByRole("link")).toHaveCount(1);
-    await expect(closing.getByRole("link")).toHaveAttribute("href", pathOf("offers", locale));
+    const hrefs = await closing
+      .getByRole("link")
+      .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+    expect(hrefs).toEqual([pathOf("contact", locale), pathOf("offers", locale)]);
   });
 }
 

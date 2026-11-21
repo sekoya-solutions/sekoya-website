@@ -146,19 +146,7 @@
     "title": "Un projet qui patine ? Parlons-en.",
     "lead": "Un premier échange pour comprendre votre situation, sans engagement.",
     "action": { "label": "Me contacter", "page": "contact", "variant": "primary" },
-    "external": {
-      "label": "Profil Malt",
-      "href": "https://www.malt.fr/profile/fabricereynaud",
-      "variant": "ghost"
-    },
-    "links": [
-      { "icon": "email", "label": "[TODO: email]" },
-      {
-        "icon": "github",
-        "label": "github.com/sekoya-solutions",
-        "href": "https://github.com/sekoya-solutions"
-      },
-      { "icon": "linkedin", "label": "[TODO: URL LinkedIn]" }
-    ]
+    "malt": { "label": "Profil Malt", "variant": "ghost" },
+    "links": ["email", "github", "linkedin"]
   }
 }

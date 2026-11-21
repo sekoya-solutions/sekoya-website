@@ -1,0 +1,52 @@
+{
+  "eyebrow": "Contact",
+  "title": "Parlons de votre projet.",
+  "lead": "Dites-moi où ça bloque. Je réponds personnellement.",
+  "channels": {
+    "title": "Me joindre directement",
+    "items": [
+      { "channel": "email", "label": "Email" },
+      { "channel": "malt", "label": "Malt" },
+      { "channel": "linkedin", "label": "LinkedIn" },
+      { "channel": "github", "label": "GitHub" }
+    ]
+  },
+  "subjects": {
+    "audit": "Audit technique",
+    "tech-lead": "Mission Tech Lead",
+    "sauvetage": "Sauvetage de projet",
+    "autre": "Autre"
+  },
+  "form": {
+    "title": "Ou écrivez-moi ici",
+    "note": "Tous les champs sont obligatoires, sauf mention contraire.",
+    "optional": "facultatif",
+    "name": { "label": "Nom", "error": "Indiquez votre nom." },
+    "email": {
+      "label": "Email",
+      "error": "Indiquez une adresse email valide, par exemple nom@entreprise.fr."
+    },
+    "company": { "label": "Entreprise" },
+    "subject": {
+      "label": "Sujet",
+      "choose": "Choisissez un sujet",
+      "error": "Choisissez un sujet."
+    },
+    "message": { "label": "Message", "error": "Écrivez votre message." },
+    "consent": {
+      "label": "J'accepte que ces informations soient utilisées pour répondre à ma demande.",
+      "error": "Cochez cette case pour envoyer votre message."
+    },
+    "honeypot": "Ne remplissez pas ce champ",
+    "submit": "Envoyer",
+    "privacy": {
+      "text": "Vos informations servent uniquement à vous répondre.",
+      "link": "Voir les mentions légales"
+    }
+  },
+  "quiz": {
+    "title": "Pas sûr de ce qu'il vous faut ?",
+    "text": "Le test « Votre projet est-il bloqué ? » vous donne un score et des pistes en 2 minutes.",
+    "action": { "label": "Faire le test", "page": "quiz", "variant": "ghost" }
+  }
+}

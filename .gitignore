@@ -27,6 +27,7 @@ desktop.ini
 # Dependencies, and the files Astro builds or generates
 /node_modules/
 /dist/
+/dist-form/
 /.astro/
 
 # Playwright results and traces
@@ -35,3 +36,4 @@ desktop.ini
 
 # Wrangler's local state
 /.wrangler/
+/e2e/.wrangler/

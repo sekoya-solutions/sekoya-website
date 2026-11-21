@@ -1,18 +1,19 @@
 # ADR 0005: Client-side JavaScript
 
 - Status: Accepted
-- Date: 2026-11-20, amended 2026-11-21 (the portfolio's demo facade)
+- Date: 2026-11-20, amended 2026-11-21 (the portfolio's demo facade, the contact subject)
 - Deciders: Owner
 
 ## Context
 
-Most pages need no JavaScript: menus use `<details>`, portfolio filters use radio inputs and `:has()`, and every animation is CSS or SVG. Five behaviours need some:
+Most pages need no JavaScript: menus use `<details>`, portfolio filters use radio inputs and `:has()`, and every animation is CSS or SVG. Six behaviours need some:
 
 - **The quiz:** ten steps, a score, a result screen with tailored advice, keyboard shortcuts. Nothing is stored or sent.
 - **The career timeline:** scroll progress drives the drawing of the rings; hover, tap and keyboard select a ring.
 - **The theme toggle** ([ADR 0003](0003-styling-theme-and-fonts.md)), with its blocking script to avoid a flash.
 - **Scroll reveal,** as a fallback where CSS scroll-driven animations are not supported.
 - **The portfolio's playable demo:** a project's page embeds its WebGL demo (about 29 MiB) in an iframe, which must load only after the visitor clicks, and only on a desktop browser.
+- **The contact subject:** the quiz and the offers link to the contact page with a `sujet` query parameter (such as `?sujet=audit`), which preselects the subject. A static page cannot read its query string without a script.
 
 The budgets: no JavaScript on any page except the quiz (at most 15 KB compressed) and the career page (at most 3 KB), beside the small inline scripts listed below. Every page must be complete without JavaScript.
 
@@ -35,6 +36,7 @@ Chosen: **a Preact island for the quiz (quiz 1)**, since the budget allows it an
 - Scoring and the "top three priorities" live in `src/lib/quiz.ts`, a pure function covered by unit tests.
 - Every animation stops under `prefers-reduced-motion: reduce`, showing the final state.
 - The demo facade is an inline script of about 1 KB, on the pages of projects that have a playable demo only, allowed by its hash. Without JavaScript, its play button is a plain link to the demo. On a click, from 1280 px wide with a mouse, where the frame is comfortably wider than the demo, it replaces the poster with the iframe; below 1280 px or on a touch screen, CSS shows a notice and a link instead, and the script never adds the iframe. Those pages' policy allows frames from the demo's origin only.
+- The contact subject is an inline script of a few hundred bytes, on the contact page only, allowed by its hash, and only when the page has something to preselect: the form's subject (when the form is on, [ADR 0008](0008-contact-and-privacy.md)) or the email link, whose subject line it fills. It accepts only the known subjects, ignores any other value, and stores and sends nothing. Without JavaScript, the form keeps its default subject and the email link has none.
 - Without JavaScript: the quiz page shows the questions as a printable checklist; the career page shows the vertical timeline.
 
 ## Consequences

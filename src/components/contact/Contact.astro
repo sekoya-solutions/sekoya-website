@@ -1,0 +1,271 @@
+---
+/**
+ * The contact page, in the page's language: src/pages/contact.astro in
+ * French and src/pages/en/contact.astro in English. Its copy is in
+ * src/content/contact; the addresses come from src/content/company.
+ *
+ * The direct links first: an address still to provide is shown as its
+ * placeholder, with no link. Then the form, only when it is on (ADR 0008,
+ * src/lib/contact-form.ts), and the quiz band once the quiz exists.
+ *
+ * A `sujet` query parameter preselects the subject (contact-subject.ts,
+ * ADR 0005): the inline script is added only when the page has something to
+ * preselect, the form or the email link.
+ */
+import { translations } from "../../i18n";
+import { pageLocale } from "../../i18n/config";
+import { companyFacts, contactContent, legalContent } from "../../i18n/content";
+import { linkHref, pathOf } from "../../i18n/routes";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { type ContactChannel, channelLink } from "../../lib/contact-channels";
+import { contactFormAction } from "../../lib/contact-form";
+import PlaceholderText from "../content/PlaceholderText.astro";
+import Button from "../ui/Button.astro";
+import Icon from "../ui/Icon.astro";
+import ContactForm from "./ContactForm.astro";
+import { contactSubjectScript, mailtoAttribute } from "./contact-subject";
+
+const locale = pageLocale(Astro.currentLocale);
+const t = translations(locale);
+const copy = await contactContent(locale);
+const company = await companyFacts();
+const legal = await legalContent(locale);
+const formAction = contactFormAction(
+  import.meta.env.PUBLIC_CONTACT_FORM_ACTION,
+  legal.form,
+  process.env.ALLOW_TODO === "1",
+);
+
+const icons = {
+  email: "email",
+  malt: "briefcase",
+  linkedin: "linkedin",
+  github: "github",
+} as const satisfies Record<ContactChannel, string>;
+
+const channels = copy.channels.items.map((item) => ({
+  ...item,
+  ...channelLink(item.channel, company[item.channel]),
+}));
+const hasEmailLink = channels.some((link) => link.channel === "email" && link.href !== undefined);
+
+const subjectScript =
+  formAction !== undefined || hasEmailLink ? contactSubjectScript(copy.subjects) : undefined;
+if (subjectScript !== undefined) {
+  if (Astro.csp === undefined) throw new Error("astro.config.mjs must enable the CSP");
+  Astro.csp.insertScriptHash(subjectScript.hash);
+}
+
+const quizHref = linkHref(copy.quiz.action, locale);
+---
+
+<BaseLayout title={t.contact.title} description={t.contact.description}>
+  <div class="contact-page mx-auto max-w-site px-(--gutter)">
+    <header class="contact-hero">
+      <p class="eyebrow"><PlaceholderText text={copy.eyebrow} /></p>
+      <h1 class="contact-title mt-3.5 font-bold tracking-[-0.02em]">
+        <PlaceholderText text={copy.title} />
+      </h1>
+      <p class="contact-lead"><PlaceholderText text={copy.lead} /></p>
+    </header>
+
+    <div class:list={["contact-body", { "contact-body-form": formAction !== undefined }]}>
+      <section aria-labelledby="channels-title" class="contact-channels">
+        <h2 id="channels-title" class="contact-label">
+          <PlaceholderText text={copy.channels.title} />
+        </h2>
+        <ul class="channel-list">
+          {
+            channels.map((link) => {
+              const external = link.href !== undefined && link.channel !== "email";
+              const mailto = link.channel === "email" ? { [mailtoAttribute]: "" } : {};
+              const content = (
+                <>
+                  <Icon name={icons[link.channel]} size={22} class="channel-icon" />
+                  <span class="channel-text">
+                    <span class="channel-name">
+                      <PlaceholderText text={link.label} />
+                    </span>
+                    <span class="channel-value">
+                      <PlaceholderText text={link.display} />
+                    </span>
+                  </span>
+                  {external && (
+                    <>
+                      <span class="sr-only">({t.contact.externalLink})</span>
+                      <Icon name="external" size={16} class="channel-external" />
+                    </>
+                  )}
+                </>
+              );
+              return (
+                <li>
+                  {link.href === undefined ? (
+                    <div class="channel card">{content}</div>
+                  ) : (
+                    <a href={link.href} class="channel card" {...mailto}>
+                      {content}
+                    </a>
+                  )}
+                </li>
+              );
+            })
+          }
+        </ul>
+
+        {
+          quizHref !== undefined && (
+            <aside aria-labelledby="quiz-title" class="contact-quiz">
+              <h2 id="quiz-title" class="mb-1.5 text-[1.2rem] font-semibold">
+                <PlaceholderText text={copy.quiz.title} />
+              </h2>
+              <p class="mb-4 font-light text-muted">
+                <PlaceholderText text={copy.quiz.text} />
+              </p>
+              <Button href={quizHref} variant={copy.quiz.action.variant} size="sm" icon="arrow">
+                {copy.quiz.action.label}
+              </Button>
+            </aside>
+          )
+        }
+      </section>
+
+      {
+        formAction !== undefined && (
+          <section aria-labelledby="form-title">
+            <ContactForm
+              action={formAction}
+              copy={copy.form}
+              subjects={copy.subjects}
+              legalHref={pathOf("legal", locale)}
+            />
+          </section>
+        )
+      }
+    </div>
+  </div>
+  {subjectScript !== undefined && <script is:inline set:html={subjectScript.script} />}
+</BaseLayout>
+
+<style>
+  .contact-page {
+    padding-top: 32px;
+    padding-bottom: 72px;
+  }
+
+  .contact-title {
+    font-size: var(--fs-h1);
+    line-height: 1.08;
+  }
+
+  .contact-lead {
+    max-width: 40rem;
+    margin-top: 18px;
+    color: var(--muted);
+    font-size: 1.02rem;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  .contact-body {
+    display: grid;
+    gap: 40px;
+    margin-top: 48px;
+  }
+
+  .contact-label {
+    margin-bottom: 16px;
+    color: var(--muted);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .channel-list {
+    display: grid;
+    gap: 12px;
+  }
+
+  .channel {
+    display: grid;
+    grid-template-columns: 22px 1fr auto;
+    gap: 14px;
+    align-items: center;
+    min-height: 64px;
+    padding: 14px 18px;
+  }
+
+  .channel-text {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .channel-name {
+    font-weight: 500;
+  }
+
+  .channel-value {
+    overflow-wrap: anywhere;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+
+  .contact-page :global(.channel-icon) {
+    color: var(--mint);
+  }
+
+  .contact-page :global(.channel-external) {
+    color: var(--muted);
+  }
+
+  a.channel:hover .channel-value {
+    color: var(--ink);
+  }
+
+  .contact-quiz {
+    margin-top: 32px;
+    padding: 24px 22px;
+    border: 1px solid rgb(34 192 138 / 0.3);
+    border-radius: var(--r-lg);
+    background: linear-gradient(110deg, rgb(34 192 138 / 0.12), rgb(14 38 47 / 0.8) 60%);
+  }
+
+  :global(:root[data-theme="light"]) .contact-quiz {
+    border-color: rgb(22 146 122 / 0.35);
+    background: linear-gradient(110deg, rgb(22 146 122 / 0.12), var(--surface-1) 60%);
+  }
+
+  @media (min-width: 48rem) {
+    .channel-list {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .contact-body-form .channel-list {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .contact-page {
+      padding-top: 40px;
+      padding-bottom: 96px;
+    }
+
+    .contact-lead {
+      font-size: var(--fs-lead);
+    }
+
+    .contact-body {
+      margin-top: 64px;
+    }
+
+    .contact-body-form {
+      grid-template-columns: 0.8fr 1.2fr;
+      gap: 56px;
+      align-items: start;
+    }
+  }
+</style>

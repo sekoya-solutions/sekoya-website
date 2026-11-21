@@ -1,0 +1,257 @@
+---
+/**
+ * The legal notice, in the page's language: src/pages/mentions-legales.astro
+ * in French and src/pages/en/legal.astro in English. The labels and the
+ * statements are in src/content/legal; the publisher's and the host's facts
+ * come from src/content/company, each still to provide shown as its
+ * placeholder (ADR 0007).
+ *
+ * The section on the contact form, which names the service that receives
+ * the messages, is shown only when the form is on (ADR 0008,
+ * src/lib/contact-form.ts).
+ */
+import { translations } from "../../i18n";
+import { pageLocale } from "../../i18n/config";
+import { companyFacts, legalContent } from "../../i18n/content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { channelLink } from "../../lib/contact-channels";
+import { contactFormAction } from "../../lib/contact-form";
+import PlaceholderText from "../content/PlaceholderText.astro";
+import Icon from "../ui/Icon.astro";
+
+const locale = pageLocale(Astro.currentLocale);
+const t = translations(locale);
+const copy = await legalContent(locale);
+const company = await companyFacts();
+const formOn =
+  contactFormAction(
+    import.meta.env.PUBLIC_CONTACT_FORM_ACTION,
+    copy.form,
+    process.env.ALLOW_TODO === "1",
+  ) !== undefined;
+
+const email = channelLink("email", company.email);
+const { labels } = copy.publisher;
+const publisher = [
+  { label: labels.name, value: company.name },
+  { label: labels.legalForm, value: copy.publisher.legalForm },
+  { label: labels.capital, value: company.capital },
+  { label: labels.address, value: company.address },
+  { label: labels.registration, value: company.registration },
+  { label: labels.vat, value: company.vat },
+  { label: labels.phone, value: company.phone },
+  { label: labels.email, value: email.display, href: email.href },
+  { label: labels.director, value: company.director },
+];
+const host = [
+  { label: copy.host.labels.name, value: company.host.name },
+  { label: copy.host.labels.address, value: company.host.address },
+  { label: copy.host.labels.phone, value: company.host.phone },
+  {
+    label: copy.host.labels.website,
+    value: new URL(company.host.website).host,
+    href: company.host.website,
+    external: true,
+  },
+];
+const facts = [
+  { id: "publisher", title: copy.publisher.title, rows: publisher },
+  { id: "host", title: copy.host.title, rows: host },
+];
+const statements = [
+  { id: "privacy", ...copy.privacy },
+  ...(formOn
+    ? [
+        {
+          id: "form",
+          title: copy.form.title,
+          items: [{ text: copy.form.processor }, ...copy.form.items],
+        },
+      ]
+    : []),
+  { id: "credits", ...copy.credits },
+];
+---
+
+<BaseLayout title={t.legal.title} description={t.legal.description}>
+  <div class="legal-page mx-auto max-w-site px-(--gutter)">
+    <header>
+      <p class="eyebrow"><PlaceholderText text={copy.eyebrow} /></p>
+      <h1 class="legal-title mt-3.5 font-bold tracking-[-0.02em]">
+        <PlaceholderText text={copy.title} />
+      </h1>
+      <p class="legal-lead"><PlaceholderText text={copy.lead} /></p>
+    </header>
+
+    <div class="legal-facts">
+      {
+        facts.map((section) => (
+          <section aria-labelledby={`${section.id}-title`} class="card legal-card">
+            <h2 id={`${section.id}-title`} class="legal-heading">
+              <PlaceholderText text={section.title} />
+            </h2>
+            <dl>
+              {section.rows.map((row) => (
+                <div class="legal-row">
+                  <dt>
+                    <PlaceholderText text={row.label} />
+                  </dt>
+                  <dd>
+                    {"href" in row && row.href !== undefined ? (
+                      <a href={row.href} class="legal-link">
+                        <PlaceholderText text={row.value} />
+                        {"external" in row && (
+                          <>
+                            <span class="sr-only">({t.legal.externalLink})</span>
+                            <Icon name="external" size={14} />
+                          </>
+                        )}
+                      </a>
+                    ) : (
+                      <PlaceholderText text={row.value} />
+                    )}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        ))
+      }
+    </div>
+
+    {
+      statements.map((section) => (
+        <section aria-labelledby={`${section.id}-title`} id={section.id} class="legal-section">
+          <h2 id={`${section.id}-title`} class="legal-heading">
+            <PlaceholderText text={section.title} />
+          </h2>
+          {section.items.map((item) => (
+            <div class="legal-paragraph">
+              <p>
+                <PlaceholderText text={item.text} />
+              </p>
+              {"links" in item && item.links !== undefined && (
+                <ul class="mt-1.5 flex flex-wrap gap-x-5 gap-y-1">
+                  {item.links.map((link) => (
+                    <li>
+                      <a href={link.href} class="legal-link">
+                        <PlaceholderText text={link.label} />
+                        <span class="sr-only">({t.legal.externalLink})</span>
+                        <Icon name="external" size={14} />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
+        </section>
+      ))
+    }
+  </div>
+</BaseLayout>
+
+<style>
+  .legal-page {
+    max-width: 60rem;
+    padding-top: 32px;
+    padding-bottom: 72px;
+  }
+
+  .legal-title {
+    font-size: var(--fs-h1);
+    line-height: 1.08;
+  }
+
+  .legal-lead {
+    max-width: 40rem;
+    margin-top: 18px;
+    color: var(--muted);
+    font-size: 1.02rem;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  .legal-facts {
+    display: grid;
+    gap: 16px;
+    margin-top: 44px;
+  }
+
+  .legal-card {
+    padding: 24px 22px;
+  }
+
+  .legal-heading {
+    margin-bottom: 14px;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .legal-row {
+    display: grid;
+    gap: 2px;
+    padding-block: 8px;
+    border-top: 1px solid var(--line);
+  }
+
+  .legal-row:first-child {
+    border-top: 0;
+  }
+
+  .legal-row dt {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .legal-row dd {
+    overflow-wrap: anywhere;
+  }
+
+  .legal-section {
+    margin-top: 44px;
+  }
+
+  .legal-paragraph {
+    max-width: 46rem;
+    margin-bottom: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .legal-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 32px;
+    color: var(--link);
+  }
+
+  .legal-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  @media (min-width: 48rem) {
+    .legal-facts {
+      grid-template-columns: repeat(2, 1fr);
+      align-items: start;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .legal-page {
+      padding-top: 40px;
+      padding-bottom: 96px;
+    }
+
+    .legal-card {
+      padding: 30px 32px;
+    }
+
+    .legal-row {
+      grid-template-columns: 10rem 1fr;
+      gap: 16px;
+    }
+  }
+</style>

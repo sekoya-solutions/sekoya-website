@@ -8,6 +8,7 @@ export const en = {
   layout: {
     skipLink: "Skip to content",
     lightTheme: "Light theme",
+    legalNotice: "Legal notice",
   },
   home: {
     title: "Sekoya Solutions",
@@ -39,6 +40,18 @@ export const en = {
     description:
       "Who I am, my values, what I bring to my clients, my stack, and how I work with AI.",
     photoMissing: "[TODO: photo to provide]",
+    externalLink: "external site",
+  },
+  contact: {
+    title: "Contact — Sekoya Solutions",
+    description:
+      "Let's talk about your project: by email, on Malt, LinkedIn or GitHub. I reply personally.",
+    externalLink: "external site",
+  },
+  legal: {
+    title: "Legal notice — Sekoya Solutions",
+    description:
+      "The site's publisher and host, and what it does with your data: no cookie, no audience measurement, no third-party script.",
     externalLink: "external site",
   },
 } satisfies Dictionary;

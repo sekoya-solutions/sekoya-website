@@ -1,0 +1,283 @@
+---
+/**
+ * The contact form (ADR 0008), rendered only when the build sets its address
+ * (src/lib/contact-form.ts): a plain HTML form, with no script, that posts
+ * to the form service. Every field has a visible label; the browser's own
+ * validation checks the required fields and the email address before
+ * sending. Each field's message is linked to it (`aria-describedby`), and
+ * CSS shows it once the field is invalid after the visitor has used it
+ * (`:user-invalid`), or after an attempt to send.
+ *
+ * The honeypot, a field people never see or reach, catches the robots that
+ * fill every field (its name is in src/lib/contact-form.ts).
+ */
+import type { CollectionEntry } from "astro:content";
+import { contactSubjects } from "../../content/contact-subjects";
+import { honeypotName } from "../../lib/contact-form";
+import PlaceholderText from "../content/PlaceholderText.astro";
+import Button from "../ui/Button.astro";
+import { subjectSelectAttribute } from "./contact-subject";
+
+interface Props {
+  action: string;
+  copy: CollectionEntry<"contact">["data"]["form"];
+  subjects: CollectionEntry<"contact">["data"]["subjects"];
+  /** The legal notice's path, where the processing is described. */
+  legalHref: string;
+}
+
+const { action, copy, subjects, legalHref } = Astro.props;
+const selectAttributes = { [subjectSelectAttribute]: "" };
+---
+
+<form method="post" action={action} class="contact-form card">
+  <h2 id="form-title" class="mb-2 text-[1.3rem] font-semibold lg:text-h3">
+    <PlaceholderText text={copy.title} />
+  </h2>
+  <p class="form-note"><PlaceholderText text={copy.note} /></p>
+
+  <div class="form-grid">
+    <div class="field">
+      <label for="contact-name">{copy.name.label}</label>
+      <input
+        id="contact-name"
+        name="name"
+        type="text"
+        autocomplete="name"
+        required
+        maxlength="200"
+        aria-describedby="contact-name-error"
+      />
+      <p id="contact-name-error" class="field-error"><PlaceholderText text={copy.name.error} /></p>
+    </div>
+
+    <div class="field">
+      <label for="contact-email">{copy.email.label}</label>
+      <input
+        id="contact-email"
+        name="email"
+        type="email"
+        autocomplete="email"
+        required
+        maxlength="320"
+        aria-describedby="contact-email-error"
+      />
+      <p id="contact-email-error" class="field-error">
+        <PlaceholderText text={copy.email.error} />
+      </p>
+    </div>
+
+    <div class="field">
+      <label for="contact-company">
+        <PlaceholderText text={copy.company.label} />{" "}
+        <span class="field-optional">(<PlaceholderText text={copy.optional} />)</span>
+      </label>
+      <input
+        id="contact-company"
+        name="company"
+        type="text"
+        autocomplete="organization"
+        maxlength="200"
+      />
+    </div>
+
+    <div class="field">
+      <label for="contact-subject">{copy.subject.label}</label>
+      <select
+        id="contact-subject"
+        name="subject"
+        required
+        aria-describedby="contact-subject-error"
+        {...selectAttributes}
+      >
+        <option value="" selected>{copy.subject.choose}</option>
+        {contactSubjects.map((subject) => <option value={subject}>{subjects[subject]}</option>)}
+      </select>
+      <p id="contact-subject-error" class="field-error">
+        <PlaceholderText text={copy.subject.error} />
+      </p>
+    </div>
+
+    <div class="field field-wide">
+      <label for="contact-message">{copy.message.label}</label>
+      <textarea
+        id="contact-message"
+        name="message"
+        rows="6"
+        required
+        maxlength="5000"
+        aria-describedby="contact-message-error"></textarea>
+      <p id="contact-message-error" class="field-error">
+        <PlaceholderText text={copy.message.error} />
+      </p>
+    </div>
+  </div>
+
+  <div class="form-trap" aria-hidden="true">
+    <label for="contact-website">{copy.honeypot}</label>
+    <input id="contact-website" name={honeypotName} type="text" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <div class="field field-consent">
+    <div class="consent">
+      <input
+        id="contact-consent"
+        name="consent"
+        type="checkbox"
+        value="yes"
+        required
+        aria-describedby="contact-consent-error"
+      />
+      <label for="contact-consent">{copy.consent.label}</label>
+    </div>
+    <p id="contact-consent-error" class="field-error">
+      <PlaceholderText text={copy.consent.error} />
+    </p>
+  </div>
+
+  <div class="form-footer">
+    <Button variant="primary" icon="arrow">
+      <PlaceholderText text={copy.submit} />
+    </Button>
+    <p class="form-privacy">
+      <PlaceholderText text={copy.privacy.text} />{" "}
+      <a href={legalHref}><PlaceholderText text={copy.privacy.link} /></a>
+    </p>
+  </div>
+</form>
+
+<style>
+  .contact-form {
+    padding: 26px 22px;
+  }
+
+  .form-note {
+    margin-bottom: 22px;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+
+  .form-grid {
+    display: grid;
+    gap: 18px;
+  }
+
+  .field {
+    display: grid;
+    gap: 6px;
+    align-content: start;
+  }
+
+  .field label {
+    font-weight: 500;
+  }
+
+  .field-optional {
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  .field input:not([type="checkbox"]),
+  .field select,
+  .field textarea {
+    width: 100%;
+    min-height: 46px;
+    padding: 10px 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    background: var(--surface-2);
+    color: var(--ink);
+    font: inherit;
+  }
+
+  .field textarea {
+    resize: vertical;
+  }
+
+  /* The message shows once the field is invalid after the visitor has used
+     it, or after an attempt to send; screen readers get it as the field's
+     description in every case. */
+  .field-error {
+    display: none;
+    color: var(--danger);
+    font-size: 0.9rem;
+  }
+
+  .field:has(:user-invalid) .field-error {
+    display: block;
+  }
+
+  .field :is(input, select, textarea):user-invalid {
+    border-color: var(--danger);
+  }
+
+  .field-consent {
+    margin-top: 20px;
+  }
+
+  .consent {
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    gap: 10px;
+    align-items: start;
+  }
+
+  .consent input {
+    width: 22px;
+    height: 22px;
+    margin-top: 1px;
+    accent-color: var(--mint);
+  }
+
+  .consent label {
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  /* Out of sight and out of reach, for people and for assistive technologies. */
+  .form-trap {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .form-footer {
+    display: grid;
+    gap: 16px;
+    justify-items: start;
+    margin-top: 24px;
+  }
+
+  .form-privacy {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .form-privacy a {
+    color: var(--link);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  @media (min-width: 48rem) {
+    .contact-form {
+      padding: 34px 38px;
+    }
+
+    .form-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .field-wide {
+      grid-column: 1 / -1;
+    }
+
+    .form-footer {
+      grid-template-columns: auto 1fr;
+      align-items: center;
+    }
+  }
+</style>

@@ -16,7 +16,7 @@ const offers = Object.fromEntries(locales.map((locale) => [locale, read("offers"
 const home = Object.fromEntries(locales.map((locale) => [locale, read("home", locale)]));
 
 /** The fields whose value is the same in every language. */
-const sharedFields = /(^|\.)(page|variant|icon)$/;
+const sharedFields = /(^|\.)(page|subject|variant|icon)$/;
 
 const shared = (entry: unknown) => sharedLeaves(entry, sharedFields);
 

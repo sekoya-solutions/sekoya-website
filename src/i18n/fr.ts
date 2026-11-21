@@ -9,6 +9,7 @@ export const fr = frenchTypographyTree({
   layout: {
     skipLink: "Aller au contenu",
     lightTheme: "Thème clair",
+    legalNotice: "Mentions légales",
   },
   home: {
     title: "Sekoya Solutions",
@@ -45,6 +46,20 @@ export const fr = frenchTypographyTree({
       "Qui je suis, mes valeurs, ce que j'apporte à mes clients, ma stack, et comment je travaille avec l'IA.",
     /** Shown under the brand avatar until the photo is added (ADR 0007). */
     photoMissing: "[TODO: photo à fournir]",
+    /** For a link to another site, read by screen readers only. */
+    externalLink: "site externe",
+  },
+  contact: {
+    title: "Contact — Sekoya Solutions",
+    description:
+      "Parlons de votre projet : par email, sur Malt, LinkedIn ou GitHub. Je réponds personnellement.",
+    /** For a link to another site, read by screen readers only. */
+    externalLink: "site externe",
+  },
+  legal: {
+    title: "Mentions légales — Sekoya Solutions",
+    description:
+      "L'éditeur et l'hébergeur du site, et ce qu'il fait de vos données : aucun cookie, aucune mesure d'audience, aucun script tiers.",
     /** For a link to another site, read by screen readers only. */
     externalLink: "site externe",
   },

@@ -1,0 +1,19 @@
+{
+  "name": "Sekoya Solutions",
+  "director": "Fabrice Reynaud",
+  "capital": "[TODO: capital social]",
+  "registration": "[TODO: SIREN et ville du RCS]",
+  "vat": "[TODO: numéro de TVA intracommunautaire]",
+  "address": "[TODO: adresse du siège]",
+  "phone": "[TODO: téléphone]",
+  "email": "[TODO: email]",
+  "malt": "https://www.malt.fr/profile/fabricereynaud",
+  "linkedin": "[TODO: URL LinkedIn]",
+  "github": "https://github.com/sekoya-solutions",
+  "host": {
+    "name": "Cloudflare, Inc.",
+    "address": "101 Townsend St., San Francisco, CA 94107, United States",
+    "phone": "[TODO: téléphone de l'hébergeur]",
+    "website": "https://www.cloudflare.com"
+  }
+}

@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "build:form-test": "node scripts/build-form-test.ts",
     "preview": "wrangler dev",
     "check": "biome check && astro check",
     "format": "biome check --write",

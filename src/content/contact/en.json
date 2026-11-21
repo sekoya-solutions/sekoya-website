@@ -1,0 +1,52 @@
+{
+  "eyebrow": "Contact",
+  "title": "Let's talk about your project.",
+  "lead": "Tell me where it's stuck. I reply personally.",
+  "channels": {
+    "title": "Reach me directly",
+    "items": [
+      { "channel": "email", "label": "Email" },
+      { "channel": "malt", "label": "Malt" },
+      { "channel": "linkedin", "label": "LinkedIn" },
+      { "channel": "github", "label": "GitHub" }
+    ]
+  },
+  "subjects": {
+    "audit": "Technical audit",
+    "tech-lead": "Tech Lead engagement",
+    "sauvetage": "Project rescue",
+    "autre": "Other"
+  },
+  "form": {
+    "title": "Or write to me here",
+    "note": "Every field is required unless marked otherwise.",
+    "optional": "optional",
+    "name": { "label": "Name", "error": "Enter your name." },
+    "email": {
+      "label": "Email",
+      "error": "Enter a valid email address, for example name@company.com."
+    },
+    "company": { "label": "Company" },
+    "subject": {
+      "label": "Subject",
+      "choose": "Choose a subject",
+      "error": "Choose a subject."
+    },
+    "message": { "label": "Message", "error": "Write your message." },
+    "consent": {
+      "label": "I agree that this information may be used to reply to my request.",
+      "error": "Tick this box to send your message."
+    },
+    "honeypot": "Do not fill in this field",
+    "submit": "Send",
+    "privacy": {
+      "text": "Your information is used only to reply to you.",
+      "link": "See the legal notice"
+    }
+  },
+  "quiz": {
+    "title": "Not sure what you need?",
+    "text": "The “Is your project stuck?” test gives you a score and leads in 2 minutes.",
+    "action": { "label": "Take the test", "page": "quiz", "variant": "ghost" }
+  }
+}

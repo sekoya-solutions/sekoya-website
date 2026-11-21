@@ -5,6 +5,7 @@ import {
   alternates,
   caseStudyKey,
   isRouteKey,
+  linkHref,
   normalizePath,
   pathOf,
   projectKey,
@@ -68,8 +69,22 @@ describe("alternates", () => {
 describe("isRouteKey", () => {
   it("accepts a page of the map and rejects one that does not exist yet", () => {
     expect(isRouteKey("home")).toBe(true);
-    expect(isRouteKey("contact")).toBe(false);
+    expect(isRouteKey("quiz")).toBe(false);
     expect(isRouteKey("toString")).toBe(false);
+  });
+});
+
+describe("linkHref", () => {
+  it("writes a page's path, then the subject to preselect, then the anchor", () => {
+    expect(linkHref({ page: "offers", hash: "audit" }, "fr")).toBe("/offres#audit");
+    expect(linkHref({ page: "contact", subject: "sauvetage" }, "en")).toBe(
+      "/en/contact?sujet=sauvetage",
+    );
+    expect(linkHref({ page: "about" }, "fr")).toBe("/a-propos");
+  });
+
+  it("gives no address to a page that does not exist yet", () => {
+    expect(linkHref({ page: "quiz" }, "fr")).toBeUndefined();
   });
 });
 
