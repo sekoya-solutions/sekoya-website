@@ -1,0 +1,127 @@
+{
+  "hero": {
+    "eyebrow": "À propos",
+    "title": "Fabrice Reynaud, Tech Lead freelance.",
+    "bio": [
+      "Je suis Tech Lead freelance, basé en [TODO: région], et je travaille surtout à distance. Depuis [TODO: années d'expérience], je construis, relie et remets d'aplomb des systèmes : e-commerce, systèmes d'information, plateformes IoT.",
+      "Mon métier : arriver sur un projet qui patine, comprendre ce qui bloque, et rendre à l'équipe un cadre où livrer redevient simple."
+    ],
+    "portrait": {
+      "avatarAlt": "L'avatar de Sekoya Solutions : le logo, un arbre dont les racines forment un circuit, dans un anneau doré."
+    }
+  },
+  "values": {
+    "eyebrow": "Valeurs",
+    "title": "Ce qui guide chaque mission.",
+    "items": [
+      {
+        "icon": "shield",
+        "title": "Rigueur",
+        "text": "Des tests, une CI, des revues. Pas par principe : parce que c'est ce qui rend les livraisons ennuyeuses, donc fiables."
+      },
+      {
+        "icon": "eye",
+        "title": "Transparence",
+        "text": "Mes dépôts sont publics, mes décisions sont écrites (ADR), mes mesures sont publiées. Vous voyez ce que je vois."
+      },
+      {
+        "icon": "target",
+        "title": "Pragmatisme",
+        "text": "Le bon niveau d'outillage pour votre équipe, pas celui d'un grand groupe. Je préfère une solution simple qui tient à une solution brillante qui casse."
+      }
+    ]
+  },
+  "bring": {
+    "eyebrow": "Pour vous",
+    "title": "Ce que j'apporte à mes clients.",
+    "items": [
+      "Un diagnostic net en quelques jours",
+      "Un cadre technique que l'équipe s'approprie",
+      "Une livraison plus régulière et plus sûre",
+      "Une passation documentée : vous n'êtes pas dépendant de moi"
+    ]
+  },
+  "stack": {
+    "eyebrow": "Stack",
+    "title": "Avec quoi je travaille.",
+    "groups": [
+      {
+        "title": "Aujourd'hui",
+        "items": [
+          "TypeScript",
+          "Next.js",
+          "Astro",
+          "Node.js",
+          "PostgreSQL",
+          "Unity / C#",
+          "Docker",
+          "AWS",
+          "CI/CD"
+        ]
+      },
+      {
+        "title": "Expérience passée",
+        "items": ["Java", "PHP", "Salesforce", "Talend", "Sage X3", "Systèmes d'information", "IoT"]
+      }
+    ]
+  },
+  "ai": {
+    "id": "ia",
+    "eyebrow": "IA",
+    "title": "Comment je travaille avec l'IA",
+    "lead": "J'utilise tous les jours Claude Code et Cursor, avec les derniers modèles d'Anthropic et de xAI, ainsi que Grok et Grok Imagine pour les maquettes et les visuels. Ils m'aident à aller plus vite ; ils ne décident de rien.",
+    "workflow": {
+      "title": "Du cadrage à la livraison",
+      "steps": [
+        {
+          "title": "Cadrer",
+          "text": "Je décide l'architecture et j'écris la décision (ADR)."
+        },
+        {
+          "title": "Générer",
+          "text": "L'agent propose, selon des règles écrites dans AGENTS.md."
+        },
+        {
+          "title": "Relire et tester",
+          "text": "Je relis chaque ligne ; les tests et la CI doivent passer."
+        },
+        {
+          "title": "Livrer",
+          "text": "Revue, pipeline, déploiement."
+        }
+      ]
+    },
+    "guardrails": {
+      "title": "Mes garde-fous",
+      "items": [
+        { "text": "Des revues de code systématiques." },
+        { "text": "Des tests automatisés qui gardent chaque changement." },
+        { "text": "Des décisions tracées, une par choix technique." },
+        {
+          "text": "Je réponds de chaque ligne livrée, qu'elle ait été écrite par moi ou par un agent."
+        },
+        {
+          "text": "De la transparence : mes projets Transit et Parts disent explicitement que du code est écrit par des agents sous ma direction ; les règles sont dans leurs fichiers AGENTS.md.",
+          "links": [
+            {
+              "label": "AGENTS.md de Sekoya Transit",
+              "href": "https://github.com/sekoya-solutions/sekoya-transit/blob/main/AGENTS.md"
+            },
+            {
+              "label": "AGENTS.md de Sekoya Parts",
+              "href": "https://github.com/sekoya-solutions/sekoya-parts/blob/main/AGENTS.md"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "closing": {
+    "title": "Un projet qui patine ? Parlons-en.",
+    "text": "Un premier échange pour comprendre votre situation, sans engagement.",
+    "actions": [
+      { "label": "Me contacter", "page": "contact", "variant": "primary" },
+      { "label": "Voir les offres", "page": "offers", "variant": "ghost" }
+    ]
+  }
+}

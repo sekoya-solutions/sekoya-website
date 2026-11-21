@@ -34,4 +34,11 @@ export const en = {
     titleSuffix: "— Portfolio — Sekoya Solutions",
     externalLink: "external site",
   },
+  about: {
+    title: "About — Sekoya Solutions",
+    description:
+      "Who I am, my values, what I bring to my clients, my stack, and how I work with AI.",
+    photoMissing: "[TODO: photo to provide]",
+    externalLink: "external site",
+  },
 } satisfies Dictionary;

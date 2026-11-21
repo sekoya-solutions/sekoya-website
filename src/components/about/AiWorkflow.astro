@@ -1,0 +1,108 @@
+---
+/**
+ * How the work is done with AI, step by step: numbered nodes joined by a
+ * circuit line, side by side from 1024 px and one under the other below. The
+ * list takes as many steps as the content gives, each in an equal column.
+ */
+import type { CollectionEntry } from "astro:content";
+import PlaceholderText from "../content/PlaceholderText.astro";
+
+interface Props {
+  copy: CollectionEntry<"about">["data"]["ai"]["workflow"];
+}
+
+const { copy } = Astro.props;
+---
+
+<div class="reveal">
+  <h3 id="workflow-title" class="mb-6 text-[1.15rem] font-semibold lg:mb-8 lg:text-h3">
+    <PlaceholderText text={copy.title} />
+  </h3>
+  <ol class="workflow" aria-labelledby="workflow-title">
+    {
+      copy.steps.map((step, index) => (
+        <li class="workflow-step">
+          <span class="workflow-node" aria-hidden="true">
+            {index + 1}
+          </span>
+          <div>
+            <h4 class="mb-1 text-[1.05rem] font-semibold">
+              <PlaceholderText text={step.title} />
+            </h4>
+            <p class="text-[0.95rem] text-muted">
+              <PlaceholderText text={step.text} />
+            </p>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+</div>
+
+<style>
+  .workflow {
+    display: grid;
+    gap: 28px;
+  }
+
+  .workflow-step {
+    position: relative;
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 16px;
+  }
+
+  /* The circuit line from a node to the next one: down below 1024 px. */
+  .workflow-step:not(:last-child)::before {
+    content: "";
+    position: absolute;
+    top: 52px;
+    bottom: -20px;
+    left: 21px;
+    width: 2px;
+    border-radius: 1px;
+    background: linear-gradient(180deg, var(--mint), rgb(34 192 138 / 0.25));
+  }
+
+  .workflow-node {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1.5px solid var(--mint);
+    border-radius: 50%;
+    box-shadow: var(--glow-mint);
+    color: var(--mint);
+    font-weight: 600;
+  }
+
+  :global(:root[data-theme="light"]) .workflow-node {
+    color: var(--ink);
+  }
+
+  @media (min-width: 64rem) {
+    /* Side by side, one equal column per step, whatever their number. */
+    .workflow {
+      grid-auto-columns: 1fr;
+      grid-auto-flow: column;
+      gap: 26px;
+    }
+
+    .workflow-step {
+      grid-template-columns: none;
+      align-content: start;
+      gap: 18px;
+    }
+
+    /* The line runs right, from a node to the next column's node. */
+    .workflow-step:not(:last-child)::before {
+      top: 21px;
+      right: -18px;
+      bottom: auto;
+      left: 52px;
+      width: auto;
+      height: 2px;
+      background: linear-gradient(90deg, var(--mint), rgb(34 192 138 / 0.25));
+    }
+  }
+</style>

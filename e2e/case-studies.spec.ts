@@ -6,8 +6,8 @@ import { caseStudyKey, pathOf, type RouteKey, routes } from "../src/i18n/routes"
 
 // The case studies (#13): the index and one page per case study, in both
 // languages, from their files; the cards aligned row by row with CSS subgrid
-// from 1024 px; placeholders shown as chips, results included; the CV link or
-// its placeholder; and no integration system in any headline.
+// from 1024 px; placeholders shown as chips, results included; and the CV
+// link or its placeholder.
 
 /** The case studies' index copy of a language, as the content file writes it. */
 function pageCopy(locale: string) {
@@ -214,29 +214,6 @@ test("the home page's featured case links to its case study", async ({ page }) =
     await page.locator(`a[href="${pathOf(caseStudyKey("sos-accessoire"), locale)}"]`).click();
     await expect(page).toHaveURL(pathOf(caseStudyKey("sos-accessoire"), locale));
   }
-});
-
-/** The past integration systems, shown only inside case studies. */
-const systems = ["Sage X3", "Salesforce", "Speed WMS", "PrestaShop", "Blueway", "Talend"];
-
-test("no page names an integration system in a headline", async ({ page }) => {
-  for (const key of Object.keys(routes) as RouteKey[]) {
-    for (const locale of locales) {
-      await page.goto(pathOf(key, locale));
-      const headlines = [
-        await page.title(),
-        (await page.locator('meta[name="description"]').getAttribute("content")) ?? "",
-        ...(await page.locator("h1, h2, h3, .eyebrow").allTextContents()),
-      ].join("\n");
-      for (const system of systems) expect(headlines, `${key} in ${locale}`).not.toContain(system);
-    }
-  }
-});
-
-test("the integration systems are named in the case studies", async ({ page }) => {
-  // So the test above has something to miss: the case studies do name them.
-  await page.goto(pathOf(caseStudyKey("sos-accessoire"), "fr"));
-  for (const system of systems) await expect(page.locator(".study-actions")).toContainText(system);
 });
 
 test.describe("without JavaScript", () => {

@@ -38,7 +38,7 @@ const externalAction = z.object({
 });
 
 /** The icons a card can show (src/components/ui/Icon.astro). */
-const icon = z.enum(["unlock", "layers", "bolt", "search", "rescue"]);
+const icon = z.enum(["unlock", "layers", "bolt", "search", "rescue", "shield", "eye", "target"]);
 
 /** A section's heading: its eyebrow and its title. */
 const sectionHead = { eyebrow: text, title: text };
@@ -336,7 +336,62 @@ const portfolioPage = defineCollection({
   }),
 });
 
+/**
+ * The About page (ADR 0004), one entry per language: who, the values, what
+ * clients get, the technologies, how the work is done with AI, and a closing
+ * band. The portrait is a photo next to the file once the owner provides one;
+ * until then the page shows the brand avatar and a placeholder (ADR 0007).
+ */
+const about = defineCollection({
+  loader: glob({ pattern: "*.json", base: "./src/content/about" }),
+  schema: ({ image }) =>
+    z.object({
+      hero: z.object({
+        eyebrow: text,
+        title: text,
+        bio: z.array(text).min(1),
+        portrait: z.object({
+          photo: z.object({ src: image(), alt: text }).optional(),
+          /** The brand avatar's alternative text, shown until the photo exists. */
+          avatarAlt: text,
+        }),
+      }),
+      values: z.object({
+        ...sectionHead,
+        items: z.array(z.object({ icon, title: text, text })).length(3),
+      }),
+      bring: z.object({ ...sectionHead, items: z.array(text).min(1) }),
+      stack: z.object({
+        ...sectionHead,
+        groups: z.array(z.object({ title: text, items: z.array(text).min(1) })).min(1),
+      }),
+      ai: z.object({
+        /** The section's anchor, `#ia`, the same in every language. */
+        id: anchor,
+        ...sectionHead,
+        lead: text,
+        workflow: z.object({
+          title: text,
+          steps: z.array(z.object({ title: text, text })).min(2),
+        }),
+        guardrails: z.object({
+          title: text,
+          items: z
+            .array(
+              z.object({
+                text,
+                links: z.array(z.object({ label: text, href: https })).optional(),
+              }),
+            )
+            .min(1),
+        }),
+      }),
+      closing: z.object({ title: text, text, actions: z.array(action).min(1) }),
+    }),
+});
+
 export const collections = {
+  about,
   home,
   offers,
   caseStudies,

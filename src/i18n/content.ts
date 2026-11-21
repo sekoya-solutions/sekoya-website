@@ -10,7 +10,7 @@ import { frenchTypographyDeep } from "../lib/french-typography";
 import { type Locale, locales } from "./config";
 
 /** The collections that hold one page's copy, one entry per language. */
-type PageCollection = "home" | "offers" | "caseStudiesPage" | "portfolioPage";
+type PageCollection = "home" | "offers" | "caseStudiesPage" | "portfolioPage" | "about";
 
 /** A page's copy in a language; a missing entry fails the build. */
 async function pageContent<C extends PageCollection>(
@@ -31,6 +31,29 @@ export function homeContent(locale: Locale) {
 /** The offers page's copy in a language. */
 export function offersContent(locale: Locale) {
   return pageContent("offers", locale);
+}
+
+/**
+ * The About page's copy in a language. In French, the portrait's photo keeps
+ * the metadata the build gave it, untouched; its alternative text is typeset.
+ */
+export async function aboutContent(locale: Locale) {
+  const entry = await getEntry("about", locale);
+  if (entry === undefined) throw new Error(`src/content/about/${locale}.json is missing`);
+  const data: CollectionEntry<"about">["data"] = entry.data;
+  if (locale !== "fr") return data;
+  const { photo, ...portrait } = data.hero.portrait;
+  const typeset = frenchTypographyDeep({ ...data, hero: { ...data.hero, portrait } });
+  return {
+    ...typeset,
+    hero: {
+      ...typeset.hero,
+      portrait: {
+        ...typeset.hero.portrait,
+        photo: photo === undefined ? undefined : { ...photo, alt: frenchTypographyDeep(photo.alt) },
+      },
+    },
+  };
 }
 
 /** The case studies' index copy and page labels in a language. */

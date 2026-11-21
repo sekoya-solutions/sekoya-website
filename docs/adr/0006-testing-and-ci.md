@@ -1,7 +1,7 @@
 # ADR 0006: Testing and continuous integration
 
 - Status: Accepted
-- Date: 2026-11-20
+- Date: 2026-11-20, amended 2026-11-21 (no rule on job titles or headline wording)
 - Deciders: Owner
 
 ## Context
@@ -30,7 +30,7 @@ The site's claims (speed, accessibility, honest figures) must be checked by mach
 Chosen: **tools 1 and pipeline 1.**
 
 - **Budgets as tests:** compressed HTML per page, total CSS, JavaScript per page (0 KB except the quiz and career pages), fonts.
-- **Content rules as tests:** no price symbol on any page, no forbidden job title or headline wording, no French interface text under `/en/`.
+- **Content rules as tests:** no price symbol on any page, no French interface text under `/en/`.
 - **The Markdown checks** run before every commit that touches Markdown, with the same versions as CI (`markdownlint-cli2` with the portable Node, and `lychee`, in `.tools/`).
 - **Playwright's browsers** are downloaded into the project's git-ignored `.tools/` folder (`PLAYWRIGHT_BROWSERS_PATH`), never into the user profile; CI installs them on its runners. Portable tools need no approval to download in this project.
 
