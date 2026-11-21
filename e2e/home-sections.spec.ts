@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { expect, type Page, test } from "@playwright/test";
 import { locales } from "../src/i18n/config";
-import { caseStudyKey, pathOf } from "../src/i18n/routes";
+import { caseStudyKey, pathOf, type RouteKey } from "../src/i18n/routes";
 
 // The home sections (#10): their content, in both languages, the scroll
 // reveal in its three modes (CSS scroll-driven animations, the fallback
@@ -86,7 +86,7 @@ test.describe("the home sections", () => {
     });
   }
 
-  test("link only to pages that exist: offers, the case study and other sites", async ({
+  test("link only to pages that exist: offers, the case study, the projects and other sites", async ({
     page,
   }) => {
     for (const locale of locales) {
@@ -98,17 +98,38 @@ test.describe("the home sections", () => {
         .getByRole("main")
         .getByRole("link")
         .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+      const projects = homeCopy(locale).portfolio.projects.map((project: { page: RouteKey }) =>
+        pathOf(project.page, locale),
+      );
       // The hero's offers button, the offers teaser, the featured case study,
-      // then the other sites; the other pages' links appear with their pages.
+      // the portfolio's projects, then the other sites; the other pages' links
+      // appear with their pages.
       expect(hrefs).toEqual([
         pathOf("offers", locale),
         ...offers,
         pathOf(caseStudyKey("sos-accessoire"), locale),
+        ...projects,
         "https://www.malt.fr/profile/fabricereynaud",
         "https://github.com/sekoya-solutions",
       ]);
     }
   });
+
+  for (const locale of locales) {
+    test(`open a project's page from anywhere on its portfolio card in ${locale}`, async ({
+      page,
+    }) => {
+      const projects: { title: string; page: RouteKey }[] = homeCopy(locale).portfolio.projects;
+      for (const [index, project] of projects.entries()) {
+        await page.goto(pathOf("home", locale));
+        const card = page.locator('section[aria-labelledby="portfolio-title"] li.card').nth(index);
+        await expect(card.getByRole("link")).toHaveText(project.title);
+        // The picture, away from the title: the link covers the whole card.
+        await card.click({ position: { x: 20, y: 20 } });
+        await expect(page).toHaveURL(pathOf(project.page, locale));
+      }
+    });
+  }
 
   test("show their placeholders as chips", async ({ page }) => {
     for (const locale of locales) {

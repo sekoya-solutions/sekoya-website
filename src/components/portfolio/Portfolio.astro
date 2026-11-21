@@ -1,0 +1,277 @@
+---
+/**
+ * The portfolio, in the page's language: src/pages/portfolio/index.astro in
+ * French and src/pages/en/portfolio/index.astro in English. Its copy is in
+ * src/content/portfolio-page, and each card comes from a project's file in
+ * src/content/projects, so adding a file adds a card.
+ *
+ * The filters are radio buttons, one per category that has a project, and
+ * the cards of the other categories are hidden with `:has()` (ADR 0005): no
+ * JavaScript. Without `:has()`, every card stays shown.
+ *
+ * The grid has 1, 2 or 3 columns. After the cards, the ghost card fills the
+ * cells left on the last row, its span worked out for each column count
+ * (src/lib/portfolio-grid.ts), and is not shown when that row is full or
+ * while a filter is on.
+ */
+import { projectCategories } from "../../content/project-categories";
+import { translations } from "../../i18n";
+import { pageLocale } from "../../i18n/config";
+import { portfolioPageContent, projects } from "../../i18n/content";
+import { pathOf, projectKey } from "../../i18n/routes";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { ghostSpan, gridColumns } from "../../lib/portfolio-grid";
+import PlaceholderText from "../content/PlaceholderText.astro";
+import ScrollReveal from "../layout/ScrollReveal.astro";
+import ProjectCard from "./ProjectCard.astro";
+
+const locale = pageLocale(Astro.currentLocale);
+const t = translations(locale);
+const copy = await portfolioPageContent(locale);
+const list = await projects(locale);
+const categories = projectCategories.filter((category) =>
+  list.some(({ data }) => data.category === category),
+);
+const spans = list.map(({ data }) => data.span);
+const ghostClasses = gridColumns.map((columns) => `ghost-${columns}-${ghostSpan(spans, columns)}`);
+---
+
+<BaseLayout title={t.portfolio.title} description={t.portfolio.description}>
+  <div class="portfolio-page mx-auto max-w-site px-(--gutter)">
+    <div class="portfolio-head">
+      <div>
+        <p class="eyebrow"><PlaceholderText text={copy.eyebrow} /></p>
+        <h1 class="portfolio-title mt-3.5 font-bold tracking-[-0.02em]">
+          <PlaceholderText text={copy.title} />
+        </h1>
+      </div>
+      <p class="text-[1.02rem] leading-[1.6] font-light text-muted lg:text-lead">
+        <PlaceholderText text={copy.lead} />
+      </p>
+    </div>
+
+    <div class="portfolio">
+      <div class="portfolio-bar">
+        <fieldset class="filters">
+          <legend class="sr-only"><PlaceholderText text={copy.filters.legend} /></legend>
+          <input
+            type="radio"
+            name="category"
+            id="filter-all"
+            value="all"
+            class="filter-input sr-only"
+            checked
+          />
+          <label for="filter-all" class="filter">
+            <PlaceholderText text={copy.filters.all} /> · {list.length}
+          </label>
+          {
+            categories.map((category) => (
+              <>
+                <input
+                  type="radio"
+                  name="category"
+                  id={`filter-${category}`}
+                  value={category}
+                  class="filter-input sr-only"
+                />
+                <label for={`filter-${category}`} class="filter">
+                  <PlaceholderText text={copy.filters.categories[category]} />
+                </label>
+              </>
+            ))
+          }
+        </fieldset>
+        <p class="filters-note"><PlaceholderText text={copy.filters.note} /></p>
+      </div>
+
+      <ul class="projects reveal-group">
+        {
+          list.map((project) => (
+            <ProjectCard
+              project={project}
+              href={pathOf(projectKey(project.slug), locale)}
+              labels={copy.labels}
+              playLabel={copy.demo.play}
+              externalHint={t.portfolio.externalLink}
+            />
+          ))
+        }
+        <li class:list={["ghost", ...ghostClasses]}>
+          <span class="ghost-plus" aria-hidden="true">+</span>
+          <p class="ghost-title"><PlaceholderText text={copy.ghost.title} /></p>
+          <p class="ghost-text"><PlaceholderText text={copy.ghost.text} /></p>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <ScrollReveal />
+</BaseLayout>
+
+<style>
+  .portfolio-page {
+    padding-top: 32px;
+    padding-bottom: 72px;
+  }
+
+  .portfolio-head {
+    display: grid;
+    gap: 18px;
+  }
+
+  .portfolio-title {
+    font-size: var(--fs-h1);
+    line-height: 1.08;
+  }
+
+  .portfolio-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 24px;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 36px;
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .filter {
+    padding: 9px 18px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-pill);
+    color: var(--ink);
+    font-size: var(--fs-sm);
+    cursor: pointer;
+  }
+
+  .filter:hover {
+    border-color: rgb(34 192 138 / 0.55);
+  }
+
+  /* The radio button is hidden: its label shows the focus ring. */
+  .filter-input:focus-visible + .filter {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+  }
+
+  .filter-input:checked + .filter {
+    border-color: var(--mint);
+    background: rgb(34 192 138 / 0.08);
+    color: var(--link);
+  }
+
+  :global(:root[data-theme="light"]) .filter-input:checked + .filter {
+    border-color: var(--link);
+    background: rgb(15 107 90 / 0.07);
+  }
+
+  .filters-note {
+    color: var(--muted);
+    font-size: var(--fs-xs);
+  }
+
+  .projects {
+    display: grid;
+    gap: 18px;
+    margin-top: 28px;
+  }
+
+  .ghost {
+    display: none;
+    place-content: center;
+    justify-items: center;
+    gap: 10px;
+    min-height: 260px;
+    padding: 32px;
+    border: 1px dashed var(--line-strong);
+    border-radius: var(--r-lg);
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent 0 14px,
+      rgb(157 189 204 / 0.035) 14px 28px
+    );
+    text-align: center;
+  }
+
+  .ghost-plus {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    margin-bottom: 14px;
+    border: 1px dashed var(--line-strong);
+    border-radius: 50%;
+    color: var(--muted);
+    font-size: 1.4rem;
+    font-weight: 300;
+  }
+
+  .ghost-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .ghost-text {
+    max-width: 18rem;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+
+  /* One column: the last row is always full. Two and three columns: the
+     ghost card takes what is left of the last row (Portfolio.astro's
+     frontmatter), or is not shown. */
+  @media (min-width: 48rem) {
+    .projects {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .ghost-2-1 {
+      display: grid;
+      grid-column: span 1;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .portfolio-page {
+      padding-top: 40px;
+      padding-bottom: 96px;
+    }
+
+    .portfolio-head {
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 60px;
+      align-items: end;
+    }
+
+    .projects {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 26px;
+    }
+
+    .ghost {
+      display: none;
+    }
+
+    .ghost-3-1 {
+      display: grid;
+      grid-column: span 1;
+    }
+
+    .ghost-3-2 {
+      display: grid;
+      grid-column: span 2;
+    }
+  }
+
+  /* A filter hides the cards of the other categories, and the ghost card. */
+  .portfolio:has(#filter-game:checked) :global(.project:not([data-category="game"])),
+  .portfolio:has(#filter-ecommerce:checked) :global(.project:not([data-category="ecommerce"])),
+  .portfolio:has(#filter-web:checked) :global(.project:not([data-category="web"])),
+  .portfolio:has(.filter-input:not([value="all"]):checked) .ghost {
+    display: none;
+  }
+</style>

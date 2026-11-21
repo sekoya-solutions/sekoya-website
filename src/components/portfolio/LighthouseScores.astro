@@ -1,0 +1,116 @@
+---
+/**
+ * A project's Lighthouse scores (ADR 0007): each score in a ring with what
+ * it measures, under a label with the measurement date, and its source on a
+ * project's page. For this site (`this-site`), its own scores, which the
+ * measurement file brings (#21): until then, the label says the measurement
+ * is pending, and no number is shown.
+ */
+import type { Project } from "../../i18n/content";
+import { numericDate } from "../../lib/dates";
+import PlaceholderText from "../content/PlaceholderText.astro";
+import Icon from "../ui/Icon.astro";
+
+interface Props {
+  lighthouse: NonNullable<Project["data"]["lighthouse"]>;
+  labels: {
+    lighthouse: string;
+    lighthouseSite: string;
+    lighthousePending: string;
+    source: string;
+  };
+  /** The hidden words that say a link leads to another site; with them, the source is linked. */
+  externalHint?: string;
+}
+
+const { lighthouse, labels, externalHint } = Astro.props;
+---
+
+<div class="scores">
+  {
+    lighthouse === "this-site" ? (
+      <p class="scores-label">
+        <PlaceholderText text={labels.lighthouseSite} /> ·{" "}
+        <PlaceholderText text={labels.lighthousePending} />
+      </p>
+    ) : (
+      <>
+        <p class="scores-label">
+          <PlaceholderText text={labels.lighthouse} />, {numericDate(lighthouse.measuredOn)}
+          {externalHint !== undefined && (
+            <>
+              {" · "}
+              <a href={lighthouse.source} class="scores-source">
+                <PlaceholderText text={labels.source} />
+                <span class="sr-only">({externalHint})</span>
+                <Icon name="external" size={13} />
+              </a>
+            </>
+          )}
+        </p>
+        <ul class="scores-list">
+          {lighthouse.scores.map(({ label, score }) => (
+            <li>
+              <span class="scores-ring">{score}</span>
+              <PlaceholderText text={label} />
+            </li>
+          ))}
+        </ul>
+      </>
+    )
+  }
+</div>
+
+<style>
+  .scores {
+    display: grid;
+    gap: 8px;
+  }
+
+  .scores-label {
+    color: var(--muted);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .scores-source {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--link);
+    letter-spacing: 0.04em;
+  }
+
+  .scores-source:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .scores-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+  }
+
+  .scores-list li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--link);
+    font-size: var(--fs-sm);
+  }
+
+  .scores-ring {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border: 2px solid var(--mint);
+    border-radius: 50%;
+    color: var(--ink);
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+</style>

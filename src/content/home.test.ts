@@ -30,6 +30,6 @@ describe("the home copy", () => {
   });
 
   it("has links, so the comparison above checks something", () => {
-    expect(shared(entries.fr).filter(([path]) => path.endsWith(".page"))).toHaveLength(8);
+    expect(shared(entries.fr).filter(([path]) => path.endsWith(".page"))).toHaveLength(11);
   });
 });

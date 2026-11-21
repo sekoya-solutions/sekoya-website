@@ -1,0 +1,337 @@
+---
+/**
+ * A project's card in the portfolio's grid: its picture (a screenshot, or
+ * this site's logo on a glow) with its category chip, its badges, title and
+ * summary, its figures with their date (ADR 0007), its Lighthouse scores, its
+ * stack, and its links. A playable demo is played on the project's page, so
+ * the card's play links lead there. From 768 px, a card may span two columns.
+ */
+import { Picture } from "astro:assets";
+import type { Project } from "../../i18n/content";
+import { numericDate } from "../../lib/dates";
+import LogoIcon from "../brand/LogoIcon.astro";
+import PlaceholderText from "../content/PlaceholderText.astro";
+import Button from "../ui/Button.astro";
+import Chip from "../ui/Chip.astro";
+import Icon from "../ui/Icon.astro";
+import LighthouseScores from "./LighthouseScores.astro";
+
+interface Props {
+  project: Project;
+  /** The project's page. */
+  href: string;
+  labels: {
+    view: string;
+    play: string;
+    site: string;
+    sourceCode: string;
+    lighthouse: string;
+    lighthouseSite: string;
+    lighthousePending: string;
+    figuresAsOf: string;
+    source: string;
+  };
+  /** The play button on the picture. */
+  playLabel: string;
+  externalHint: string;
+}
+
+const { project, href, labels, playLabel, externalHint } = Astro.props;
+const { data } = project;
+const demoHref = `${href}#demo`;
+const statDates = [...new Set(data.stats.map(({ measuredOn }) => numericDate(measuredOn)))];
+---
+
+<li class:list={["card project reveal", data.span === 2 && "project-wide"]} data-category={data.category}>
+  <div class="project-media">
+    {
+      data.cover === undefined ? (
+        <div class="project-logo">
+          <LogoIcon class="h-[150px] w-auto" />
+        </div>
+      ) : (
+        <Picture
+          src={data.cover.src}
+          alt={data.cover.alt}
+          formats={["avif", "webp"]}
+          widths={[400, 700, 1000]}
+          sizes={
+            data.span === 2
+              ? "(min-width: 1024px) 740px, 100vw"
+              : "(min-width: 1024px) 360px, (min-width: 768px) 50vw, 100vw"
+          }
+          loading="lazy"
+          decoding="async"
+          class="project-shot"
+        />
+      )
+    }
+    <span class="project-media-label"><PlaceholderText text={data.mediaLabel} /></span>
+    {
+      data.demo?.kind === "play" && (
+        <a href={demoHref} class="project-play">
+          <span class="project-play-icon">
+            <Icon name="play" size={16} />
+          </span>
+          <PlaceholderText text={playLabel} />
+        </a>
+      )
+    }
+  </div>
+
+  <div class="project-body">
+    <ul class="flex flex-wrap gap-2">
+      {
+        data.badges.map((badge, index) => (
+          <li>
+            <Chip variant={index === 0 ? "mint" : "neutral"}>
+              <PlaceholderText text={badge} />
+            </Chip>
+          </li>
+        ))
+      }
+    </ul>
+    <h2 class="project-title">
+      <a href={href} class="project-title-link"><PlaceholderText text={data.title} /></a>
+    </h2>
+    <p class="project-summary"><PlaceholderText text={data.summary} /></p>
+
+    {
+      data.stats.length > 0 && (
+        <div class="grid gap-2">
+          <ul class="flex flex-wrap gap-2">
+            {data.stats.map((stat) => (
+              <li>
+                <Chip variant="gold">
+                  <PlaceholderText text={stat.value} />
+                </Chip>
+              </li>
+            ))}
+          </ul>
+          <p class="project-dates">
+            <PlaceholderText text={labels.figuresAsOf} /> {statDates.join(", ")}
+          </p>
+        </div>
+      )
+    }
+
+    {data.lighthouse !== undefined && <LighthouseScores lighthouse={data.lighthouse} labels={labels} />}
+
+    <ul class="flex flex-wrap gap-1.5">
+      {
+        data.stack.map((technology) => (
+          <li>
+            <Chip>
+              <PlaceholderText text={technology} />
+            </Chip>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="project-actions">
+      {
+        data.demo?.kind === "play" && (
+          <Button href={demoHref} variant="primary" size="sm" leadingIcon="play">
+            <PlaceholderText text={labels.play} />
+          </Button>
+        )
+      }
+      {
+        data.demo?.kind === "site" && (
+          <Button
+            href={data.demo.url}
+            variant="primary"
+            size="sm"
+            icon="external"
+            externalHint={externalHint}
+          >
+            <PlaceholderText text={labels.site} />
+          </Button>
+        )
+      }
+      <Button
+        href={data.repo}
+        variant="ghost"
+        size="sm"
+        leadingIcon="github"
+        externalHint={externalHint}
+      >
+        <PlaceholderText text={labels.sourceCode} />
+      </Button>
+      <a href={href} class="project-view">
+        <PlaceholderText text={labels.view} />
+        <Icon name="arrow" size={16} />
+      </a>
+    </div>
+  </div>
+</li>
+
+<style>
+  .project {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .project-media {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border-bottom: 1px solid var(--line);
+    background: #0c242c;
+  }
+
+  .project-shot {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+  }
+
+  /* The bottom of the screenshot fades into the card. */
+  .project-media::after {
+    position: absolute;
+    inset: 55% 0 0;
+    background: linear-gradient(180deg, transparent, rgb(14 38 47 / 0.75));
+    content: "";
+    pointer-events: none;
+  }
+
+  .project-logo {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    background:
+      radial-gradient(circle at 50% 45%, rgb(34 192 138 / 0.22), transparent 60%),
+      #0c242c;
+  }
+
+  :global(:root[data-theme="light"]) .project-media {
+    background: var(--surface-2);
+  }
+
+  :global(:root[data-theme="light"]) .project-logo {
+    background:
+      radial-gradient(circle at 50% 45%, rgb(22 146 122 / 0.16), transparent 60%),
+      var(--surface-2);
+  }
+
+  :global(:root[data-theme="light"]) .project-media::after {
+    background: linear-gradient(180deg, transparent, rgb(14 38 47 / 0.35));
+  }
+
+  .project-media-label {
+    position: absolute;
+    z-index: 1;
+    top: 14px;
+    right: 14px;
+    padding: 4px 11px;
+    border: 1px solid rgb(232 211 168 / 0.45);
+    border-radius: var(--r-pill);
+    background: rgb(8 28 34 / 0.82);
+    color: #eef4f6;
+    font-size: var(--fs-xs);
+    font-weight: 500;
+  }
+
+  /* Shown where the demo can be played (demo-facade.ts): elsewhere, the
+     project's page shows a notice instead. */
+  .project-play {
+    position: absolute;
+    z-index: 1;
+    bottom: 20px;
+    left: 20px;
+    display: none;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 20px 8px 8px;
+    border: 1px solid rgb(34 192 138 / 0.55);
+    border-radius: var(--r-pill);
+    background: rgb(8 28 34 / 0.85);
+    box-shadow: var(--glow-mint);
+    color: #eef4f6;
+    font-weight: 500;
+  }
+
+  .project-play-icon {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--mint);
+    color: #0b2027;
+  }
+
+  /* The links sit at the bottom of the card, level with its neighbour's. */
+  .project-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 14px;
+    padding: 24px 22px 26px;
+  }
+
+  .project-title {
+    font-size: var(--fs-h3);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .project-title-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .project-summary {
+    color: var(--muted);
+    font-size: 0.98rem;
+    line-height: 1.6;
+  }
+
+  .project-dates {
+    color: var(--muted);
+    font-size: var(--fs-xs);
+  }
+
+  .project-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+  }
+
+  .project-view {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    color: var(--link);
+    font-size: var(--fs-sm);
+    font-weight: 500;
+  }
+
+  .project-view:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  @media (min-width: 48rem) {
+    .project-wide {
+      grid-column: span 2;
+    }
+
+    .project-body {
+      padding: 26px 28px 28px;
+    }
+  }
+
+  @media (min-width: 80rem) and (pointer: fine) {
+    .project-play {
+      display: inline-flex;
+    }
+  }
+</style>

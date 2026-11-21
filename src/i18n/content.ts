@@ -5,11 +5,12 @@
  */
 import { type CollectionEntry, getCollection, getEntry } from "astro:content";
 import { caseStudyDifferences } from "../content/case-study-parity";
+import { projectDifferences } from "../content/project-parity";
 import { frenchTypographyDeep } from "../lib/french-typography";
 import { type Locale, locales } from "./config";
 
 /** The collections that hold one page's copy, one entry per language. */
-type PageCollection = "home" | "offers" | "caseStudiesPage";
+type PageCollection = "home" | "offers" | "caseStudiesPage" | "portfolioPage";
 
 /** A page's copy in a language; a missing entry fails the build. */
 async function pageContent<C extends PageCollection>(
@@ -60,7 +61,7 @@ async function caseStudiesAsWritten(locale: Locale): Promise<CaseStudy[]> {
 
 /**
  * The case studies of a language, in their index order. Each entry's id is
- * `<locale>/<slug>`, from its file (src/content/case-study-slugs.ts). They
+ * `<locale>/<slug>`, from its file (src/content/slugs.ts). They
  * must say the same in every language (src/content/case-study-parity.ts), or
  * the build fails.
  */
@@ -82,5 +83,70 @@ export async function caseStudy(locale: Locale, slug: string): Promise<CaseStudy
   const found = (await caseStudies(locale)).find((study) => study.slug === slug);
   if (found === undefined)
     throw new Error(`src/content/case-studies/${locale}/${slug}.mdx is missing`);
+  return found;
+}
+
+/** The portfolio's copy and the labels of its cards and project pages in a language. */
+export function portfolioPageContent(locale: Locale) {
+  return pageContent("portfolioPage", locale);
+}
+
+/** A portfolio project in a language: its slug, its facts, and its entry, to render its body. */
+export interface Project {
+  slug: string;
+  data: CollectionEntry<"projects">["data"];
+  entry: CollectionEntry<"projects">;
+}
+
+/** The projects of a language as written, in their grid order. */
+async function projectsAsWritten(locale: Locale): Promise<Project[]> {
+  const prefix = `${locale}/`;
+  const entries = await getCollection("projects", ({ id }) => id.startsWith(prefix));
+  const projects = entries
+    .map((entry) => ({ slug: entry.id.slice(prefix.length), data: entry.data, entry }))
+    .sort((a, b) => a.data.order - b.data.order);
+  const orders = projects.map(({ data }) => data.order);
+  if (new Set(orders).size !== orders.length) {
+    throw new Error(`Two ${locale} projects have the same order`);
+  }
+  return projects;
+}
+
+/**
+ * French typography on a project's texts. Its images keep the metadata the
+ * build gave them, untouched; their alternative texts are typeset.
+ */
+function typesetProject(data: Project["data"]): Project["data"] {
+  const { cover, screenshots, ...texts } = data;
+  return {
+    ...frenchTypographyDeep(texts),
+    cover: cover === undefined ? undefined : { ...cover, alt: frenchTypographyDeep(cover.alt) },
+    screenshots: screenshots.map((shot) => ({ ...shot, alt: frenchTypographyDeep(shot.alt) })),
+  };
+}
+
+/**
+ * The portfolio's projects in a language, in their grid order. Each entry's
+ * id is `<locale>/<slug>`, from its file (src/content/slugs.ts). They must say
+ * the same in every language (src/content/project-parity.ts), or the build
+ * fails.
+ */
+export async function projects(locale: Locale): Promise<Project[]> {
+  const written = await projectsAsWritten(locale);
+  for (const other of locales.filter((candidate) => candidate !== locale)) {
+    const differences = projectDifferences(written, await projectsAsWritten(other));
+    if (differences.length > 0) {
+      throw new Error(`The ${locale} and ${other} projects differ: ${differences.join("; ")}`);
+    }
+  }
+  return locale === "fr"
+    ? written.map((project) => ({ ...project, data: typesetProject(project.data) }))
+    : written;
+}
+
+/** One portfolio project in a language; a missing one fails the build. */
+export async function project(locale: Locale, slug: string): Promise<Project> {
+  const found = (await projects(locale)).find((candidate) => candidate.slug === slug);
+  if (found === undefined) throw new Error(`src/content/projects/${locale}/${slug}.mdx is missing`);
   return found;
 }

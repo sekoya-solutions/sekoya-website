@@ -1,0 +1,40 @@
+{
+  "eyebrow": "Portfolio",
+  "title": "Des projets que vous pouvez ouvrir, jouer et lire.",
+  "lead": "Chaque projet est public : code, décisions d'architecture et mesures. Rien à croire sur parole.",
+  "filters": {
+    "legend": "Filtrer les projets",
+    "all": "Tous",
+    "note": "Filtres en CSS pur (:has et boutons radio), sans JavaScript",
+    "categories": { "game": "Jeu", "ecommerce": "E-commerce", "web": "Web" }
+  },
+  "ghost": {
+    "title": "Prochain projet",
+    "text": "D'autres réalisations arrivent. La grille est prévue pour grandir."
+  },
+  "labels": {
+    "view": "Voir le projet",
+    "play": "Jouer à la démo",
+    "site": "Voir le site",
+    "sourceCode": "Code source",
+    "lighthouse": "Lighthouse mobile (médiane)",
+    "lighthouseSite": "Lighthouse mobile",
+    "lighthousePending": "mesure en cours",
+    "figuresAsOf": "Chiffres publiés dans le dépôt, au",
+    "measuredOn": "mesuré le",
+    "source": "source",
+    "back": "Tous les projets",
+    "figures": "Les chiffres",
+    "stack": "Stack",
+    "demonstrates": "Ce que ce projet démontre",
+    "screenshots": "Captures d'écran"
+  },
+  "demo": {
+    "title": "La démo jouable",
+    "play": "Jouer dans le navigateur",
+    "frameTitle": "démo jouable",
+    "notice": "La démo est prévue pour un navigateur de bureau, avec une souris.",
+    "open": "Ouvrir la démo",
+    "fullscreen": "Plein écran"
+  }
+}

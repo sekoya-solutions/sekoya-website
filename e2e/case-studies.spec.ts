@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { expect, type Page, test } from "@playwright/test";
-import { caseStudiesFolder, caseStudySlugs } from "../src/content/case-study-slugs";
+import { caseStudiesFolder, caseStudySlugs } from "../src/content/slugs";
 import { locales } from "../src/i18n/config";
 import { caseStudyKey, pathOf, type RouteKey, routes } from "../src/i18n/routes";
 

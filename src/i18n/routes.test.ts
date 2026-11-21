@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { caseStudySlugs } from "../content/case-study-slugs";
+import { caseStudySlugs, projectSlugs } from "../content/slugs";
 import { locales } from "./config";
 import {
   alternates,
@@ -7,6 +7,7 @@ import {
   isRouteKey,
   normalizePath,
   pathOf,
+  projectKey,
   routeOf,
   routes,
 } from "./routes";
@@ -90,5 +91,20 @@ describe("the case studies' routes", () => {
     expect(() => pathOf(caseStudyKey("nowhere"), "fr")).toThrow(
       'The page "caseStudy/nowhere" is missing from src/i18n/routes.ts',
     );
+  });
+});
+
+describe("the portfolio's routes", () => {
+  it("give each project file a page under the portfolio, in every language", () => {
+    expect(routes.portfolio).toEqual({ fr: "/portfolio", en: "/en/portfolio" });
+    for (const slug of projectSlugs()) {
+      const key = projectKey(slug);
+      expect(isRouteKey(key)).toBe(true);
+      expect(routes[key]).toEqual({ fr: `/portfolio/${slug}`, en: `/en/portfolio/${slug}` });
+    }
+  });
+
+  it("have no page for a project without a file", () => {
+    expect(isRouteKey(projectKey("nowhere"))).toBe(false);
   });
 });

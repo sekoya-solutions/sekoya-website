@@ -1,0 +1,398 @@
+---
+/**
+ * A project's page, in the page's language: src/pages/portfolio/[slug].astro
+ * in French and src/pages/en/portfolio/[slug].astro in English. Its facts are
+ * in the project's frontmatter, what it demonstrates in the MDX body, and its
+ * labels in src/content/portfolio-page.
+ *
+ * The hero (badges, title, summary, links), the playable demo (behind its
+ * facade, DemoFacade.astro) or the cover, the figures with their dates and
+ * sources (ADR 0007), what the project demonstrates, the screenshots and the
+ * stack.
+ */
+import { Picture } from "astro:assets";
+import { render } from "astro:content";
+import { translations } from "../../i18n";
+import { pageLocale } from "../../i18n/config";
+import { portfolioPageContent, project } from "../../i18n/content";
+import { pathOf } from "../../i18n/routes";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { numericDate } from "../../lib/dates";
+import LogoIcon from "../brand/LogoIcon.astro";
+import PlaceholderText from "../content/PlaceholderText.astro";
+import Button from "../ui/Button.astro";
+import Chip from "../ui/Chip.astro";
+import Icon from "../ui/Icon.astro";
+import DemoFacade from "./DemoFacade.astro";
+import LighthouseScores from "./LighthouseScores.astro";
+
+interface Props {
+  slug: string;
+}
+
+const locale = pageLocale(Astro.currentLocale);
+const t = translations(locale);
+const copy = await portfolioPageContent(locale);
+const { data, entry } = await project(locale, Astro.props.slug);
+const { Content } = await render(entry);
+const { labels } = copy;
+const externalHint = t.portfolio.externalLink;
+const hasFigures = data.stats.length > 0 || data.lighthouse !== undefined;
+---
+
+<BaseLayout title={`${data.title} ${t.portfolio.titleSuffix}`} description={data.summary}>
+  <article class="project-page mx-auto max-w-site px-(--gutter)">
+    <a href={pathOf("portfolio", locale)} class="project-back">
+      <Icon name="arrow" size={16} class="project-back-icon" />
+      <PlaceholderText text={labels.back} />
+    </a>
+
+    <header class="project-hero">
+      <ul class="flex flex-wrap gap-2">
+        {
+          data.badges.map((badge, index) => (
+            <li>
+              <Chip variant={index === 0 ? "mint" : "neutral"}>
+                <PlaceholderText text={badge} />
+              </Chip>
+            </li>
+          ))
+        }
+      </ul>
+      <h1 class="project-name font-bold tracking-[-0.02em]">
+        <PlaceholderText text={data.title} />
+      </h1>
+      <p class="project-lead text-lead font-light text-muted">
+        <PlaceholderText text={data.summary} />
+      </p>
+      <div class="flex flex-wrap gap-3">
+        {
+          data.demo?.kind === "play" && (
+            <Button href="#demo" variant="primary" leadingIcon="play">
+              <PlaceholderText text={labels.play} />
+            </Button>
+          )
+        }
+        {
+          data.demo?.kind === "site" && (
+            <Button href={data.demo.url} variant="primary" icon="external" externalHint={externalHint}>
+              <PlaceholderText text={labels.site} />
+            </Button>
+          )
+        }
+        <Button href={data.repo} variant="ghost" leadingIcon="github" externalHint={externalHint}>
+          <PlaceholderText text={labels.sourceCode} />
+        </Button>
+      </div>
+    </header>
+
+    {
+      data.demo?.kind === "play" && data.cover !== undefined ? (
+        <section id="demo" aria-labelledby="demo-title" class="project-section project-demo">
+          <h2 id="demo-title" class="project-label">
+            <PlaceholderText text={copy.demo.title} />
+          </h2>
+          <DemoFacade
+            url={data.demo.url}
+            poster={data.cover}
+            frameTitle={`${data.title} — ${copy.demo.frameTitle}`}
+            labels={copy.demo}
+            externalHint={externalHint}
+          />
+        </section>
+      ) : data.cover !== undefined ? (
+        <Picture
+          src={data.cover.src}
+          alt={data.cover.alt}
+          formats={["avif", "webp"]}
+          widths={[600, 1000, 1400]}
+          sizes="(min-width: 1280px) 1180px, 100vw"
+          decoding="async"
+          class="project-cover"
+        />
+      ) : (
+        <div class="project-cover project-logo">
+          <LogoIcon class="h-[180px] w-auto" />
+        </div>
+      )
+    }
+
+    <div class="project-steps">
+      {
+        hasFigures && (
+          <section aria-labelledby="figures-title" class="project-step">
+            <h2 id="figures-title" class="project-label">
+              <PlaceholderText text={labels.figures} />
+            </h2>
+            <div class="grid gap-5">
+              {data.stats.length > 0 && (
+                <ul class="project-stats">
+                  {data.stats.map((stat) => (
+                    <li>
+                      <Chip variant="gold">
+                        <PlaceholderText text={stat.value} />
+                      </Chip>
+                      <span class="project-stat-meta">
+                        <PlaceholderText text={labels.measuredOn} /> {numericDate(stat.measuredOn)}
+                        {" · "}
+                        <a href={stat.source} class="project-source">
+                          <PlaceholderText text={labels.source} />
+                          <span class="sr-only">({externalHint})</span>
+                          <Icon name="external" size={13} />
+                        </a>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {data.lighthouse !== undefined && (
+                <LighthouseScores
+                  lighthouse={data.lighthouse}
+                  labels={labels}
+                  externalHint={externalHint}
+                />
+              )}
+            </div>
+          </section>
+        )
+      }
+
+      <section aria-labelledby="demonstrates-title" class="project-step">
+        <h2 id="demonstrates-title" class="project-label">
+          <PlaceholderText text={labels.demonstrates} />
+        </h2>
+        <div class="project-body"><Content /></div>
+      </section>
+
+      {
+        data.screenshots.length > 0 && (
+          <section aria-labelledby="screenshots-title" class="project-step">
+            <h2 id="screenshots-title" class="project-label">
+              <PlaceholderText text={labels.screenshots} />
+            </h2>
+            <ul class="project-shots">
+              {data.screenshots.map((shot) => (
+                <li>
+                  <Picture
+                    src={shot.src}
+                    alt={shot.alt}
+                    formats={["avif", "webp"]}
+                    widths={[500, 800, 1100]}
+                    sizes="(min-width: 1024px) 480px, (min-width: 768px) 50vw, 100vw"
+                    loading="lazy"
+                    decoding="async"
+                    class="project-shot"
+                  />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+
+      <section aria-labelledby="stack-title" class="project-step">
+        <h2 id="stack-title" class="project-label"><PlaceholderText text={labels.stack} /></h2>
+        <ul class="flex flex-wrap gap-1.5">
+          {
+            data.stack.map((technology) => (
+              <li>
+                <Chip>
+                  <PlaceholderText text={technology} />
+                </Chip>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .project-page {
+    padding-top: 32px;
+    padding-bottom: 72px;
+  }
+
+  .project-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--link);
+    font-size: var(--fs-sm);
+    font-weight: 500;
+  }
+
+  .project-back:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  /* The arrow points back. */
+  .project-back :global(.project-back-icon) {
+    transform: scaleX(-1);
+  }
+
+  .project-hero {
+    display: grid;
+    gap: 18px;
+    justify-items: start;
+    margin-top: 28px;
+  }
+
+  .project-name {
+    font-size: var(--fs-h1);
+    line-height: 1.08;
+  }
+
+  .project-lead {
+    max-width: 44rem;
+  }
+
+  .project-section,
+  .project-cover {
+    margin-top: 44px;
+  }
+
+  .project-cover {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    object-fit: cover;
+    object-position: top;
+  }
+
+  .project-logo {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 21 / 9;
+    background:
+      radial-gradient(circle at 50% 45%, rgb(34 192 138 / 0.22), transparent 60%),
+      #0c242c;
+  }
+
+  :global(:root[data-theme="light"]) .project-logo {
+    background:
+      radial-gradient(circle at 50% 45%, rgb(22 146 122 / 0.16), transparent 60%),
+      var(--surface-2);
+  }
+
+  .project-steps {
+    display: grid;
+    gap: 34px;
+    margin-top: 48px;
+  }
+
+  .project-label {
+    margin-bottom: 12px;
+    color: var(--gold);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  :global(:root[data-theme="light"]) .project-label {
+    color: var(--muted);
+  }
+
+  .project-stats {
+    display: grid;
+    gap: 10px;
+  }
+
+  .project-stats li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    align-items: center;
+  }
+
+  .project-stat-meta {
+    color: var(--muted);
+    font-size: var(--fs-sm);
+  }
+
+  .project-source {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--link);
+  }
+
+  .project-source:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .project-body {
+    max-width: 46rem;
+    font-size: 1.02rem;
+    line-height: 1.6;
+  }
+
+  .project-body :global(ul) {
+    display: grid;
+    gap: 12px;
+    padding-left: 1.2em;
+    list-style: disc;
+  }
+
+  .project-body :global(li::marker) {
+    color: var(--mint);
+  }
+
+  .project-body :global(strong) {
+    font-weight: 600;
+  }
+
+  .project-shots {
+    display: grid;
+    gap: 16px;
+  }
+
+  .project-shots :global(.project-shot) {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+  }
+
+  @media (min-width: 48rem) {
+    .project-shots {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .project-page {
+      padding-top: 40px;
+      padding-bottom: 96px;
+    }
+
+    .project-section,
+    .project-cover {
+      margin-top: 56px;
+    }
+
+    .project-steps {
+      gap: 40px;
+      margin-top: 64px;
+    }
+
+    /* The label sits beside its content, as on a case study's page. */
+    .project-step {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 24px;
+      align-items: baseline;
+    }
+
+    .project-label {
+      margin-bottom: 0;
+    }
+  }
+</style>

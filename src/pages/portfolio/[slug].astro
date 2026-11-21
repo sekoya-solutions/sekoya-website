@@ -1,0 +1,16 @@
+---
+/**
+ * One page per portfolio project, from the projects' files
+ * (src/content/slugs.ts), the same slugs in every language.
+ */
+import ProjectPage from "../../components/portfolio/ProjectPage.astro";
+import { projectSlugs } from "../../content/slugs";
+
+export function getStaticPaths() {
+  return projectSlugs().map((slug) => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+---
+
+<ProjectPage slug={slug} />

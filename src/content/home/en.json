@@ -112,7 +112,8 @@
         "text": "A transport management game in Unity, playable in the browser.",
         "image": "sekoya-transit",
         "alt": "The Sekoya Transit game: an isometric map with roads, towns and the active contracts.",
-        "stack": ["Unity", "C#", "WebGL"]
+        "stack": ["Unity", "C#", "WebGL"],
+        "page": "project/sekoya-transit"
       },
       {
         "title": "Sekoya Parts",
@@ -120,14 +121,16 @@
         "measuredOn": "2026-11-17",
         "image": "sekoya-parts",
         "alt": "The Sekoya Parts shop's home page: a parts search by appliance brand, type and model, above a photo of spare parts.",
-        "stack": ["Next.js", "Payload", "PostgreSQL"]
+        "stack": ["Next.js", "Payload", "PostgreSQL"],
+        "page": "project/sekoya-parts"
       },
       {
         "title": "This site",
         "text": "Astro, zero JS by default, public source code.",
         "image": "logo",
         "alt": "",
-        "stack": ["Astro", "Tailwind CSS", "TypeScript"]
+        "stack": ["Astro", "Tailwind CSS", "TypeScript"],
+        "page": "project/sekoya-website"
       }
     ]
   },

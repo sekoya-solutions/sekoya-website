@@ -112,7 +112,8 @@
         "text": "Jeu de gestion de transport en Unity, jouable dans le navigateur.",
         "image": "sekoya-transit",
         "alt": "Le jeu Sekoya Transit : une carte en vue isométrique avec des routes, des villes et le tableau de bord des contrats.",
-        "stack": ["Unity", "C#", "WebGL"]
+        "stack": ["Unity", "C#", "WebGL"],
+        "page": "project/sekoya-transit"
       },
       {
         "title": "Sekoya Parts",
@@ -120,14 +121,16 @@
         "measuredOn": "2026-11-17",
         "image": "sekoya-parts",
         "alt": "La page d'accueil de la boutique Sekoya Parts : une recherche de pièces par marque, type et modèle d'appareil, au-dessus d'une photo de pièces détachées.",
-        "stack": ["Next.js", "Payload", "PostgreSQL"]
+        "stack": ["Next.js", "Payload", "PostgreSQL"],
+        "page": "project/sekoya-parts"
       },
       {
         "title": "Ce site",
         "text": "Astro, zéro JS par défaut, code source public.",
         "image": "logo",
         "alt": "",
-        "stack": ["Astro", "Tailwind CSS", "TypeScript"]
+        "stack": ["Astro", "Tailwind CSS", "TypeScript"],
+        "page": "project/sekoya-website"
       }
     ]
   },
