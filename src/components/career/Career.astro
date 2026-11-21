@@ -580,6 +580,17 @@ Astro.csp.insertScriptHash(careerRingsHash);
       height: 300vh;
     }
 
+    /* At the track's end, the footer follows the pinned block directly, with
+       no page padding or footer margin in between: the block, about as tall
+       as the screen, then leaves it only by the footer's height (#51). */
+    .career-page {
+      padding-bottom: 0;
+    }
+
+    :global(main:has([data-career-stage]) + footer) {
+      margin-top: 0;
+    }
+
     .stage-pin {
       --ring-size: min(700px, calc(100vh - 11rem));
 

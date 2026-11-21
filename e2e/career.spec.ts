@@ -337,11 +337,72 @@ test.describe("from 1280 px wide and 640 px tall, with motion", () => {
     expect(
       Math.abs((await page_(".stage", "bottom")) - (await page_(".stage-pin", "bottom"))),
     ).toBeLessThan(2);
-    // Then only the spacing every page has before the footer: the page's
-    // 96 px bottom padding and the footer's 96 px top margin.
+    // Then the footer, directly: no page padding or footer margin between
+    // them, so no empty band under the legend (#51).
     expect(
-      (await page_("footer", "top")) - (await page_(".stage-pin", "bottom")),
-    ).toBeLessThanOrEqual(96 + 96 + 1);
+      Math.abs((await page_("footer", "top")) - (await page_(".stage-pin", "bottom"))),
+    ).toBeLessThan(2);
+  });
+
+  // The pinned block is about as tall as the screen, so it leaves it as the
+  // footer comes up (the owner's choice, #51), but only by the footer's
+  // height: the page cannot scroll past the block any further.
+  for (const viewport of [
+    { width: 1280, height: 640 },
+    { width: 1440, height: 900 },
+    { width: 1600, height: 915 },
+    { width: 1920, height: 1080 },
+  ]) {
+    test(`at the bottom of the page, the block has moved up by the footer's height only (${viewport.width} × ${viewport.height})`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(viewport);
+      await page.goto(pathOf("career", "fr"));
+      await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
+      const { pinBottom, footerTop, footerHeight, pageBottom } = await page.evaluate(() => {
+        const footer = document.querySelector("footer");
+        const pin = document.querySelector(".stage-pin");
+        if (footer === null || pin === null) throw new Error("no footer or pinned block");
+        return {
+          pinBottom: pin.getBoundingClientRect().bottom,
+          footerTop: footer.getBoundingClientRect().top,
+          footerHeight: footer.getBoundingClientRect().height,
+          pageBottom: document.documentElement.scrollHeight - scrollY,
+        };
+      });
+      // The page is scrolled to its very end, the footer's bottom at the
+      // screen's bottom.
+      expect(Math.abs(pageBottom - viewport.height)).toBeLessThan(2);
+      expect(Math.abs(footerTop + footerHeight - viewport.height)).toBeLessThan(2);
+      // The block ends where the footer starts: above it, only the footer's
+      // height of the screen is taken from the block.
+      expect(Math.abs(pinBottom - footerTop)).toBeLessThan(2);
+      expect(pinBottom).toBeGreaterThanOrEqual(viewport.height - footerHeight - 1);
+    });
+  }
+
+  test("without the pinned block, the page keeps its spacing before the footer", async ({
+    page,
+  }) => {
+    // From 1024 px the rings show, but are only pinned from 1280 × 640.
+    await page.setViewportSize({ width: 1100, height: 900 });
+    await page.goto(pathOf("career", "fr"));
+    const spacing = await page.evaluate(() => {
+      const career = document.querySelector(".career-page");
+      const footer = document.querySelector("footer");
+      if (career === null || footer === null) throw new Error("no page or footer");
+      return {
+        padding: getComputedStyle(career).paddingBottom,
+        margin: getComputedStyle(footer).marginTop,
+      };
+    });
+    expect(spacing).toEqual({ padding: "96px", margin: "96px" });
+    // Another page keeps the footer's margin at the pinned size.
+    await page.setViewportSize({ width: 1600, height: 1000 });
+    await page.goto(pathOf("legal", "fr"));
+    expect(
+      await page.locator("footer").evaluate((footer) => getComputedStyle(footer).marginTop),
+    ).toBe("96px");
   });
 
   test("a band's name appears as the band draws itself in, and the bark is smooth", async ({
