@@ -12,13 +12,14 @@
  * Without scripting, or below 768 px, the timeline shows (ADR 0005).
  *
  * From 1024 px, the rings and the panel sit side by side, with the legend in
- * one row under both. From 1280 px wide and 640 px tall, that block, one
- * screen tall, is held in place (`position: sticky`) while the page scrolls
+ * one row under both. From 1280 px wide and 640 px tall, that block is held
+ * in place (`position: sticky`) while the page scrolls
  * through a 300 vh track, and the rings draw themselves in from the pith
  * outwards as it does: CSS scroll-driven animations write the progress,
  * `--career-p`, from 0 to 1, or the script (career-rings.ts) where they are
  * missing. Under reduced motion, or on a smaller screen, the rings are drawn
- * in full, with no track.
+ * in full, with no track. There, a big gold arrow at the bottom of the screen
+ * says the page scrolls on, until the visitor starts scrolling.
  */
 import { translations } from "../../i18n";
 import { pageLocale } from "../../i18n/config";
@@ -28,6 +29,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import PlaceholderText from "../content/PlaceholderText.astro";
 import Button from "../ui/Button.astro";
 import Chip from "../ui/Chip.astro";
+import Icon from "../ui/Icon.astro";
 import { careerRingsHash, careerRingsScript } from "./career-rings";
 import { careerView, ringStyles, styleHash } from "./career-view";
 import TreeRings from "./TreeRings.astro";
@@ -37,6 +39,8 @@ const t = translations(locale);
 const copy = await careerContent(locale);
 const { labels, initial } = copy;
 const positions = careerView(copy.positions, labels, locale);
+/** The legend reads as the rings grow: from the pith outwards. */
+const oldestFirst = [...positions].reverse();
 const caseStudyHref = (slug: string | undefined) => {
   if (slug === undefined) return undefined;
   const key = caseStudyKey(slug);
@@ -58,7 +62,7 @@ Astro.csp.insertScriptHash(careerRingsHash);
           <PlaceholderText text={copy.title} />
         </h1>
       </div>
-      <p class="career-lead">
+      <p class="career-lead head-lead">
         <PlaceholderText text={copy.lead} />
       </p>
     </div>
@@ -104,12 +108,19 @@ Astro.csp.insertScriptHash(careerRingsHash);
         }
       </ol>
 
+      <p class="scroll-cue" aria-hidden="true">
+        {labels.scrollHint}
+        <span class="scroll-cue-arrow"><Icon name="down" size={30} /></span>
+      </p>
       <div class="stage" data-career-stage>
         <div class="stage-pin">
         <div class="stage-figure">
           <TreeRings positions={positions} initial={initial} label={labels.rings} />
         </div>
         <div class="stage-side">
+          <p class="career-lead stage-lead">
+            <PlaceholderText text={copy.lead} />
+          </p>
           <div id="career-panel" class="card panel">
             {
               positions.map((position) => (
@@ -152,7 +163,7 @@ Astro.csp.insertScriptHash(careerRingsHash);
         </div>
           <ul class="legend" aria-label={labels.legend}>
             {
-              positions.map((position) => (
+              oldestFirst.map((position) => (
                 <li>
                   <button
                     type="button"
@@ -255,6 +266,14 @@ Astro.csp.insertScriptHash(careerRingsHash);
     font-size: 1.02rem;
     font-weight: 300;
     line-height: 1.6;
+  }
+
+  /* How to read the rings, shown with them, above the panel: the copy is
+     written twice, and only one shows at a time, so it is read once. */
+  .stage-lead {
+    display: none;
+    max-width: none;
+    margin-bottom: 14px;
   }
 
   /* The vertical timeline: a line from mint to faded gold, and a card per
@@ -479,6 +498,14 @@ Astro.csp.insertScriptHash(careerRingsHash);
       display: block;
     }
 
+    .head-lead {
+      display: none;
+    }
+
+    .stage-lead {
+      display: block;
+    }
+
     .stage-pin {
       display: grid;
       gap: 24px;
@@ -541,34 +568,74 @@ Astro.csp.insertScriptHash(careerRingsHash);
   }
 
   /* From 1280 px wide and 640 px tall, with motion, the scroll-drawn stage:
-     a 300 vh track, along which the pinned block, exactly one screen tall,
-     stays in place. The ring takes the height the legend leaves, up to
-     700 px, and the panel the width the ring leaves. e2e/career.spec.ts
-     checks that the panel fits beside the ring at the smallest such screen. */
+     a 300 vh track, along which the pinned block, as tall as its content,
+     stays at the top of the screen; at the track's end, it leaves with the
+     track, so no empty space shows before or after it. The ring is 700 px,
+     or less on a shorter screen, leaving 11rem for the legend and the
+     margins; the panel takes the width the ring leaves. e2e/career.spec.ts
+     checks that everything fits, whatever position the panel shows, from
+     1280 × 640. */
   @media (scripting: enabled) and (min-width: 80rem) and (min-height: 40rem) and (prefers-reduced-motion: no-preference) {
     .stage {
       height: 300vh;
     }
 
     .stage-pin {
+      --ring-size: min(700px, calc(100vh - 11rem));
+
       position: sticky;
       top: 0;
-      box-sizing: border-box;
-      height: 100vh;
       padding-block: 24px;
-      grid-template-columns: minmax(0, min(700px, calc(100vh - 10rem))) minmax(0, 1fr);
-      grid-template-rows: minmax(0, 1fr) auto;
+      grid-template-columns: minmax(0, var(--ring-size)) minmax(0, 1fr);
     }
 
-    .stage-figure {
+    .stage-figure > :global(.rings-figure) {
+      width: min(100%, var(--ring-size));
+      margin-inline: auto;
+    }
+
+    /* At the bottom of the screen, a big gold arrow that bobs, with a word,
+       says the page scrolls on: without it, the empty trunk looks broken.
+       It goes once the visitor has scrolled (`data-scrolled`, set by the
+       script), and sits above the legend's cards when they are in view
+       (`--cue-lift`, set by the script too). */
+    .scroll-cue {
+      position: fixed;
+      z-index: 5;
+      bottom: calc(28px + var(--cue-lift, 0px));
+      left: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: var(--fs-xs);
+      letter-spacing: 0.2em;
+      pointer-events: none;
+      text-transform: uppercase;
+      transform: translateX(-50%);
+      transition:
+        opacity 300ms var(--ease-out),
+        visibility 300ms;
+      white-space: nowrap;
+    }
+
+    .career[data-scrolled] .scroll-cue {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .scroll-cue-arrow {
       display: grid;
-      height: 100%;
-      container-type: size;
       place-items: center;
-    }
-
-    .stage-figure > :global(*) {
-      width: min(100cqw, 100cqh);
+      width: 60px;
+      height: 60px;
+      border: 2px solid var(--accent);
+      border-radius: 50%;
+      background: color-mix(in oklab, var(--bg) 85%, transparent);
+      box-shadow: var(--glow-gold);
+      color: var(--accent);
+      animation: cue-bob 1.6s ease-in-out infinite;
     }
 
     /* The timeline and its range sit in a rule of their own, one class more
@@ -585,6 +652,53 @@ Astro.csp.insertScriptHash(careerRingsHash);
         animation-timeline: --career;
         animation-range: contain 0% contain 100%;
       }
+    }
+  }
+
+  /* On a short screen (640 to 719 px tall), the side column is tightened,
+     so the explanation and the tallest panel still fit beside the ring. */
+  @media (scripting: enabled) and (min-width: 80rem) and (min-height: 40rem) and (max-height: 44.999rem) and (prefers-reduced-motion: no-preference) {
+    .stage-lead {
+      margin-bottom: 10px;
+      font-size: var(--fs-sm);
+      line-height: 1.5;
+    }
+
+    .panel {
+      padding: 22px 26px 20px;
+    }
+
+    .panel-company {
+      font-size: 1.6rem;
+    }
+
+    .panel-chips {
+      margin: 10px 0 14px;
+    }
+
+    .panel-highlights {
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .panel-stack {
+      margin-bottom: 16px;
+    }
+  }
+
+  .scroll-cue {
+    display: none;
+  }
+
+  @media (scripting: enabled) and (min-width: 80rem) and (min-height: 40rem) and (prefers-reduced-motion: no-preference) {
+    .scroll-cue {
+      display: flex;
+    }
+  }
+
+  @keyframes cue-bob {
+    50% {
+      transform: translateY(8px);
     }
   }
 

@@ -2,8 +2,10 @@
 /**
  * The career as a trunk's cross-section (#18): one band per position, the
  * oldest at the pith, with a hairline per whole year, the boundaries in gold,
- * a few cracks, the bark and each past band's name on its top arc. The
- * current position is the thin band under the bark, its edge dashed.
+ * a few cracks, the bark and each past band's name on its top arc, which
+ * appears as its band draws itself in. The current position is the thin band
+ * under the bark, its edge dashed. The bands come in the Tab order from the
+ * pith outwards, as the career goes.
  *
  * Each band is a button (`role="button"`, Tab, Enter, Space) whose accessible
  * name is its company, role and period; everything else is decoration, hidden
@@ -15,7 +17,6 @@
 import {
   barkPhase,
   barkRadius,
-  barkRoughness,
   barkWidth,
   centre,
   discRadius,
@@ -38,6 +39,7 @@ const cracks = [24, 152, 238, 318].map((degrees) => {
     `${Math.round((centre + radius * Math.sin(angle)) * 10) / 10} ${Math.round((centre - radius * Math.cos(angle)) * 10) / 10}`;
   return `M${at(40)}L${at(360)}`;
 });
+const oldestFirst = [...positions].reverse();
 const labelled = positions.filter((position) => !position.current);
 const current = positions.find((position) => position.current);
 const arc = (radius: number) =>
@@ -63,18 +65,13 @@ const arc = (radius: number) =>
           <feMergeNode in="SourceGraphic"></feMergeNode>
         </feMerge>
       </filter>
-      <filter id="rings-bark" x="-5%" y="-5%" width="110%" height="110%">
-        <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="4"
-        ></feTurbulence>
-        <feDisplacementMap in="SourceGraphic" scale={barkRoughness * 2}></feDisplacementMap>
-      </filter>
       {labelled.map((position) => <path id={`rings-arc-${position.slug}`} d={arc(position.band.middle + 1)} />)}
     </defs>
 
     <path d={ringPath(discRadius, barkPhase)} fill="url(#rings-disc)" aria-hidden="true"></path>
 
     {
-      positions.map((position) => (
+      oldestFirst.map((position) => (
         // biome-ignore lint/a11y/useSemanticElements: SVG has no button element; each band is a shaped button
         <path
           class:list={["band", { current: position.current, pinned: position.slug === initial }]}
@@ -88,6 +85,8 @@ const arc = (radius: number) =>
           data-select={position.slug}
           data-ring={position.slug}
           data-r={position.band.middle}
+          data-start={position.draw.start}
+          data-end={position.draw.end}
           data-placeholder={position.band.placeholder ? "" : undefined}
         />
       ))
@@ -113,12 +112,10 @@ const arc = (radius: number) =>
 
     <g class="rings-late" aria-hidden="true">
       {current !== undefined && <path class="current-edge" d={current.paths.middle} />}
-      <path
-        class="bark"
-        d={ringPath(barkRadius, barkPhase)}
-        stroke-width={barkWidth}
-        filter="url(#rings-bark)"
-      ></path>
+      <path class="bark" d={ringPath(barkRadius, barkPhase)} stroke-width={barkWidth}></path>
+    </g>
+
+    <g class="rings-labels" aria-hidden="true">
       {
         labelled.map((position) => (
           <text
@@ -217,16 +214,28 @@ const arc = (radius: number) =>
     fill: color-mix(in oklab, var(--wood-current), var(--wood-hot) 14%);
   }
 
-  /* The focus ring: the band's two edges in the focus colour, on top of the
-     hot style it gets while focused. */
-  .band:focus-visible {
+  /* A browser outlines a focused SVG shape with a rectangle round its
+     bounding box, even after a click: the band draws its own focus ring
+     instead, its two edges in the focus colour, on top of the hot style it
+     gets while focused, for keyboard focus. */
+  .band {
     outline: none;
+  }
+
+  .band:focus-visible {
     stroke: var(--focus);
     stroke-width: 2.5;
   }
 
+  /* A band not drawn in yet cannot be pointed at (the script also takes it
+     out of the Tab order). */
+  .band[data-undrawn] {
+    pointer-events: none;
+  }
+
   .rings-lines,
-  .rings-late {
+  .rings-late,
+  .rings-labels {
     pointer-events: none;
   }
 
@@ -281,7 +290,7 @@ const arc = (radius: number) =>
     stroke-width: 1.4;
   }
 
-  /* The bark, the labels and the current band's dashed edge appear last. */
+  /* The bark and the current band's dashed edge appear last. */
   .rings-late {
     opacity: clamp(0, (var(--career-p) - var(--ring-late, 0.92)) / (1 - var(--ring-late, 0.92)), 1);
   }
@@ -301,7 +310,9 @@ const arc = (radius: number) =>
     stroke-opacity: var(--wood-bark-opacity);
   }
 
+  /* A band's name appears as the band draws itself in. */
   .ring-label {
+    opacity: var(--ring-k);
     fill: var(--wood-label);
     font-family: var(--font);
     font-size: 15px;

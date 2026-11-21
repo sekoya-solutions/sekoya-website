@@ -173,9 +173,6 @@ export function currentLinePhase(index: number): number {
 /** The phase of the bark. */
 export const barkPhase = 2.2;
 
-/** How far the bark's rough edge (TreeRings.astro's displacement filter) moves it, at most. */
-export const barkRoughness = 1.5;
-
 /** A line the rings draw: its radius and phase, and what it is. */
 export interface RingLine {
   readonly radius: number;
@@ -186,7 +183,7 @@ export interface RingLine {
 /**
  * Every line the rings draw, from the pith outwards: each band's inner edge
  * for the first, its hairlines, the current band's dashed line, its outer
- * edge, then the bark's inner side, rough edge included.
+ * edge, then the bark's inner side.
  */
 export function ringLines(all: readonly Band[]): RingLine[] {
   const lines: RingLine[] = [];
@@ -202,7 +199,7 @@ export function ringLines(all: readonly Band[]): RingLine[] {
     lines.push({ radius: band.outer, phase: edgePhase(band.index), kind: "edge" });
   }
   lines.push({
-    radius: barkRadius - barkWidth / 2 - barkRoughness,
+    radius: barkRadius - barkWidth / 2,
     phase: barkPhase,
     kind: "bark",
   });

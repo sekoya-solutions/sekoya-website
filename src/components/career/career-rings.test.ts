@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
-import { careerRingsHash, careerRingsScript, drawProgress } from "./career-rings";
+import { careerRingsHash, careerRingsScript, drawProgress, ringAt } from "./career-rings";
 
 // The career rings' inline script (#18). Its behaviour in the browser, which
 // needs a real layout, is covered by e2e/career.spec.ts; here, its scroll
@@ -27,6 +27,22 @@ describe("the drawing's progress on scroll", () => {
   it("is 1 for a track no taller than the viewport", () => {
     expect(drawProgress(0, viewport, viewport)).toBe(1);
     expect(drawProgress(-10, 400, viewport)).toBe(1);
+  });
+});
+
+describe("the band the panel follows while the rings draw", () => {
+  const starts = [0, 0.2, 0.4, 0.6];
+
+  it("is the most recent band whose drawing has started", () => {
+    expect(ringAt(starts, 0)).toBe(0);
+    expect(ringAt(starts, 0.19)).toBe(0);
+    expect(ringAt(starts, 0.2)).toBe(1);
+    expect(ringAt(starts, 0.45)).toBe(2);
+    expect(ringAt(starts, 1)).toBe(3);
+  });
+
+  it("takes a start written with rounding as reached", () => {
+    expect(ringAt([0, 0.6000000000000001], 0.6)).toBe(1);
   });
 });
 

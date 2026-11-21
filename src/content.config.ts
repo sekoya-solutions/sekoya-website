@@ -545,6 +545,8 @@ const career = defineCollection({
         period: template("start", "end"),
         /** The current position's period, as read aloud. */
         since: template("start"),
+        /** Under the rings, while they draw themselves in: the page scrolls on. */
+        scrollHint: text,
         /** The current position's end, as shown. */
         present: text,
         readCaseStudy: text,
