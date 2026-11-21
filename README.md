@@ -57,4 +57,4 @@ On every pull request and every push to `main`, a first job classifies the chang
 
 ## Licence
 
-The source code is under the [MIT licence](LICENSE). The brand assets are not: see [LICENSE-ASSETS.md](LICENSE-ASSETS.md).
+All rights reserved: the repository is public to be read, not reused. The Outfit font keeps its own SIL Open Font License. See [LICENSE](LICENSE).

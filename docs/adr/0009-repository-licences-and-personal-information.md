@@ -8,7 +8,7 @@
 
 The site's source code is itself part of the portfolio, so the repository is meant to be public. The forces:
 
-- **Code versus brand.** The code can be reused by anyone; the logo, the animated logo and the brand imagery cannot. The Outfit font files keep their own SIL Open Font License (OFL).
+- **Code, content and brand.** The code is public to be read as a portfolio piece; the written content tells the owner's career, and the logo, the animated logo and the brand imagery belong to the company. The Outfit font files keep their own SIL Open Font License (OFL).
 - **Personal information in a public repository.** The site necessarily shows facts about the owner (name, company, region, career, public profiles). In a public repository, every content file and every commit keeps them forever, including in the git history. Only facts the owner has approved, one by one, may be committed.
 - **Design references.** The visual mockups and their screenshots guide the build. They contain brand imagery and draft copy.
 - **No availability statements in the repository.** The repository presents the site as a portfolio project and explains how it is built. Calls to contact the company belong on the website only.
@@ -23,7 +23,8 @@ The site's source code is itself part of the portfolio, so the repository is mea
 ### Licences
 
 1. **MIT for the code (`LICENSE`), all rights reserved for brand assets (`LICENSE-ASSETS.md`),** listing the folders concerned, with the OFL kept next to the font files.
-2. **A single licence for everything.** Ruled out: it would license the brand.
+2. **A single open licence for everything.** Ruled out: it would license the brand.
+3. **All rights reserved on the whole repository (`LICENSE`),** with the OFL kept next to the font files. Pros: one boundary, nothing to list, the written content cannot be copied under a licence. Cons: nobody may reuse the code.
 
 ### Design references
 
@@ -32,18 +33,19 @@ The site's source code is itself part of the portfolio, so the repository is mea
 
 ## Decision
 
-Chosen: **public from the first commit (visibility 1), MIT plus reserved brand assets (licences 1), mockups kept outside the repository (design references 2)**.
+Chosen: **public from the first commit (visibility 1), all rights reserved on the whole repository (licences 3), mockups kept outside the repository (design references 2)**.
 
 - Personal details appear only in content files and only once the owner has approved each one; age, home address and any detail not shown on the site are never committed.
 - Values not yet provided stay `[TODO: …]` placeholders ([ADR 0007](0007-measured-figures-and-placeholders.md)).
 - The README, `package.json`, comments, commit messages and documentation never state availability for work.
+- All rights are reserved on the whole repository: option 1 left the written content under MIT, free to copy and republish (owner decision, 2026-11-21, issue #46). Viewing and forking on GitHub remain possible, as GitHub's terms provide.
 - The mockup images are never committed, and no per-page specification replaces them: agents work from the owner's local copies (owner decision, 2026-11-20, issue #29).
 
 ## Consequences
 
 Positive:
 
-- The repository is a reviewable proof of how the site is built, with a clear licence boundary.
+- The repository is a reviewable proof of how the site is built, under a single licence boundary.
 
 Negative:
 
