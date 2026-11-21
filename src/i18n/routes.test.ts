@@ -1,6 +1,15 @@
 import { describe, expect, it } from "vitest";
+import { caseStudySlugs } from "../content/case-study-slugs";
 import { locales } from "./config";
-import { alternates, isRouteKey, normalizePath, routeOf, routes } from "./routes";
+import {
+  alternates,
+  caseStudyKey,
+  isRouteKey,
+  normalizePath,
+  pathOf,
+  routeOf,
+  routes,
+} from "./routes";
 
 const entries = Object.entries(routes).flatMap(([key, paths]) =>
   locales.map((locale) => ({ key, locale, path: paths[locale] })),
@@ -60,5 +69,26 @@ describe("isRouteKey", () => {
     expect(isRouteKey("home")).toBe(true);
     expect(isRouteKey("contact")).toBe(false);
     expect(isRouteKey("toString")).toBe(false);
+  });
+});
+
+describe("the case studies' routes", () => {
+  it("give each case study file a page under the index, in every language", () => {
+    expect(isRouteKey("caseStudies")).toBe(true);
+    for (const slug of caseStudySlugs()) {
+      const key = caseStudyKey(slug);
+      expect(isRouteKey(key)).toBe(true);
+      expect(routes[key]).toEqual({
+        fr: `/realisations/${slug}`,
+        en: `/en/case-studies/${slug}`,
+      });
+    }
+  });
+
+  it("have no page for a case study without a file", () => {
+    expect(isRouteKey(caseStudyKey("nowhere"))).toBe(false);
+    expect(() => pathOf(caseStudyKey("nowhere"), "fr")).toThrow(
+      'The page "caseStudy/nowhere" is missing from src/i18n/routes.ts',
+    );
   });
 });

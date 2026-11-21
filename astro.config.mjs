@@ -1,7 +1,10 @@
 // @ts-check
+import { satteri } from "@astrojs/markdown-satteri";
+import mdx from "@astrojs/mdx";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, fontProviders } from "astro/config";
 import { defaultLocale, locales } from "./src/i18n/config.ts";
+import { contentTypography } from "./src/lib/content-typography.ts";
 
 // ADR 0001: a static site, one URL per page without a trailing slash.
 export default defineConfig({
@@ -54,6 +57,17 @@ export default defineConfig({
       },
     },
   ],
+  // ADR 0004: case studies are MDX. Their bodies get French typography and
+  // placeholder chips like the rest of the content
+  // (src/lib/content-typography.ts), and keep their punctuation as written,
+  // as the JSON collections do: no smart quotes or dashes.
+  integrations: [mdx()],
+  markdown: {
+    processor: satteri({
+      hastPlugins: [contentTypography],
+      features: { smartPunctuation: false },
+    }),
+  },
   vite: {
     plugins: [tailwindcss()],
   },

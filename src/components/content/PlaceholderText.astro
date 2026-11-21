@@ -1,7 +1,8 @@
 ---
 /**
  * A text from the content, with each `[TODO: …]` placeholder (ADR 0007)
- * shown as a chip: dashed, monospace, so it can never pass for a fact.
+ * shown as a chip (`.placeholder`, src/styles/global.css): dashed,
+ * monospace, so it can never pass for a fact.
  */
 import { splitPlaceholders } from "../../lib/placeholders";
 
@@ -13,26 +14,3 @@ const parts = splitPlaceholders(Astro.props.text);
 ---
 
 {parts.map((part) => (part.placeholder ? <span class="placeholder">{part.text}</span> : part.text))}
-
-<style>
-  .placeholder {
-    padding: 1px 6px;
-    border: 1px dashed rgb(232 211 168 / 0.55);
-    border-radius: 4px;
-    background: rgb(232 211 168 / 0.05);
-    color: var(--gold);
-    font-family: ui-monospace, Menlo, Consolas, monospace;
-    font-size: 0.78em;
-    font-weight: 400;
-    letter-spacing: normal;
-    text-transform: none;
-    white-space: nowrap;
-  }
-
-  /* Deep gold is for strokes only on sand: the text stays ink. */
-  :global(:root[data-theme="light"]) .placeholder {
-    border-color: var(--accent);
-    background: rgb(168 137 63 / 0.06);
-    color: var(--ink);
-  }
-</style>

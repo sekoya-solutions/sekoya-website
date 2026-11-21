@@ -138,6 +138,13 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      # The placeholder guard (ADR 0007) lists the placeholders left and the
+      # missing files, such as the CV. It only reports until the launch makes
+      # it a gate on the production build.
+      - name: Placeholder report
+        env:
+          ALLOW_TODO: "1"
+        run: npm run check:todos
       # Chromium's headless shell into .tools/ms-playwright, as locally;
       # --with-deps adds the system libraries it uses.
       - run: npm run e2e:install -- --with-deps

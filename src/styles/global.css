@@ -114,6 +114,31 @@
   }
 }
 
+/* A `[TODO: …]` placeholder (ADR 0007), from PlaceholderText.astro or an
+   MDX body (src/lib/content-typography.ts): dashed and monospace, so it can
+   never pass for a fact. Outside the layers, like the component styles it
+   sits among, so the layered utilities never override it. */
+.placeholder {
+  padding: 1px 6px;
+  border: 1px dashed rgb(232 211 168 / 0.55);
+  border-radius: 4px;
+  background: rgb(232 211 168 / 0.05);
+  color: var(--gold);
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 0.78em;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+/* Deep gold is for strokes only on sand: the text stays ink. */
+:root[data-theme="light"] .placeholder {
+  border-color: var(--accent);
+  background: rgb(168 137 63 / 0.06);
+  color: var(--ink);
+}
+
 /*
  * Scroll reveal (ADR 0005): `.reveal` fades up as it enters the viewport, and
  * `.reveal-draw` draws a circuit divider, by uncovering it. Children of a

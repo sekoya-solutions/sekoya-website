@@ -25,6 +25,7 @@ Node.js at the version in [`.node-version`](.node-version), with npm.
 | `npm test` | Runs the unit tests |
 | `npm run e2e:install` | Downloads Chromium for Playwright into `.tools/ms-playwright` |
 | `npm run test:e2e` | Runs the end-to-end and accessibility tests against the build (run `npm run build` first) |
+| `npm run check:todos` | Lists the `[TODO: …]` placeholders left in the content and the build, and the missing files such as the CV; fails when it finds any, unless `ALLOW_TODO=1` (run `npm run build` first) |
 | `npm run lint:md` | Lints the tracked Markdown files |
 | `npm run links:md` | Checks the links between the tracked Markdown files, offline (needs `lychee`) |
 
@@ -34,10 +35,10 @@ Node.js at the version in [`.node-version`](.node-version), with npm.
 | --- | --- |
 | `src/pages/` | One file per page: French at the root, English under `en/` |
 | `src/layouts/` | The base layout of every page |
-| `src/components/` | Components: the logo, the header and footer shells, the language switch, the theme toggle and its script, the scroll reveal script, the placeholder chip, the shared buttons, chips and icons, the home hero and its animated scene, the home sections, and the page bodies shared by both languages |
+| `src/components/` | Components: the logo, the header and footer shells, the language switch, the theme toggle and its script, the scroll reveal script, the placeholder chip, the shared buttons, chips and icons, the home hero and its animated scene, the home sections, the offer and case study cards, and the page bodies shared by both languages |
 | `src/i18n/` | The languages, the interface strings of each (`fr.ts`, `en.ts`), the map of translated paths (`routes.ts`) and the reading of the content in a page's language (`content.ts`) |
-| `src/content/` | Long copy, in content collections declared in `src/content.config.ts`: one entry per language (`fr.json`, `en.json`) |
-| `src/lib/` | Pure functions, with their unit tests |
+| `src/content/` | Long copy, in content collections declared in `src/content.config.ts`: one entry per language (`fr.json`, `en.json`), or one MDX file per case study and language (`case-studies/<language>/<slug>.mdx`), which also makes its page |
+| `src/lib/` | Pure functions, with their unit tests, and the Markdown plugin that gives MDX bodies French typography and placeholder chips |
 | `src/styles/` | The brand tokens (`tokens.css`), mapped into Tailwind with the base styles, the card and the scroll reveal (`global.css`) |
 | `src/assets/` | Logos, animated logo, portfolio screenshots and font, processed by the build |
 | `public/` | Files copied as they are into the build, including the `_headers` and `_redirects` files |
@@ -51,7 +52,7 @@ Node.js at the version in [`.node-version`](.node-version), with npm.
 
 ## Continuous integration
 
-On every pull request and every push to `main`, a first job classifies the change. When every changed file is Markdown, only the Markdown checks run and the other jobs report as skipped. Otherwise lint and types, unit tests, the build and the end-to-end and accessibility tests run as well.
+On every pull request and every push to `main`, a first job classifies the change. When every changed file is Markdown, only the Markdown checks run and the other jobs report as skipped. Otherwise lint and types, unit tests, the build, a report of the placeholders left, and the end-to-end and accessibility tests run as well.
 
 ## Licence
 

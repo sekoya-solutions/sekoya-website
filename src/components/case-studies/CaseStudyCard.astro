@@ -1,0 +1,105 @@
+---
+/**
+ * A case study's card on the index: the company, the role and period, the
+ * one-line title and the first three technologies. The whole card links to
+ * the case study, through the company's link stretched over it. From
+ * 1024 px, its parts line up with the other cards' parts.
+ */
+import type { CaseStudy } from "../../i18n/content";
+import PlaceholderText from "../content/PlaceholderText.astro";
+import Chip from "../ui/Chip.astro";
+import Icon from "../ui/Icon.astro";
+
+interface Props {
+  study: CaseStudy;
+  href: string;
+  readLabel: string;
+}
+
+const { study, href, readLabel } = Astro.props;
+const { data } = study;
+---
+
+<li class="card study reveal">
+  <h2 class="study-company">
+    <a href={href} class="study-link"><PlaceholderText text={data.company} /></a>
+  </h2>
+  <p class="flex flex-wrap gap-2">
+    <Chip variant="mint"><PlaceholderText text={data.role} /></Chip>
+    <Chip><PlaceholderText text={data.period} /></Chip>
+  </p>
+  <p class="study-title"><PlaceholderText text={data.title} /></p>
+  <ul class="flex flex-wrap gap-1.5">
+    {
+      data.stack.slice(0, 3).map((technology) => (
+        <li>
+          <Chip>
+            <PlaceholderText text={technology} />
+          </Chip>
+        </li>
+      ))
+    }
+  </ul>
+  <p class="study-read" aria-hidden="true">
+    <PlaceholderText text={readLabel} />
+    <Icon name="arrow" size={16} />
+  </p>
+</li>
+
+<style>
+  .study {
+    display: grid;
+    gap: 14px;
+    align-content: start;
+    padding: 26px 24px;
+  }
+
+  .study-company {
+    font-size: var(--fs-h3);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  /* The link covers the card, which shows the focus ring. */
+  .study-link::after {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    content: "";
+  }
+
+  .study-link:focus-visible {
+    outline: none;
+  }
+
+  .study:has(.study-link:focus-visible) {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+  }
+
+  .study-title {
+    font-size: 1.05rem;
+    line-height: 1.45;
+  }
+
+  .study-read {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    align-self: end;
+    color: var(--link);
+    font-size: var(--fs-sm);
+    font-weight: 500;
+  }
+
+  /* From 1024 px, the card's five parts share the index's rows (subgrid,
+     CaseStudies.astro), so they line up across the cards. */
+  @media (min-width: 64rem) {
+    .study {
+      grid-template-rows: subgrid;
+      grid-row: span 5;
+      row-gap: 14px;
+      padding: 32px 30px;
+    }
+  }
+</style>

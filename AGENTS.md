@@ -22,6 +22,7 @@ Standing rules for every AI agent working on this repository. The owner's genera
 
 - **Node.js:** the version in `.node-version`, portable in `.tools/node`, first on the `PATH` (`export PATH="$PWD/.tools/node:$PATH"` in Git Bash). npm is the package manager; `npm ci` installs the locked versions.
 - **Before every push that changes code:** `npm run check` (Biome and `astro check`), `npm test` (Vitest), `npm run build`, then `npm run test:e2e` (Playwright and axe, against the build in `dist/`). `npm run e2e:install` downloads Chromium into `.tools/ms-playwright` once per checkout.
+- **Placeholders:** `npm run check:todos`, after a build, lists the `[TODO: …]` placeholders left and the missing files (the CV, `public/cv.pdf`). It fails when it finds any; `ALLOW_TODO=1` makes it report only, as CI does until the launch (#26) makes it a gate on the production build.
 - **Markdown checks:** `npm run lint:md` and `npm run links:md`, run on the Markdown files git tracks. `links:md` runs lychee offline and finds it on the `PATH`, or at the path in the `LYCHEE` variable (portable in `.tools/lychee`).
 - **Worktrees:** a worktree has no `.tools` folder and no `node_modules`. Run `npm ci` in it, and create its `.tools` folder with junctions to the main checkout's `node` and `lychee` folders (`cmd /c mklink /J`), then run `npm run e2e:install`. Before deleting a worktree, remove its junctions first, as the general rules require.
 
