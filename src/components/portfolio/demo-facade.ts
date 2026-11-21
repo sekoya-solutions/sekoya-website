@@ -21,6 +21,13 @@ import { createHash } from "node:crypto";
  */
 export const desktopQuery = "(min-width: 64rem) and (pointer: fine)";
 
+/**
+ * The space the demo's page needs, in CSS pixels: Unity's desktop template
+ * draws a 960 × 600 canvas with a 38 px footer under it. DemoFacade.astro's
+ * styles keep the frame at least this tall.
+ */
+export const demoSize = { width: 960, height: 600 + 38 } as const;
+
 function loadDemoOnClick(query: string): void {
   const desktop = matchMedia(query);
   for (const play of document.querySelectorAll<HTMLAnchorElement>("a[data-demo-play]")) {

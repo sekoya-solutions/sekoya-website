@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { type BrowserContext, expect, type Page, test } from "@playwright/test";
+import { demoSize } from "../src/components/portfolio/demo-facade";
 import { projectSlugs, projectsFolder } from "../src/content/slugs";
 import { locales } from "../src/i18n/config";
 import { pathOf, projectKey } from "../src/i18n/routes";
@@ -236,6 +237,13 @@ test("the demo loads only after a click, on a desktop browser", async ({
     `${field("fr", playable, "title")} — ${copy.demo.frameTitle}`,
   );
   await expect(frame).toBeFocused();
+  // The frame is big enough for the demo's fixed-size page: no scrollbar.
+  const inner = await frame.evaluate((element) => ({
+    width: element.clientWidth,
+    height: element.clientHeight,
+  }));
+  expect(inner.width).toBeGreaterThanOrEqual(demoSize.width);
+  expect(inner.height).toBeGreaterThanOrEqual(demoSize.height);
   // The page stays on the project, and the demo loads in the frame.
   await expect(page).toHaveURL(pathOf(projectKey(playable), "fr"));
   await expect.poll(() => requests.length).toBeGreaterThan(0);
@@ -269,5 +277,19 @@ test("only a page with a playable demo allows frames, from the demo's origin", a
   expect(await policy(pathOf(projectKey(playable), "fr"))).toContain(`frame-src ${demoOrigin}`);
   for (const path of [pathOf("portfolio", "fr"), pathOf("home", "fr")]) {
     expect(await policy(path)).not.toContain("frame-src");
+  }
+});
+
+test("the demo's frame fits the page from 1024 px", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name === "mobile", "Checked at desktop widths.");
+  for (const width of [1024, 1280, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(pathOf(projectKey(playable), "fr"));
+    const layout = await page.locator(".demo-frame").evaluate((frame) => ({
+      height: frame.clientHeight,
+      pageScrolls: document.documentElement.scrollWidth > window.innerWidth,
+    }));
+    expect(layout.pageScrolls).toBe(false);
+    expect(layout.height).toBeGreaterThanOrEqual(demoSize.height);
   }
 });

@@ -164,6 +164,16 @@ Astro.csp.insertScriptHash(demoFacadeHash);
 
   /* Where the demo can be played: the same query as demo-facade.ts. */
   @media (min-width: 64rem) and (pointer: fine) {
+    /* The demo's page has a fixed size (demoSize, demo-facade.ts): a 960 × 600
+       canvas and a 38 px footer. The frame is never shorter, borders and a few
+       pixels of slack included, so the demo shows no scrollbar. Its width is
+       set, so the aspect ratio does not turn that minimum height into a
+       minimum width wider than the page. */
+    .demo-frame {
+      width: 100%;
+      min-height: calc(638px + 2px + 8px);
+    }
+
     .demo-play {
       display: inline-flex;
     }
