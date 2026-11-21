@@ -53,6 +53,11 @@ export const fr = frenchTypographyTree({
     /** For a link to another site, read by screen readers only. */
     externalLink: "site externe",
   },
+  career: {
+    title: "Parcours — Sekoya Solutions",
+    description:
+      "Mon parcours en anneaux de tronc d'arbre : un anneau par poste, du plus ancien au plus récent.",
+  },
   about: {
     title: "À propos — Sekoya Solutions",
     description:

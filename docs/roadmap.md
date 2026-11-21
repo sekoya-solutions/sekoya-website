@@ -33,7 +33,7 @@ Everything the pages build on.
 
 ## [Epic #20](https://github.com/sekoya-solutions/sekoya-website/issues/20): Interactive features
 
-- [#18](https://github.com/sekoya-solutions/sekoya-website/issues/18) Career tree rings: the career as a tree-trunk cross-section, with build-time ring geometry, scroll-driven drawing, tooltip, pinned panel, legend, and a vertical timeline fallback.
+- [#18](https://github.com/sekoya-solutions/sekoya-website/issues/18) Career tree rings: at `/parcours` and `/en/career`, the positions from the `career` collection, each agreeing with its case study, as a trunk's cross-section whose ring geometry is computed at build time (one band per position, the oldest at the pith, one hairline per whole year), in dark wood or light sand wood with the theme; from 768 px with scripting, a tooltip, a pinned panel with the link to the case study, a legend and a keyboard path; from 1280 px wide and 640 px tall, the rings, the panel and the legend held on one screen while the rings draw themselves from the pith outwards on scroll, in CSS scroll-driven animations with a small inline fallback script, and drawn in full under reduced motion; below 768 px or without JavaScript, the vertical timeline, the list of positions always in the page; and the header's career link.
 - [#19](https://github.com/sekoya-solutions/sekoya-website/issues/19) Self-assessment quiz: the ten-question quiz as a Preact island, its result screen and the no-JavaScript fallback.
 
 ## [Epic #27](https://github.com/sekoya-solutions/sekoya-website/issues/27): Quality, SEO and launch
