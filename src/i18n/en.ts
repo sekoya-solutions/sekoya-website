@@ -21,6 +21,13 @@ export const en = {
       about: "About",
     },
     contact: "Contact me",
+    footer: {
+      tagline: "Freelance Tech Lead. [TODO: region] · remote · France.",
+      legalForm: "SASU",
+      navigationTitle: "Navigate",
+      navigation: "Footer navigation",
+      contact: "Contact",
+    },
     scores: {
       title: "This site, measured",
       source: "Lighthouse mobile",

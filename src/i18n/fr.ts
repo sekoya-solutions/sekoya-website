@@ -25,6 +25,18 @@ export const fr = frenchTypographyTree({
       about: "À propos",
     },
     contact: "Me contacter",
+    /** The footer's brand and navigation columns (src/components/layout/Footer.astro). */
+    footer: {
+      /** Under the logo; the region is still to approve. */
+      tagline: "Tech Lead freelance. [TODO: région] · remote · France.",
+      /** Before the company's name and its registration, from src/content/company. */
+      legalForm: "SASU",
+      /** The navigation column's heading. */
+      navigationTitle: "Naviguer",
+      /** The footer's navigation landmark, read by screen readers only. */
+      navigation: "Navigation du pied de page",
+      contact: "Contact",
+    },
     /** The footer's "this site, measured" column (src/components/layout/SiteScores.astro). */
     scores: {
       title: "Ce site, mesuré",

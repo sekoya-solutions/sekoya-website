@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { caseStudySlugs, projectSlugs } from "../content/slugs";
 import { locales } from "./config";
 import { dictionaries } from "./index";
-import { navigationLinks, navigationPages } from "./navigation";
+import { footerLinks, footerPages, navigationLinks, navigationPages } from "./navigation";
 import { caseStudyKey, isRouteKey, pathOf, projectKey, type RouteKey } from "./routes";
 
 describe("the header's navigation", () => {
@@ -57,6 +57,37 @@ describe("the header's navigation", () => {
       for (const page of navigationPages) {
         expect(dictionaries[locale].layout.nav[page]).toMatch(/\S/);
       }
+    }
+  });
+});
+
+describe("the footer's navigation", () => {
+  it("links the main pages, then the quiz and contact, in the page's language", () => {
+    expect(footerPages).toEqual([...navigationPages, "quiz", "contact"]);
+    for (const locale of locales) {
+      const links = footerLinks({ key: "legal", locale });
+      expect(links.map((link) => link.page)).toEqual([...footerPages]);
+      for (const link of links) expect(link.href).toBe(pathOf(link.page, locale));
+    }
+  });
+
+  it("leaves out a page that is not built yet", () => {
+    const withoutQuiz = (page: string): page is RouteKey => page !== "quiz" && isRouteKey(page);
+    expect(
+      footerLinks({ key: "home", locale: "fr" }, withoutQuiz).map((link) => link.page),
+    ).toEqual([...navigationPages, "contact"]);
+  });
+
+  it("marks the page shown, or the section of a case study", () => {
+    const current = (key: RouteKey) =>
+      footerLinks({ key, locale: "fr" })
+        .filter((link) => link.current !== undefined)
+        .map((link) => [link.page, link.current]);
+    expect(current("quiz")).toEqual([["quiz", "page"]]);
+    expect(current("contact")).toEqual([["contact", "page"]]);
+    expect(current("legal")).toEqual([]);
+    for (const slug of caseStudySlugs()) {
+      expect(current(caseStudyKey(slug))).toEqual([["caseStudies", "true"]]);
     }
   });
 });
