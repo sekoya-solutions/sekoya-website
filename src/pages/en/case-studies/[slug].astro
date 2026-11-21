@@ -1,0 +1,16 @@
+---
+/**
+ * One page per case study, from the case studies' files
+ * (src/content/case-study-slugs.ts), the same slugs in every language.
+ */
+import CaseStudy from "../../../components/case-studies/CaseStudy.astro";
+import { caseStudySlugs } from "../../../content/case-study-slugs";
+
+export function getStaticPaths() {
+  return caseStudySlugs().map((slug) => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+---
+
+<CaseStudy slug={slug} />

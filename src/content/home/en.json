@@ -87,7 +87,7 @@
     },
     "action": {
       "label": "Read the case study",
-      "page": "caseStudySosAccessoire",
+      "page": "caseStudy/sos-accessoire",
       "variant": "ghost"
     },
     "map": {

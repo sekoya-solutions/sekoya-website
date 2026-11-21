@@ -1,18 +1,41 @@
 /**
  * The translated paths (ADR 0004): each page's path in every language, so the
  * language switch and the hreflang alternates point to the equivalent page.
- * Astro's i18n does not translate paths, so this map is kept by hand: every
+ * Astro's i18n does not translate paths, so this map is kept by hand, except
+ * for the case studies, one page each, which come from their files: every
  * page must be in it (the base layout fails the build otherwise), and an
  * end-to-end test visits every entry in both languages.
  */
+import { caseStudySlugs } from "../content/case-study-slugs";
 import { defaultLocale, type Locale, locales } from "./config";
 
-export const routes = {
+const pages = {
   home: { fr: "/", en: "/en" },
   offers: { fr: "/offres", en: "/en/services" },
+  caseStudies: { fr: "/realisations", en: "/en/case-studies" },
 } as const satisfies Record<string, Record<Locale, string>>;
 
-export type RouteKey = keyof typeof routes;
+/** A case study's page: `caseStudy/<slug>`, under the case studies' path. */
+export type CaseStudyKey = `caseStudy/${string}`;
+
+export type RouteKey = keyof typeof pages | CaseStudyKey;
+
+/** The route key of a case study. */
+export function caseStudyKey(slug: string): CaseStudyKey {
+  return `caseStudy/${slug}`;
+}
+
+export const routes: Readonly<Record<RouteKey, Readonly<Record<Locale, string>>>> = {
+  ...pages,
+  ...Object.fromEntries(
+    caseStudySlugs().map((slug) => [
+      caseStudyKey(slug),
+      Object.fromEntries(
+        locales.map((locale) => [locale, `${pages.caseStudies[locale]}/${slug}`]),
+      ) as Record<Locale, string>,
+    ]),
+  ),
+};
 
 /** Whether a page exists: a key of the route map. */
 export function isRouteKey(value: string): value is RouteKey {
@@ -45,8 +68,9 @@ export function routeOf(pathname: string): PageRoute {
   throw new Error(`The page ${pathname} is missing from src/i18n/routes.ts`);
 }
 
-/** The path of a route in a language. */
+/** The path of a route in a language; a case study missing from the map throws. */
 export function pathOf(key: RouteKey, locale: Locale): string {
+  if (!isRouteKey(key)) throw new Error(`The page "${key}" is missing from src/i18n/routes.ts`);
   return routes[key][locale];
 }
 

@@ -22,4 +22,12 @@ export const fr = frenchTypographyTree({
     description:
       "Trois offres pour remettre un projet en mouvement : audit technique, mission Tech Lead ou Lead Dev, sauvetage de projet.",
   },
+  caseStudies: {
+    title: "Réalisations — Sekoya Solutions",
+    description: "Trois études de cas : le contexte, ce que j'ai fait, le résultat.",
+    /** After a case study's company, in its page's title. */
+    titleSuffix: "— Réalisations — Sekoya Solutions",
+    /** Shown in place of the CV button until the PDF is added (ADR 0007). */
+    cvMissing: "[TODO: CV (PDF) à fournir]",
+  },
 });

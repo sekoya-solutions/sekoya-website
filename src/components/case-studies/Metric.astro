@@ -1,0 +1,60 @@
+---
+/**
+ * A case study's result: the figure, large, and what it measures. Until the
+ * figure is provided, its placeholder shows as a chip (ADR 0007), at text
+ * size, never as a large number.
+ */
+import { splitPlaceholders } from "../../lib/placeholders";
+import PlaceholderText from "../content/PlaceholderText.astro";
+
+interface Props {
+  value: string;
+  label?: string | undefined;
+}
+
+const { value, label } = Astro.props;
+const pending = splitPlaceholders(value).every((part) => part.placeholder);
+---
+
+<li class="metric">
+  {
+    pending ? (
+      <span class="placeholder">{value}</span>
+    ) : (
+      <span class="metric-value">
+        <PlaceholderText text={value} />
+      </span>
+    )
+  }
+  {
+    label !== undefined && (
+      <span class="metric-label">
+        <PlaceholderText text={label} />
+      </span>
+    )
+  }
+</li>
+
+<style>
+  .metric {
+    display: grid;
+    gap: 6px;
+    align-content: start;
+    justify-items: start;
+    padding: 20px 22px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+  }
+
+  .metric-value {
+    color: var(--link);
+    font-size: var(--fs-h2);
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .metric-label {
+    color: var(--muted);
+    font-size: var(--fs-sm);
+  }
+</style>

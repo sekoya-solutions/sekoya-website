@@ -21,4 +21,10 @@ export const en = {
     description:
       "Three offers to get a project moving again: technical audit, Tech Lead or Lead Dev engagement, project rescue.",
   },
+  caseStudies: {
+    title: "Case studies — Sekoya Solutions",
+    description: "Three case studies: the context, what I did, the result.",
+    titleSuffix: "— Case studies — Sekoya Solutions",
+    cvMissing: "[TODO: CV (PDF) to provide]",
+  },
 } satisfies Dictionary;

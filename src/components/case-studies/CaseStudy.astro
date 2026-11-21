@@ -1,0 +1,274 @@
+---
+/**
+ * A case study's page, in the page's language:
+ * src/pages/realisations/[slug].astro in French and
+ * src/pages/en/case-studies/[slug].astro in English. Its facts are in the
+ * case study's frontmatter, its context in the MDX body, and its labels in
+ * src/content/case-studies-page.
+ *
+ * The hero (company, role, period, title), then context, what was done and
+ * the results, the stack, and a closing band whose calls to action are shown
+ * once their pages exist.
+ */
+import { render } from "astro:content";
+import { translations } from "../../i18n";
+import { pageLocale } from "../../i18n/config";
+import { caseStudiesPageContent, caseStudy } from "../../i18n/content";
+import { isRouteKey, pathOf } from "../../i18n/routes";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PlaceholderText from "../content/PlaceholderText.astro";
+import Button from "../ui/Button.astro";
+import Chip from "../ui/Chip.astro";
+import Icon from "../ui/Icon.astro";
+import Metric from "./Metric.astro";
+
+interface Props {
+  slug: string;
+}
+
+const locale = pageLocale(Astro.currentLocale);
+const t = translations(locale);
+const copy = await caseStudiesPageContent(locale);
+const { data, entry } = await caseStudy(locale, Astro.props.slug);
+const { Content } = await render(entry);
+const { labels, closing } = copy;
+const actions = closing.actions.flatMap(({ page, label, variant }) =>
+  isRouteKey(page) ? [{ label, variant, href: pathOf(page, locale) }] : [],
+);
+---
+
+<BaseLayout title={`${data.company} ${t.caseStudies.titleSuffix}`} description={data.title}>
+  <article class="study-page mx-auto max-w-site px-(--gutter)">
+    <a href={pathOf("caseStudies", locale)} class="study-back">
+      <Icon name="arrow" size={16} class="study-back-icon" />
+      <PlaceholderText text={labels.back} />
+    </a>
+
+    <header class="study-hero">
+      <h1 class="study-company font-bold tracking-[-0.02em]">
+        <PlaceholderText text={data.company} />
+      </h1>
+      <p class="study-title text-lead font-light text-muted">
+        <PlaceholderText text={data.title} />
+      </p>
+      <p class="flex flex-wrap gap-2">
+        <Chip variant="mint"><PlaceholderText text={data.role} /></Chip>
+        <Chip><PlaceholderText text={data.period} /></Chip>
+      </p>
+    </header>
+
+    <div class="study-steps">
+      <section aria-labelledby="context-title" class="study-step">
+        <h2 id="context-title" class="study-label"><PlaceholderText text={labels.context} /></h2>
+        <div class="study-body"><Content /></div>
+      </section>
+
+      <section aria-labelledby="work-title" class="study-step">
+        <h2 id="work-title" class="study-label"><PlaceholderText text={labels.work} /></h2>
+        <ul class="study-actions">
+          {
+            data.actions.map((item) => (
+              <li>
+                <Icon name="check" size={18} class="study-check" />
+                <span>
+                  <PlaceholderText text={item} />
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <section aria-labelledby="results-title" class="study-step">
+        <h2 id="results-title" class="study-label"><PlaceholderText text={labels.results} /></h2>
+        <ul class="study-metrics">
+          {data.results.map((result) => <Metric value={result.value} label={result.label} />)}
+        </ul>
+      </section>
+
+      <section aria-labelledby="stack-title" class="study-step">
+        <h2 id="stack-title" class="study-label"><PlaceholderText text={labels.stack} /></h2>
+        <ul class="flex flex-wrap gap-1.5">
+          {
+            data.stack.map((technology) => (
+              <li>
+                <Chip>
+                  <PlaceholderText text={technology} />
+                </Chip>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+    </div>
+
+    <section aria-labelledby="closing-title" class="study-closing">
+      <div>
+        <h2 id="closing-title" class="mb-1.5 text-[1.5rem] leading-[1.2] font-bold">
+          <PlaceholderText text={closing.title} />
+        </h2>
+        <p class="font-light text-muted"><PlaceholderText text={closing.text} /></p>
+      </div>
+      {
+        actions.length > 0 && (
+          <div class="flex flex-wrap gap-3">
+            {actions.map((action) => (
+              <Button href={action.href} variant={action.variant} icon="arrow">
+                {action.label}
+              </Button>
+            ))}
+          </div>
+        )
+      }
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .study-page {
+    padding-top: 32px;
+    padding-bottom: 72px;
+  }
+
+  .study-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--link);
+    font-size: var(--fs-sm);
+    font-weight: 500;
+  }
+
+  .study-back:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  /* The arrow points back. */
+  .study-back :global(.study-back-icon) {
+    transform: scaleX(-1);
+  }
+
+  .study-hero {
+    display: grid;
+    gap: 16px;
+    margin-top: 28px;
+  }
+
+  .study-company {
+    font-size: var(--fs-h1);
+    line-height: 1.08;
+  }
+
+  .study-title {
+    max-width: 40rem;
+  }
+
+  .study-steps {
+    display: grid;
+    gap: 34px;
+    margin-top: 48px;
+  }
+
+  .study-label {
+    margin-bottom: 12px;
+    color: var(--gold);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  :global(:root[data-theme="light"]) .study-label {
+    color: var(--muted);
+  }
+
+  .study-body {
+    max-width: 44rem;
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+
+  .study-body :global(p + p) {
+    margin-top: 0.9em;
+  }
+
+  .study-actions {
+    display: grid;
+    gap: 10px;
+  }
+
+  .study-actions li {
+    display: grid;
+    grid-template-columns: 18px 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+
+  .study-actions :global(.study-check) {
+    margin-top: 0.3em;
+    color: var(--link);
+  }
+
+  .study-metrics {
+    display: grid;
+    gap: 12px;
+  }
+
+  .study-closing {
+    display: grid;
+    gap: 24px;
+    align-items: center;
+    justify-items: start;
+    margin-top: 56px;
+    padding: 28px 24px;
+    border: 1px solid rgb(34 192 138 / 0.3);
+    border-radius: var(--r-lg);
+    background: linear-gradient(110deg, rgb(34 192 138 / 0.12), rgb(14 38 47 / 0.8) 60%);
+  }
+
+  :global(:root[data-theme="light"]) .study-closing {
+    border-color: rgb(22 146 122 / 0.35);
+    background: linear-gradient(110deg, rgb(22 146 122 / 0.12), var(--surface-1) 60%);
+  }
+
+  @media (min-width: 48rem) {
+    .study-metrics {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .study-closing {
+      grid-template-columns: 1fr auto;
+      gap: 30px;
+      padding: 34px 44px;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .study-page {
+      padding-top: 40px;
+      padding-bottom: 96px;
+    }
+
+    .study-steps {
+      gap: 40px;
+      margin-top: 64px;
+    }
+
+    /* The label sits beside its content, as in the home page's featured case. */
+    .study-step {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 24px;
+      align-items: baseline;
+    }
+
+    .study-label {
+      margin-bottom: 0;
+    }
+
+    .study-closing {
+      margin-top: 72px;
+    }
+  }
+</style>

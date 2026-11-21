@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { expect, type Page, test } from "@playwright/test";
 import { locales } from "../src/i18n/config";
-import { pathOf } from "../src/i18n/routes";
+import { caseStudyKey, pathOf } from "../src/i18n/routes";
 
 // The home sections (#10): their content, in both languages, the scroll
 // reveal in its three modes (CSS scroll-driven animations, the fallback
@@ -86,7 +86,9 @@ test.describe("the home sections", () => {
     });
   }
 
-  test("link only to pages that exist: the offers page and other sites", async ({ page }) => {
+  test("link only to pages that exist: offers, the case study and other sites", async ({
+    page,
+  }) => {
     for (const locale of locales) {
       const offers = homeCopy(locale).offers.items.map(
         (item: { link: { hash: string } }) => `${pathOf("offers", locale)}#${item.link.hash}`,
@@ -96,11 +98,12 @@ test.describe("the home sections", () => {
         .getByRole("main")
         .getByRole("link")
         .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
-      // The hero's offers button, the offers teaser, then the other sites; the
-      // other pages' links appear with their pages.
+      // The hero's offers button, the offers teaser, the featured case study,
+      // then the other sites; the other pages' links appear with their pages.
       expect(hrefs).toEqual([
         pathOf("offers", locale),
         ...offers,
+        pathOf(caseStudyKey("sos-accessoire"), locale),
         "https://www.malt.fr/profile/fabricereynaud",
         "https://github.com/sekoya-solutions",
       ]);

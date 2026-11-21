@@ -1,0 +1,26 @@
+{
+  "eyebrow": "Case studies",
+  "title": "Three engagements, from context to result.",
+  "lead": "For each one: the starting point, what I did, and the result.",
+  "cv": {
+    "label": "Download my CV (PDF)",
+    "note": "The full CV, in the classic format.",
+    "file": "/cv.pdf"
+  },
+  "labels": {
+    "read": "Read the case study",
+    "back": "All case studies",
+    "context": "Context",
+    "work": "What I did",
+    "results": "Result",
+    "stack": "Stack"
+  },
+  "closing": {
+    "title": "A project that's stalling? Let's talk.",
+    "text": "A first conversation to understand your situation, with no commitment.",
+    "actions": [
+      { "label": "Contact me", "page": "contact", "variant": "primary" },
+      { "label": "See the services", "page": "offers", "variant": "ghost" }
+    ]
+  }
+}

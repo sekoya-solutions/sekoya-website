@@ -165,4 +165,62 @@ const offers = defineCollection({
   }),
 });
 
-export const collections = { home, offers };
+/**
+ * A result of a case study: a measured figure and what it measures, or a
+ * placeholder until the figure is provided (ADR 0007), whose label may wait
+ * too.
+ */
+const metric = z
+  .object({ value: text, label: text.optional() })
+  .refine(({ value, label }) => label !== undefined || /^\[TODO:[^\]]*\]$/.test(value), {
+    message: "A figure needs its label",
+    path: ["label"],
+  });
+
+/**
+ * The case studies (ADR 0004), one MDX file per case study and language:
+ * `case-studies/<locale>/<slug>.mdx`. The frontmatter holds the facts the
+ * template lays out; the body is the context, in Markdown.
+ */
+const caseStudies = defineCollection({
+  loader: glob({ pattern: "*/*.mdx", base: "./src/content/case-studies" }),
+  schema: z.object({
+    /** The case study's place on the index, from 1. */
+    order: z.number().int().positive(),
+    company: text,
+    role: text,
+    period: text,
+    title: text,
+    actions: z.array(text).min(1),
+    results: z.array(metric).min(1),
+    /** The technologies, the index card showing the first three. */
+    stack: z.array(text).min(1),
+  }),
+});
+
+/** The case studies' index and the labels of their pages, one entry per language. */
+const caseStudiesPage = defineCollection({
+  loader: glob({ pattern: "*.json", base: "./src/content/case-studies-page" }),
+  schema: z.object({
+    eyebrow: text,
+    title: text,
+    lead: text,
+    cv: z.object({
+      label: text,
+      note: text,
+      /** The PDF, a file of public/; until it exists, a placeholder replaces the button. */
+      file: z.string().regex(/^\/[a-z0-9-]+\.pdf$/),
+    }),
+    labels: z.object({
+      read: text,
+      back: text,
+      context: text,
+      work: text,
+      results: text,
+      stack: text,
+    }),
+    closing: z.object({ title: text, text, actions: z.array(action).min(1) }),
+  }),
+});
+
+export const collections = { home, offers, caseStudies, caseStudiesPage };

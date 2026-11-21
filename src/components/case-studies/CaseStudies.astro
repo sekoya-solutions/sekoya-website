@@ -1,0 +1,127 @@
+---
+/**
+ * The case studies' index, in the page's language:
+ * src/pages/realisations/index.astro in French and
+ * src/pages/en/case-studies/index.astro in English. Its copy is in
+ * src/content/case-studies-page, and each card comes from a case study's file
+ * in src/content/case-studies.
+ *
+ * The page's heading, a card per case study, then the CV: its download
+ * button once the PDF is in public/, and a placeholder until then, which the
+ * placeholder guard reports (ADR 0007).
+ */
+import { translations } from "../../i18n";
+import { pageLocale } from "../../i18n/config";
+import { caseStudies, caseStudiesPageContent } from "../../i18n/content";
+import { caseStudyKey, pathOf } from "../../i18n/routes";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { publicFileExists } from "../../lib/public-files";
+import PlaceholderText from "../content/PlaceholderText.astro";
+import ScrollReveal from "../layout/ScrollReveal.astro";
+import Button from "../ui/Button.astro";
+import CaseStudyCard from "./CaseStudyCard.astro";
+
+const locale = pageLocale(Astro.currentLocale);
+const t = translations(locale);
+const copy = await caseStudiesPageContent(locale);
+const studies = await caseStudies(locale);
+const cvExists = publicFileExists(copy.cv.file);
+---
+
+<BaseLayout title={t.caseStudies.title} description={t.caseStudies.description}>
+  <div class="studies-page mx-auto max-w-site px-(--gutter)">
+    <div class="studies-head">
+      <div>
+        <p class="eyebrow"><PlaceholderText text={copy.eyebrow} /></p>
+        <h1 class="studies-title mt-3.5 font-bold tracking-[-0.02em]">
+          <PlaceholderText text={copy.title} />
+        </h1>
+      </div>
+      <p class="text-[1.02rem] leading-[1.6] font-light text-muted lg:text-lead">
+        <PlaceholderText text={copy.lead} />
+      </p>
+    </div>
+
+    <ul class="studies reveal-group">
+      {
+        studies.map((study) => (
+          <CaseStudyCard
+            study={study}
+            href={pathOf(caseStudyKey(study.slug), locale)}
+            readLabel={copy.labels.read}
+          />
+        ))
+      }
+    </ul>
+
+    <div class="studies-cv reveal">
+      {
+        cvExists ? (
+          <Button href={copy.cv.file} variant="ghost" icon="arrow">
+            {copy.cv.label}
+          </Button>
+        ) : (
+          <p class="studies-cv-missing">
+            <PlaceholderText text={t.caseStudies.cvMissing} />
+          </p>
+        )
+      }
+      <p class="text-muted"><PlaceholderText text={copy.cv.note} /></p>
+    </div>
+  </div>
+  <ScrollReveal />
+</BaseLayout>
+
+<style>
+  .studies-page {
+    padding-top: 32px;
+    padding-bottom: 72px;
+  }
+
+  .studies-head {
+    display: grid;
+    gap: 18px;
+  }
+
+  .studies-title {
+    font-size: var(--fs-h1);
+    line-height: 1.08;
+  }
+
+  .studies {
+    display: grid;
+    gap: 16px;
+    margin-top: 40px;
+  }
+
+  .studies-cv {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 22px;
+    align-items: center;
+    margin-top: 48px;
+  }
+
+  @media (min-width: 64rem) {
+    .studies-page {
+      padding-top: 40px;
+      padding-bottom: 96px;
+    }
+
+    .studies-head {
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 60px;
+      align-items: end;
+    }
+
+    /* Each card spans five rows and shares them with the cards beside it
+       (subgrid), so their companies, chips, titles, technologies and links
+       line up. A fourth case study starts a new line of cards, 26 px below:
+       inside a card, its own gap applies. */
+    .studies {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 26px;
+      margin-top: 56px;
+    }
+  }
+</style>

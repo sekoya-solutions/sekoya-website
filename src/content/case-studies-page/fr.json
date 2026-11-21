@@ -1,0 +1,26 @@
+{
+  "eyebrow": "Réalisations",
+  "title": "Trois missions, du contexte au résultat.",
+  "lead": "Pour chacune : la situation de départ, ce que j'ai fait, et le résultat.",
+  "cv": {
+    "label": "Télécharger mon CV (PDF)",
+    "note": "Le CV complet, au format classique.",
+    "file": "/cv.pdf"
+  },
+  "labels": {
+    "read": "Lire l'étude de cas",
+    "back": "Toutes les réalisations",
+    "context": "Contexte",
+    "work": "Ce que j'ai fait",
+    "results": "Résultat",
+    "stack": "Stack"
+  },
+  "closing": {
+    "title": "Un projet qui patine ? Parlons-en.",
+    "text": "Un premier échange pour comprendre votre situation, sans engagement.",
+    "actions": [
+      { "label": "Me contacter", "page": "contact", "variant": "primary" },
+      { "label": "Voir les offres", "page": "offers", "variant": "ghost" }
+    ]
+  }
+}
