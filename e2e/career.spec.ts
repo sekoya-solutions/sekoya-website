@@ -181,11 +181,8 @@ test.describe("from 1024 px, with scripting", () => {
       "aria-label",
       "SOS Accessoire, Lead Dev, de 05/2022 à 09/2025",
     );
-    // A position whose dates are placeholders is flagged.
-    await expect(page.locator('path[data-select="culligan"]')).toHaveAttribute(
-      "data-placeholder",
-      "",
-    );
+    // Every position's dates are known: no band is flagged as a placeholder.
+    await expect(page.locator("path[data-placeholder]")).toHaveCount(0);
   });
 
   test("a band clicked with the mouse shows no browser focus rectangle", async ({ page }) => {
@@ -211,7 +208,8 @@ test.describe("the drawing, with motion", () => {
 
   test("the rings draw from the pith outwards, once", async ({ page }) => {
     await page.goto(pathOf("career", "fr"));
-    const [oldest, , , newest] = [...slugs].reverse() as [string, string, string, string];
+    const oldest = slugs.at(-1) ?? "";
+    const newest = slugs[0] ?? "";
     // The stage is in view on landing, so the drawing starts at once.
     await expect(page.locator("[data-career-stage]")).toHaveAttribute("data-draw", "run");
     await seekDrawing(page, 0);
@@ -262,7 +260,7 @@ test.describe("the drawing, with motion", () => {
       page
         .locator(`.ring-label[data-ring="${slug}"]`)
         .evaluate((label) => Number(getComputedStyle(label).opacity));
-    expect(await opacity("atos-bull")).toBeGreaterThan(0.3);
+    expect(await opacity(slugs.at(-1) ?? "")).toBeGreaterThan(0.3);
     expect(await opacity("sos-accessoire")).toBe(0);
     await expect(page.locator(".bark")).not.toHaveAttribute("filter");
   });
@@ -286,7 +284,8 @@ test.describe("the drawing, with motion", () => {
         margin: getComputedStyle(footer).marginTop,
       };
     });
-    expect(spacing).toEqual({ padding: "96px", margin: "96px" });
+    // The footer alone keeps the space before it.
+    expect(spacing).toEqual({ padding: "0px", margin: "96px" });
   });
 });
 
@@ -323,6 +322,7 @@ for (const viewport of [
             block: box(".stage-pin"),
             rings: box(".rings"),
             lead: box(".stage-lead"),
+            side: box(".stage-side"),
             panel: box("#career-panel"),
             legend: box(".legend"),
             width: document.documentElement.clientWidth,
@@ -335,6 +335,13 @@ for (const viewport of [
           boxes.height,
         );
         expect(boxes.rings.right).toBeLessThanOrEqual(boxes.panel.left);
+        // The ring sits halfway down its row, beside the side column.
+        const top = Math.min(boxes.rings.top, boxes.side.top);
+        const bottom = Math.max(boxes.rings.bottom, boxes.side.bottom);
+        expect(
+          Math.abs((boxes.rings.top + boxes.rings.bottom) / 2 - (top + bottom) / 2),
+          `${slug}: the ring is not centred`,
+        ).toBeLessThan(2);
         expect(boxes.lead.bottom).toBeLessThanOrEqual(boxes.panel.top);
         expect(boxes.rings.bottom).toBeLessThanOrEqual(boxes.legend.top);
         expect(boxes.panel.bottom, `${slug}: the panel overlaps the legend`).toBeLessThanOrEqual(

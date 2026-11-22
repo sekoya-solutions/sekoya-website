@@ -257,12 +257,17 @@ export const drawLength = 0.35;
 /** The share of the drawing from which the bark and the labels appear. */
 export const lateStart = 0.92;
 
+/** The share of the drawing at which the last band is fully drawn in. */
+export const lastEnd = 0.95;
+
 /**
- * The share of the drawing at which band `index` of `count` starts drawing itself in:
- * the oldest at once, each later one a step after, the last one ending just
- * after the bark starts to appear.
+ * The share of the drawing at which band `index` of `count` starts drawing
+ * itself in: the oldest at once, each later one an equal step after, so the
+ * last one ends at `lastEnd`, just after the bark starts to appear, however
+ * many bands there are.
  */
 export function drawWindow(index: number, count: number): DrawWindow {
-  const start = index / (count + 1);
+  const step = count > 1 ? (lastEnd - drawLength) / (count - 1) : 0;
+  const start = index * step;
   return { start, end: start + drawLength };
 }

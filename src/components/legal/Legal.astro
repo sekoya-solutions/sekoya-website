@@ -155,7 +155,6 @@ const statements = [
   .legal-page {
     max-width: 60rem;
     padding-top: 32px;
-    padding-bottom: 72px;
   }
 
   .legal-title {
@@ -208,6 +207,11 @@ const statements = [
     overflow-wrap: anywhere;
   }
 
+  /* A placeholder in a fact may wrap, so it never widens its card. */
+  .legal-row dd :global(.placeholder) {
+    white-space: normal;
+  }
+
   .legal-section {
     margin-top: 44px;
   }
@@ -234,7 +238,9 @@ const statements = [
 
   @media (min-width: 48rem) {
     .legal-facts {
-      grid-template-columns: repeat(2, 1fr);
+      /* Columns that may shrink below their content's widest word, so
+         the cards never run past the page (ADR 0010). */
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       align-items: start;
     }
   }
@@ -242,7 +248,6 @@ const statements = [
   @media (min-width: 64rem) {
     .legal-page {
       padding-top: 40px;
-      padding-bottom: 96px;
     }
 
     .legal-card {
@@ -250,7 +255,7 @@ const statements = [
     }
 
     .legal-row {
-      grid-template-columns: 10rem 1fr;
+      grid-template-columns: 10rem minmax(0, 1fr);
       gap: 16px;
     }
   }

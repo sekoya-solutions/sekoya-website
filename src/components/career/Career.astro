@@ -64,7 +64,7 @@ Astro.csp.insertScriptHash(careerRingsHash);
       </p>
     </div>
 
-    <div class="career mx-auto max-w-site-wide px-(--gutter)" data-career>
+    <div class="career mx-auto max-w-site px-(--gutter)" data-career>
       <ol class="timeline" aria-label={labels.list}>
         {
           positions.map((position) => (
@@ -168,7 +168,7 @@ Astro.csp.insertScriptHash(careerRingsHash);
                   >
                     <span class="legend-swatch" aria-hidden="true" />
                     <span class="legend-company">{position.company}</span>
-                    <span class="legend-meta">
+                    <span class="legend-meta sr-only">
                       <PlaceholderText text={position.role} /> · <PlaceholderText text={position.period} />
                     </span>
                   </button>
@@ -234,7 +234,6 @@ Astro.csp.insertScriptHash(careerRingsHash);
 
   .career-page {
     padding-top: 32px;
-    padding-bottom: 72px;
   }
 
   .career-head {
@@ -415,6 +414,8 @@ Astro.csp.insertScriptHash(careerRingsHash);
     margin-bottom: 24px;
   }
 
+  /* The legend: a compact chip per position, its swatch and company; the
+     role and period, in the panel and the tooltip, are only read aloud. */
   .legend {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -423,15 +424,14 @@ Astro.csp.insertScriptHash(careerRingsHash);
 
   .legend-item {
     display: grid;
-    grid-template-columns: 16px 1fr;
+    grid-template-columns: 14px 1fr;
     align-items: center;
     width: 100%;
     height: 100%;
-    padding: 12px 16px;
-    column-gap: 12px;
-    row-gap: 2px;
+    padding: 9px 12px;
+    column-gap: 9px;
     border: 1px solid var(--line);
-    border-radius: 14px;
+    border-radius: 999px;
     background: rgb(14 38 47 / 0.5);
     color: var(--ink);
     cursor: pointer;
@@ -475,21 +475,9 @@ Astro.csp.insertScriptHash(careerRingsHash);
     line-height: 1.25;
   }
 
-  .legend-meta {
-    grid-column: 2;
-    color: var(--muted);
-    font-size: 0.78rem;
-  }
-
-  /* A placeholder in a legend card may wrap, so the card keeps its width. */
-  .legend-meta :global(.placeholder) {
-    white-space: normal;
-  }
-
   @media (width >= 64rem) {
     .career-page {
       padding-top: 40px;
-      padding-bottom: 96px;
     }
 
     .career-head {
@@ -535,6 +523,11 @@ Astro.csp.insertScriptHash(careerRingsHash);
       grid-template-columns: minmax(0, var(--ring-size)) minmax(28rem, 1fr);
       gap: 24px 44px;
       align-items: start;
+    }
+
+    /* The ring sits halfway down the side column, however tall the panel. */
+    .stage-figure {
+      align-self: center;
     }
 
     .stage-figure > :global(.rings-figure) {

@@ -49,7 +49,6 @@
   --ease-*: initial;
 
   --container-site: var(--container);
-  --container-site-wide: var(--container-wide);
 }
 
 @layer base {

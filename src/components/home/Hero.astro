@@ -30,7 +30,7 @@ const actions = copy.actions.flatMap(({ label, page, variant }) =>
 
 <section class="hero relative overflow-hidden lg:-mt-21 lg:min-h-[650px]" aria-labelledby="hero-title">
   <HeroScene />
-  <div class="relative z-2 mx-auto max-w-site-wide px-(--gutter) pb-12 lg:pt-24 lg:pb-32">
+  <div class="relative z-2 mx-auto max-w-site px-(--gutter) pb-12 lg:pt-24 lg:pb-32">
     <div class="lg:max-w-[min(660px,52%)]">
       <p
         class="hero-reveal reveal-1 text-[0.7rem] font-medium tracking-[0.24em] text-link uppercase lg:text-xs"
@@ -71,7 +71,7 @@ const actions = copy.actions.flatMap(({ label, page, variant }) =>
   </div>
   <div class="absolute inset-x-0 bottom-7 z-2 hidden lg:block" aria-hidden="true">
     <p
-      class="mx-auto flex max-w-site-wide items-center gap-3 px-(--gutter) text-xs tracking-[0.2em] text-muted uppercase"
+      class="mx-auto flex max-w-site items-center gap-3 px-(--gutter) text-xs tracking-[0.2em] text-muted uppercase"
     >
       <span class="hero-scroll-line"></span>
       {copy.scrollHint}
