@@ -4,7 +4,8 @@ import { pathOf, type RouteKey, routes } from "../src/i18n/routes";
 
 // The width sweep (ADR 0010): every page, in French and English, widened step
 // by step from 320 to 1920 px, with each width step's value and the pixel
-// below it, at the 600 px height and the tallest one. At every size, once a
+// below it, at the 600 px height and the tallest one, then at each of ADR
+// 0010's reference viewport sizes. At every size, once a
 // frame has been drawn after the resize: no horizontal scroll, no visible
 // element beyond the viewport's sides outside a box that clips it, no text
 // clipped by a box that hides its overflow, and no overlap between the regions
@@ -17,6 +18,20 @@ const step = 16;
 const heights = [600, 950];
 /** ADR 0010's width steps (48, 64 and 80 rem) and the pixel below each. */
 const edges = [767, 768, 1023, 1024, 1279, 1280];
+/** ADR 0010's reference sizes, as the browser's viewport. */
+const references = [
+  [320, 568],
+  [360, 740],
+  [390, 664],
+  [768, 1024],
+  [1024, 768],
+  [1280, 600],
+  [1366, 650],
+  [1440, 800],
+  [1536, 730],
+  [1600, 770],
+  [1920, 950],
+] as const;
 
 const widths = [
   ...new Set([
@@ -151,16 +166,16 @@ for (const key of Object.keys(routes) as RouteKey[]) {
       await page.goto(pathOf(key, locale));
       await page.evaluate(() => document.fonts.ready);
       const found = new Map<string, string[]>();
-      for (const height of heights) {
-        for (const width of widths) {
-          await page.setViewportSize({ width, height });
-          await settled(page);
-          for (const problem of await page.evaluate(problemsNow)) {
-            found.set(problem.replace(/\(.*\)$/, "").trim(), [
-              ...(found.get(problem.replace(/\(.*\)$/, "").trim()) ?? []),
-              `${width}×${height}`,
-            ]);
-          }
+      const sizes = [
+        ...heights.flatMap((height) => widths.map((width) => [width, height] as const)),
+        ...references,
+      ];
+      for (const [width, height] of sizes) {
+        await page.setViewportSize({ width, height });
+        await settled(page);
+        for (const problem of await page.evaluate(problemsNow)) {
+          const kind = problem.replace(/\(.*\)$/, "").trim();
+          found.set(kind, [...(found.get(kind) ?? []), `${width}×${height}`]);
         }
       }
       // One line per problem, with the sizes where it shows.
