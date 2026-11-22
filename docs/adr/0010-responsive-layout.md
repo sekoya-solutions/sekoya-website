@@ -47,12 +47,13 @@ Layout bugs keep appearing at widths and heights no test visits (a range of a fe
 
 Chosen: **width steps 2, fluid by default (between the steps 1), career stage 2, the timeline below 1024 px (career page 2), and testing 2.**
 
-- **Allowed media queries:** widths 48, 64 and 80 rem, mobile first (`width >= …` or `min-width`), and one height, 45 rem (720 px), as `height < 45rem` for a compact mode on short screens. Preference and capability queries (`prefers-reduced-motion`, `scripting`, `hover`, `pointer`) are free. A container query's value belongs to its component and is written in rem. A unit test reads every style in `src` and fails on any other media query value.
+- **Allowed media queries:** widths 48, 64 and 80 rem and one height, 45 rem (720 px), in range syntax: `width >= 48rem` (or `min-width`) mobile first, `width < 48rem` where hiding or adjusting below a step is cleaner, a band between two of these values such as `48rem <= width < 64rem`, and `height < 45rem` for a compact mode on short screens. `>=` and `<` on the same value cover every width exactly once, so no `767px` or `47.99rem` is ever needed. Preference and capability queries (`prefers-reduced-motion`, `scripting`, `hover`, `pointer`) are free. A unit test reads every style in `src` and fails on any other media query value.
+- **Container queries:** a component's own values, in rem, each with a comment naming what stops fitting at that width. The "no range fixes" rule applies to them too, and the sweep checks them like any other layout.
 - **No range fixes:** a layout that breaks between two steps is fixed by making the component fluid, never by a rule for that range.
 - **Viewport units:** `dvh` (or `svh`) rather than `vh` for anything sized on the screen's height.
 - **The career page:** from 1024 px with scripting, the rings and the panel, the ring sized on both the width and the height (`min(…, 100%, calc(100dvh - …))`); below 1024 px, or without JavaScript, the vertical timeline. This replaces ADR 0005's "scroll progress drives the drawing of the rings": the rings draw once, on entering the screen.
-- **Reference sizes**, as the browser's viewport (the page area, not the screen): 320 × 568, 360 × 740, 390 × 664 (Playwright's iPhone), 768 × 1024, 1024 × 768, 1280 × 600, 1366 × 650, 1440 × 800, 1536 × 730 and 1920 × 950.
-- **The sweep:** on every page, in French and English, widths from 320 to 1920 px in 16 px steps plus each step's value and one pixel below it, at heights 600, 750 and 950. At every width: no horizontal scroll on the page; no visible element beyond the viewport's sides outside a scroll container; no clipped text (an element that hides its overflow and whose content is wider or taller than its box); and the regions a page marks as side by side (such as the rings, the panel and the legend) do not overlap. Each width is checked once the layout has settled after the resize, never after a fixed delay.
+- **Reference sizes**, as the browser's viewport (the page area, not the screen): 320 × 568, 360 × 740, 390 × 664 (Playwright's iPhone), 768 × 1024, 1024 × 768, 1280 × 600, 1366 × 650, 1440 × 800, 1536 × 730, 1600 × 770 (a 1600 × 900 screen) and 1920 × 950.
+- **The sweep:** widths from 320 to 1920 px, at heights from 600 to 950. Every pull request that changes code runs it, never only on a schedule, and every run keeps: every page template, in French and English; each step's value and one pixel below it; and the 600 px height. #54 measures the run and sets the width step (16 or 32 px), the other heights and whether pages sharing a template (case studies, projects) are all visited, within a budget of 5 minutes added to CI. At every width: no horizontal scroll on the page; no visible element beyond the viewport's sides outside a scroll container; no clipped text (an element that hides its overflow and whose content is wider or taller than its box); and the regions a page marks as side by side (such as the rings, the panel and the legend) do not overlap. Each width is checked once the layout has settled after the resize, never after a fixed delay.
 - **Done means swept:** a page or component is finished only when the sweep passes on it.
 
 ## Consequences
@@ -64,7 +65,7 @@ Positive:
 
 Negative:
 
-- The sweep adds CI time; its cost is measured in the issue that builds it, and it can be split across workers.
+- The sweep adds CI time, up to the 5 minute budget; a coarser width step finds a broken range only when it is wider than the step, so the step values and the pixels below them are always checked.
 - The rings no longer draw with the scroll, and tablets in portrait show the timeline.
 
 Follow-up:
