@@ -2,7 +2,7 @@
  * What the career page (#18) shows of each position, computed at build time
  * from its content (src/content/career): its period, duration and ring
  * number in words, its band's geometry (src/lib/rings-geometry.ts), and when
- * it draws itself in on scroll.
+ * it draws itself in.
  *
  * Each band's drawing window and shade go into a small generated style sheet,
  * one rule per position, which the page inlines with its hash in the page's

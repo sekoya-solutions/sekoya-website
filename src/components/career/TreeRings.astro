@@ -12,7 +12,7 @@
  * from screen readers. The tooltips are positioned by the page's script
  * (career-rings.ts). Every state is drawn by CSS (Career.astro): a band is
  * `hot` while pointed at or focused, `pinned` while the panel shows it, and
- * draws itself in from `--career-p`, the scroll progress.
+ * draws itself in from `--career-p`, the drawing's progress.
  */
 import {
   barkPhase,
@@ -85,8 +85,6 @@ const arc = (radius: number) =>
           data-select={position.slug}
           data-ring={position.slug}
           data-r={position.band.middle}
-          data-start={position.draw.start}
-          data-end={position.draw.end}
           data-placeholder={position.band.placeholder ? "" : undefined}
         />
       ))
@@ -186,7 +184,7 @@ const arc = (radius: number) =>
     fill-opacity: 0.35;
   }
 
-  /* Each band's progress, from 0 to 1, as the page scrolls (Career.astro). */
+  /* Each band's progress, from 0 to 1, as the rings draw (Career.astro). */
   [data-ring] {
     --ring-k: clamp(0, (var(--career-p) - var(--ring-start, 0)) / var(--ring-length, 0.35), 1);
   }
@@ -225,12 +223,6 @@ const arc = (radius: number) =>
   .band:focus-visible {
     stroke: var(--focus);
     stroke-width: 2.5;
-  }
-
-  /* A band not drawn in yet cannot be pointed at (the script also takes it
-     out of the Tab order). */
-  .band[data-undrawn] {
-    pointer-events: none;
   }
 
   .rings-lines,

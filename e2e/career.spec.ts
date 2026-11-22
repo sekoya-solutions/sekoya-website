@@ -4,11 +4,12 @@ import { expect, type Page, test } from "@playwright/test";
 import { locales } from "../src/i18n/config";
 import { pathOf } from "../src/i18n/routes";
 
-// The career page (#18): the trunk's rings from 768 px with scripting, the
-// vertical timeline below or without scripting, the semantic list always in
-// the page, the drawing from the pith outwards on scroll, the tooltip, the
-// pinned panel, the legend and the keyboard, reduced motion, and the page's
-// JavaScript budget (ADR 0005).
+// The career page (#18, #55): the trunk's rings from 1024 px with scripting,
+// the vertical timeline below or without scripting, the semantic list always
+// in the page, the drawing from the pith outwards once the rings come into
+// view, the tooltip, the pinned panel, the legend and the keyboard, the fit at
+// ADR 0010's reference sizes, reduced motion, and the page's JavaScript
+// budget (ADR 0005).
 
 /** The career copy of a language, as the content file writes it. */
 function careerCopy(locale: string) {
@@ -25,16 +26,6 @@ function typeset(text: string, locale: string): string {
 const fr = careerCopy("fr");
 const slugs: string[] = fr.positions.map((position: { slug: string }) => position.slug);
 
-/** The rings' stage scrolled so that the drawing's progress is `share`, from 0 to 1. */
-async function scrollStage(page: Page, share: number) {
-  await page.evaluate((value) => {
-    const stage = document.querySelector<HTMLElement>("[data-career-stage]");
-    if (stage === null) throw new Error("no stage");
-    const top = stage.getBoundingClientRect().top + scrollY;
-    scrollTo(0, top + (stage.offsetHeight - innerHeight) * value);
-  }, share);
-}
-
 /** How much of a ring's outer edge is drawn, from 0 to 1. */
 async function drawn(page: Page, slug: string): Promise<number> {
   return page.locator(`.ring-lines[data-ring="${slug}"] .ring-outer`).evaluate((edge) => {
@@ -42,6 +33,30 @@ async function drawn(page: Page, slug: string): Promise<number> {
     const offset = /-?\d*\.?\d+/.exec(getComputedStyle(edge).strokeDashoffset)?.[0];
     return 1 - Number(offset);
   });
+}
+
+/** The rings' drawing (a CSS animation), paused at `share` of its length, from 0 to 1. */
+async function seekDrawing(page: Page, share: number) {
+  await page.evaluate((value) => {
+    const drawing = document
+      .getAnimations()
+      .find((animation) => (animation as CSSAnimation).animationName === "career-draw");
+    if (drawing === undefined) throw new Error("no drawing");
+    drawing.pause();
+    drawing.currentTime = Number(drawing.effect?.getComputedTiming().duration) * value;
+  }, share);
+}
+
+/** Resolves once the rings' drawing has finished. */
+async function drawingDone(page: Page) {
+  await page.evaluate(() =>
+    Promise.all(
+      document
+        .getAnimations()
+        .filter((animation) => (animation as CSSAnimation).animationName === "career-draw")
+        .map((animation) => animation.finished),
+    ),
+  );
 }
 
 for (const locale of locales) {
@@ -61,8 +76,8 @@ for (const locale of locales) {
   });
 }
 
-test.describe("from 768 px, with scripting", () => {
-  test.skip(({ isMobile }) => isMobile, "the rings show from 768 px");
+test.describe("from 1024 px, with scripting", () => {
+  test.skip(({ isMobile }) => isMobile, "the rings show from 1024 px");
 
   test("the rings show, and the list is kept for screen readers only", async ({ page }) => {
     await page.goto(pathOf("career", "fr"));
@@ -79,9 +94,8 @@ test.describe("from 768 px, with scripting", () => {
   });
 
   test("the panel shows the initial position, and a click pins another", async ({ page }) => {
-    // With no drawing on scroll, the panel does not follow it: it shows the initial position.
-    await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto(pathOf("career", "fr"));
+    await drawingDone(page);
     const panel = page.locator("#career-panel");
     await expect(panel.getByRole("heading", { level: 2 })).toHaveText("SOS Accessoire");
     await expect(panel).toContainText("3 ans 4 mois");
@@ -90,7 +104,6 @@ test.describe("from 768 px, with scripting", () => {
       pathOf("caseStudy/sos-accessoire", "fr"),
     );
     const band = page.locator('path[data-select="culligan"]');
-    await scrollStage(page, 1);
     await band.click({ position: await bandPoint(page, "culligan") });
     await expect(panel.getByRole("heading", { level: 2 })).toHaveText("Culligan");
     await expect(band).toHaveAttribute("aria-pressed", "true");
@@ -106,11 +119,17 @@ test.describe("from 768 px, with scripting", () => {
       "aria-pressed",
       "true",
     );
+    // The career reads from the pith outwards, in the legend too.
+    expect(
+      await page
+        .locator(".legend [data-select]")
+        .evaluateAll((items) => items.map((item) => (item as HTMLElement).dataset.select)),
+    ).toEqual([...slugs].reverse());
   });
 
   test("pointing at a band lights it up and shows its tooltip there", async ({ page }) => {
     await page.goto(pathOf("career", "fr"));
-    await scrollStage(page, 1);
+    await drawingDone(page);
     const point = await bandPoint(page, "culligan");
     const band = page.locator('path[data-select="culligan"]');
     const box = await band.boundingBox();
@@ -133,8 +152,6 @@ test.describe("from 768 px, with scripting", () => {
 
   test("the keyboard moves between the bands and pins one", async ({ page }) => {
     await page.goto(pathOf("career", "fr"));
-    // Every band drawn, so every band takes the focus.
-    await scrollStage(page, 1);
     const band = (slug: string) => page.locator(`path[data-select="${slug}"]`);
     await band("sos-accessoire").focus();
     await expect(page.locator('[data-tip="sos-accessoire"]')).toBeVisible();
@@ -170,87 +187,15 @@ test.describe("from 768 px, with scripting", () => {
       "",
     );
   });
-});
 
-test.describe("from 1280 px wide and 640 px tall, with motion", () => {
-  test.skip(({ isMobile }) => isMobile, "the rings draw on scroll on a large screen");
-  test.use({ viewport: { width: 1440, height: 900 } });
-
-  test("the rings draw from the pith outwards as the page scrolls", async ({ page }) => {
+  test("a band clicked with the mouse shows no browser focus rectangle", async ({ page }) => {
     await page.goto(pathOf("career", "fr"));
-    const [oldest, , , newest] = [...slugs].reverse() as [string, string, string, string];
-    await scrollStage(page, 0);
-    await expect.poll(() => drawn(page, oldest)).toBeLessThan(0.05);
-    await expect.poll(() => drawn(page, newest)).toBeLessThan(0.05);
-    // Part-way: the oldest ring is drawn, the newest not yet.
-    await scrollStage(page, 0.4);
-    await expect.poll(() => drawn(page, oldest)).toBeGreaterThan(0.95);
-    await expect.poll(() => drawn(page, newest)).toBeLessThan(0.05);
-    await scrollStage(page, 1);
-    for (const slug of slugs) await expect.poll(() => drawn(page, slug)).toBeGreaterThan(0.95);
-    // The rings and the panel stay in view while the track scrolls by.
-    await expect(page.locator(".rings")).toBeInViewport();
-    await expect(page.locator("#career-panel")).toBeInViewport();
+    await drawingDone(page);
+    const band = page.locator('path[data-select="culligan"]');
+    await band.click({ position: await bandPoint(page, "culligan") });
+    await expect(band).toBeFocused();
+    expect(await band.evaluate((element) => getComputedStyle(element).outlineStyle)).toBe("none");
   });
-
-  test("the panel follows the drawing, until the visitor pins a band", async ({ page }) => {
-    await page.goto(pathOf("career", "fr"));
-    const heading = page.locator("#career-panel").getByRole("heading", { level: 2 });
-    const legend = page.locator(".legend [data-select]");
-    // The career reads from the pith outwards, in the legend too.
-    expect(await legend.evaluateAll((items) => items.map((item) => item.dataset.select))).toEqual(
-      [...slugs].reverse(),
-    );
-    for (const [share, company] of [
-      [0, "Atos / Bull"],
-      [0.25, "Culligan"],
-      [0.45, "SOS Accessoire"],
-      [1, "Sekoya Solutions"],
-    ] as const) {
-      await scrollStage(page, share);
-      await expect(heading).toHaveText(company);
-    }
-    await page.locator('.legend [data-select="culligan"]').click();
-    await scrollStage(page, 0.45);
-    await expect(page.locator('[data-ring="sos-accessoire"].ring-lines')).not.toHaveClass(/pinned/);
-    await expect(heading).toHaveText("Culligan");
-  });
-
-  test("on landing, a big arrow at the bottom of the screen says the page scrolls on", async ({
-    page,
-  }) => {
-    await page.goto(pathOf("career", "fr"));
-    const cue = page.locator(".scroll-cue");
-    await expect(cue).toBeVisible();
-    await expect(cue).toHaveText(typeset(fr.labels.scrollHint, "fr"));
-    await expect(cue).toBeInViewport();
-    // The arrow is big: 60 px, in gold.
-    const arrow = await cue.locator(".scroll-cue-arrow").boundingBox();
-    expect(arrow?.width).toBeGreaterThanOrEqual(56);
-    // It goes once the visitor scrolls.
-    await page.evaluate(() => scrollTo(0, innerHeight * 0.5));
-    await expect(cue).toBeHidden();
-  });
-
-  for (const viewport of [
-    { width: 1280, height: 720 },
-    { width: 1440, height: 900 },
-    { width: 1600, height: 1000 },
-    { width: 1600, height: 1200 },
-    { width: 1920, height: 1200 },
-  ]) {
-    test(`at ${viewport.width} × ${viewport.height}, the arrow sits above the legend's cards, never over them`, async ({
-      page,
-    }) => {
-      await page.setViewportSize(viewport);
-      await page.goto(pathOf("career", "fr"));
-      const cue = await page.locator(".scroll-cue").boundingBox();
-      const legend = await page.locator(".legend").boundingBox();
-      if (cue === null || legend === null) throw new Error("cue or legend missing");
-      expect(cue.y + cue.height).toBeLessThanOrEqual(viewport.height);
-      expect(cue.y + cue.height).toBeLessThanOrEqual(legend.y - 8);
-    });
-  }
 
   test("how to read the rings shows with them, above the panel, once", async ({ page }) => {
     await page.goto(pathOf("career", "fr"));
@@ -258,135 +203,80 @@ test.describe("from 1280 px wide and 640 px tall, with motion", () => {
     const lead = page.getByText(typeset(fr.lead, "fr")).filter({ visible: true });
     await expect(lead).toHaveCount(1);
     await expect(page.locator(".stage-side .stage-lead")).toBeVisible();
-    await scrollStage(page, 0.5);
-    await expect(page.locator(".stage-lead")).toBeInViewport();
   });
+});
 
-  test("a band not drawn yet takes neither the pointer nor the focus", async ({ page }) => {
+test.describe("the drawing, with motion", () => {
+  test.skip(({ isMobile }) => isMobile, "the rings show from 1024 px");
+
+  test("the rings draw from the pith outwards, once", async ({ page }) => {
     await page.goto(pathOf("career", "fr"));
-    const band = page.locator('path[data-select="culligan"]');
-    await expect(band).toHaveAttribute("data-undrawn", "");
-    await expect(band).toHaveAttribute("tabindex", "-1");
-    expect(await band.evaluate((element) => getComputedStyle(element).pointerEvents)).toBe("none");
-    // Once the drawing reaches it, it does.
-    await scrollStage(page, 0.3);
-    await expect(band).not.toHaveAttribute("data-undrawn");
-    await expect(band).toHaveAttribute("tabindex", "0");
+    const [oldest, , , newest] = [...slugs].reverse() as [string, string, string, string];
+    // The stage is in view on landing, so the drawing starts at once.
+    await expect(page.locator("[data-career-stage]")).toHaveAttribute("data-draw", "run");
+    await seekDrawing(page, 0);
+    expect(await drawn(page, oldest)).toBeLessThan(0.05);
+    expect(await drawn(page, newest)).toBeLessThan(0.05);
+    // Part-way: the oldest ring is drawn, the newest not yet.
+    await seekDrawing(page, 0.4);
+    expect(await drawn(page, oldest)).toBeGreaterThan(0.95);
+    expect(await drawn(page, newest)).toBeLessThan(0.05);
+    await seekDrawing(page, 1);
+    for (const slug of slugs) expect(await drawn(page, slug)).toBeGreaterThan(0.95);
+    // Scrolled away and back, the rings stay drawn: the drawing never replays.
+    await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
+    await page.evaluate(() => scrollTo(0, 0));
+    await expect(page.locator("[data-career-stage]")).toHaveAttribute("data-draw", "run");
+    for (const slug of slugs) expect(await drawn(page, slug)).toBeGreaterThan(0.95);
   });
 
-  test("a legend card whose ring is not drawn scrolls to it, then pins it", async ({ page }) => {
+  test("the rings wait undrawn until they come into view", async ({ page }) => {
+    // The stage pushed below the screen as the page is parsed, before the
+    // observer's first report, which then finds it out of view.
+    await page.addInitScript(() => {
+      new MutationObserver((_, observer) => {
+        const head = document.querySelector<HTMLElement>(".career-head");
+        if (head === null) return;
+        head.style.marginBottom = "200vh";
+        observer.disconnect();
+      }).observe(document, { childList: true, subtree: true });
+    });
     await page.goto(pathOf("career", "fr"));
-    await page.locator('.legend [data-select="sos-accessoire"]').click();
-    await expect.poll(() => drawn(page, "sos-accessoire")).toBeGreaterThan(0.95);
-    await expect(page.locator("#career-panel").getByRole("heading", { level: 2 })).toHaveText(
-      "SOS Accessoire",
-    );
+    await page.waitForLoadState("load");
+    const stage = page.locator("[data-career-stage]");
+    await expect(stage).toHaveAttribute("data-draw", "pending");
+    for (const slug of slugs) expect(await drawn(page, slug)).toBe(0);
+    await stage.scrollIntoViewIfNeeded();
+    await expect(stage).toHaveAttribute("data-draw", "run");
+    await drawingDone(page);
+    for (const slug of slugs) expect(await drawn(page, slug)).toBe(1);
   });
 
-  test("a pinned ring scrolled back to undrawn is released, and the panel follows again", async ({
+  test("a band's name appears as the band draws itself in, and the bark is smooth", async ({
     page,
   }) => {
     await page.goto(pathOf("career", "fr"));
-    await scrollStage(page, 1);
-    const card = page.locator('.legend [data-select="sos-accessoire"]');
-    await card.click();
-    await expect(card).toHaveAttribute("aria-pressed", "true");
-    // Back above SOS Accessoire's ring, which starts drawing at 40 %.
-    await scrollStage(page, 0.25);
-    await expect(card).toHaveAttribute("aria-pressed", "false");
-    await expect(page.locator("#career-panel").getByRole("heading", { level: 2 })).toHaveText(
-      "Culligan",
-    );
+    await expect(page.locator("[data-career-stage]")).toHaveAttribute("data-draw", "run");
+    await seekDrawing(page, 0.15);
+    const opacity = (slug: string) =>
+      page
+        .locator(`.ring-label[data-ring="${slug}"]`)
+        .evaluate((label) => Number(getComputedStyle(label).opacity));
+    expect(await opacity("atos-bull")).toBeGreaterThan(0.3);
+    expect(await opacity("sos-accessoire")).toBe(0);
+    await expect(page.locator(".bark")).not.toHaveAttribute("filter");
   });
 
-  test("a band clicked with the mouse shows no browser focus rectangle", async ({ page }) => {
-    await page.goto(pathOf("career", "fr"));
-    await scrollStage(page, 1);
-    const band = page.locator('path[data-select="culligan"]');
-    await band.click({ position: await bandPoint(page, "culligan") });
-    await expect(band).toBeFocused();
-    expect(await band.evaluate((element) => getComputedStyle(element).outlineStyle)).toBe("none");
-  });
-
-  test("on landing, the panel shows the oldest position, where the drawing starts", async ({
-    page,
-  }) => {
-    await page.goto(pathOf("career", "fr"));
-    await expect(page.locator("#career-panel").getByRole("heading", { level: 2 })).toHaveText(
-      "Atos / Bull",
-    );
-  });
-
-  test("no empty screen shows before or after the pinned block", async ({ page }) => {
+  test("the page scrolls normally to its footer, with its usual spacing", async ({ page }) => {
     await page.setViewportSize({ width: 1600, height: 1000 });
     await page.goto(pathOf("career", "fr"));
-    const page_ = (selector: string, edge: "top" | "bottom") =>
-      page.evaluate(
-        ([query, side]) =>
-          (document.querySelector(query)?.getBoundingClientRect()[side as "top" | "bottom"] ?? 0) +
-          scrollY,
-        [selector, edge],
-      );
-    // As the visitor lands: the pinned block follows the page's title.
-    expect(
-      (await page_(".stage-pin", "top")) - (await page_(".career-head", "bottom")),
-    ).toBeLessThan(80);
-    // At the track's end, the block leaves with it, and the footer follows.
-    await scrollStage(page, 1);
-    await page.evaluate(() => scrollBy(0, 200));
-    expect(
-      Math.abs((await page_(".stage", "bottom")) - (await page_(".stage-pin", "bottom"))),
-    ).toBeLessThan(2);
-    // Then the footer, directly: no page padding or footer margin between
-    // them, so no empty band under the legend (#51).
-    expect(
-      Math.abs((await page_("footer", "top")) - (await page_(".stage-pin", "bottom"))),
-    ).toBeLessThan(2);
-  });
-
-  // The pinned block is about as tall as the screen, so it leaves it as the
-  // footer comes up (the owner's choice, #51), but only by the footer's
-  // height: the page cannot scroll past the block any further.
-  for (const viewport of [
-    { width: 1280, height: 640 },
-    { width: 1440, height: 900 },
-    { width: 1600, height: 915 },
-    { width: 1920, height: 1080 },
-  ]) {
-    test(`at the bottom of the page, the block has moved up by the footer's height only (${viewport.width} × ${viewport.height})`, async ({
-      page,
-    }) => {
-      await page.setViewportSize(viewport);
-      await page.goto(pathOf("career", "fr"));
-      await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
-      const { pinBottom, footerTop, footerHeight, pageBottom } = await page.evaluate(() => {
-        const footer = document.querySelector("footer");
-        const pin = document.querySelector(".stage-pin");
-        if (footer === null || pin === null) throw new Error("no footer or pinned block");
-        return {
-          pinBottom: pin.getBoundingClientRect().bottom,
-          footerTop: footer.getBoundingClientRect().top,
-          footerHeight: footer.getBoundingClientRect().height,
-          pageBottom: document.documentElement.scrollHeight - scrollY,
-        };
-      });
-      // The page is scrolled to its very end, the footer's bottom at the
-      // screen's bottom.
-      expect(Math.abs(pageBottom - viewport.height)).toBeLessThan(2);
-      expect(Math.abs(footerTop + footerHeight - viewport.height)).toBeLessThan(2);
-      // The block ends where the footer starts: above it, only the footer's
-      // height of the screen is taken from the block.
-      expect(Math.abs(pinBottom - footerTop)).toBeLessThan(2);
-      expect(pinBottom).toBeGreaterThanOrEqual(viewport.height - footerHeight - 1);
+    // No scroll track: the stage is as tall as its content.
+    const heights = await page.evaluate(() => {
+      const box = (selector: string) => document.querySelector(selector)?.getBoundingClientRect();
+      return { stage: box("[data-career-stage]")?.height, block: box(".stage-pin")?.height };
     });
-  }
-
-  test("without the pinned block, the page keeps its spacing before the footer", async ({
-    page,
-  }) => {
-    // From 1024 px the rings show, but are only pinned from 1280 × 640.
-    await page.setViewportSize({ width: 1100, height: 900 });
-    await page.goto(pathOf("career", "fr"));
+    expect(heights.stage).toBe(heights.block);
+    await expect(page.locator(".scroll-cue")).toHaveCount(0);
     const spacing = await page.evaluate(() => {
       const career = document.querySelector(".career-page");
       const footer = document.querySelector("footer");
@@ -397,106 +287,78 @@ test.describe("from 1280 px wide and 640 px tall, with motion", () => {
       };
     });
     expect(spacing).toEqual({ padding: "96px", margin: "96px" });
-    // Another page keeps the footer's margin at the pinned size.
-    await page.setViewportSize({ width: 1600, height: 1000 });
-    await page.goto(pathOf("legal", "fr"));
-    expect(
-      await page.locator("footer").evaluate((footer) => getComputedStyle(footer).marginTop),
-    ).toBe("96px");
   });
+});
 
-  test("a band's name appears as the band draws itself in, and the bark is smooth", async ({
-    page,
-  }) => {
-    await page.goto(pathOf("career", "fr"));
-    await scrollStage(page, 0.15);
-    const opacity = (slug: string) =>
-      page
-        .locator(`.ring-label[data-ring="${slug}"]`)
-        .evaluate((label) => Number(getComputedStyle(label).opacity));
-    await expect.poll(() => opacity("atos-bull")).toBeGreaterThan(0.3);
-    await expect.poll(() => opacity("sos-accessoire")).toBe(0);
-    await expect(page.locator(".bark")).not.toHaveAttribute("filter");
-  });
-
-  for (const viewport of [
-    { width: 1280, height: 640 },
-    { width: 1280, height: 720 },
-    { width: 1440, height: 900 },
-  ]) {
-    test(`at ${viewport.width} × ${viewport.height}, the pinned block fits the screen, whatever position the panel shows`, async ({
+// ADR 0010's reference sizes from 1024 px: the ring and the side column side
+// by side, the legend in one row under both, nothing overlapping or beyond
+// the screen's sides, and the whole block, from the explanation to the
+// legend, on one screen, whatever position the panel shows.
+for (const viewport of [
+  { width: 1024, height: 768 },
+  { width: 1280, height: 600 },
+  { width: 1366, height: 650 },
+  { width: 1440, height: 800 },
+  { width: 1536, height: 730 },
+  { width: 1600, height: 770 },
+  { width: 1920, height: 950 },
+]) {
+  for (const locale of locales) {
+    test(`at ${viewport.width} × ${viewport.height} in ${locale}, the rings, the panel and the legend fit on one screen`, async ({
       page,
+      isMobile,
     }) => {
+      test.skip(isMobile, "the rings show from 1024 px");
       await page.setViewportSize(viewport);
-      await page.goto(pathOf("career", "fr"));
-      await scrollStage(page, 0.5);
+      await page.goto(pathOf("career", locale));
       for (const slug of slugs) {
         await page.locator(`.legend [data-select="${slug}"]`).click();
         const boxes = await page.evaluate(() => {
           const box = (selector: string) => {
             const element = document.querySelector(selector);
             if (element === null) throw new Error(`${selector} missing`);
-            return element.getBoundingClientRect();
+            return element.getBoundingClientRect().toJSON() as DOMRect;
           };
           return {
+            block: box(".stage-pin"),
             rings: box(".rings"),
+            lead: box(".stage-lead"),
             panel: box("#career-panel"),
             legend: box(".legend"),
-            lead: box(".stage-lead"),
             width: document.documentElement.clientWidth,
+            scrollWidth: document.documentElement.scrollWidth,
             height: innerHeight,
           };
         });
-        expect(boxes.rings.top).toBeGreaterThanOrEqual(0);
-        // How to read the rings stays in view with them, above the panel.
-        expect(boxes.lead.top).toBeGreaterThanOrEqual(0);
+        expect(boxes.scrollWidth, "the page scrolls sideways").toBeLessThanOrEqual(boxes.width);
+        expect(boxes.block.height, `${slug}: taller than the screen`).toBeLessThanOrEqual(
+          boxes.height,
+        );
+        expect(boxes.rings.right).toBeLessThanOrEqual(boxes.panel.left);
         expect(boxes.lead.bottom).toBeLessThanOrEqual(boxes.panel.top);
         expect(boxes.rings.bottom).toBeLessThanOrEqual(boxes.legend.top);
         expect(boxes.panel.bottom, `${slug}: the panel overlaps the legend`).toBeLessThanOrEqual(
           boxes.legend.top,
         );
-        expect(boxes.legend.bottom).toBeLessThanOrEqual(boxes.height);
         expect(boxes.panel.right).toBeLessThanOrEqual(boxes.width);
+        expect(boxes.legend.right).toBeLessThanOrEqual(boxes.width);
       }
+      const tops = await page
+        .locator(".legend-item")
+        .evaluateAll((items) => items.map((item) => item.getBoundingClientRect().top));
+      expect(new Set(tops).size).toBe(1);
     });
   }
-});
-
-test.describe("from 1024 px, on a smaller screen", () => {
-  test.skip(({ isMobile }) => isMobile, "the rings show from 768 px");
-  test.use({ viewport: { width: 1100, height: 800 } });
-
-  test("the rings are drawn in full beside the panel, with the legend in one row", async ({
-    page,
-  }) => {
-    await page.goto(pathOf("career", "fr"));
-    for (const slug of slugs) expect(await drawn(page, slug)).toBe(1);
-    const stage = page.locator("[data-career-stage]");
-    expect(await stage.evaluate((element: HTMLElement) => element.offsetHeight)).toBeLessThan(
-      800 * 1.5,
-    );
-    const tops = await page
-      .locator(".legend-item")
-      .evaluateAll((items) => items.map((item) => item.getBoundingClientRect().top));
-    expect(new Set(tops).size).toBe(1);
-  });
-});
+}
 
 test.describe("under reduced motion", () => {
-  test.skip(({ isMobile }) => isMobile, "the rings show from 768 px");
+  test.skip(({ isMobile }) => isMobile, "the rings show from 1024 px");
   test.use({ viewport: { width: 1440, height: 900 } });
 
-  test("the rings are drawn in full, with no scroll track and nothing running", async ({
-    page,
-  }) => {
+  test("the rings are drawn in full at once, with nothing running", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto(pathOf("career", "fr"));
     for (const slug of slugs) expect(await drawn(page, slug)).toBe(1);
-    const stage = page.locator("[data-career-stage]");
-    expect(await stage.evaluate((element: HTMLElement) => element.offsetHeight)).toBeLessThan(
-      900 * 1.5,
-    );
-    await expect(page.locator(".scroll-cue")).toBeHidden();
     expect(await page.evaluate(() => document.getAnimations().length)).toBe(0);
     // Hover and pinning still work.
     await page.locator('path[data-select="atos-bull"]').focus();
@@ -507,18 +369,19 @@ test.describe("under reduced motion", () => {
   });
 });
 
-test.describe("below 768 px", () => {
-  test.skip(({ isMobile }) => !isMobile, "the timeline shows below 768 px");
-
-  test("the vertical timeline shows, and its cards open", async ({ page }) => {
+test.describe("below 1024 px", () => {
+  test("the vertical timeline shows, and its cards open", async ({ page, isMobile }) => {
+    // On the phone project, and on a desktop screen just under 1024 px.
+    if (!isMobile) await page.setViewportSize({ width: 1023, height: 800 });
     await page.goto(pathOf("career", "fr"));
-    // Nothing is wider than the phone: the page never scrolls sideways.
+    // Nothing is wider than the screen: the page never scrolls sideways.
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
       page.viewportSize()?.width ?? 0,
     );
     await expect(page.locator("[data-career-stage]")).toBeHidden();
     const list = page.getByRole("list", { name: fr.labels.list });
     await expect(list).toBeVisible();
+    await expect(list.locator("summary").first()).not.toHaveAttribute("tabindex");
     // How to read the career stays under the title.
     await expect(page.locator(".career-head .head-lead")).toBeVisible();
     const card = list.locator("details").nth(1);
@@ -544,7 +407,7 @@ test("the light theme draws the trunk in light wood, with no dark disc", async (
   page,
   isMobile,
 }) => {
-  test.skip(isMobile, "the rings show from 768 px");
+  test.skip(isMobile, "the rings show from 1024 px");
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.addInitScript(() => localStorage.setItem("theme", "light"));
   await page.goto(pathOf("career", "fr"));
