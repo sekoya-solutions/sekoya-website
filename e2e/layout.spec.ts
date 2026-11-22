@@ -1,7 +1,9 @@
 import { expect, test } from "@playwright/test";
+import { locales } from "../src/i18n/config";
+import { pathOf, type RouteKey, routes } from "../src/i18n/routes";
 
-// The base layout (ADR 0003): the font, the landmarks, the skip link, the
-// focus ring and the icons.
+// The base layout (ADR 0003, ADR 0010): the font, the landmarks, the skip
+// link, the focus ring, the icons and the width of the content.
 
 /** The load status of the Outfit face, the first family the body uses. */
 function outfitStatus(): string | undefined {
@@ -177,3 +179,75 @@ test("the favicons and the web manifest are wired and served", async ({ page, re
     expect(response.headers()["content-type"]).toBe("image/png");
   }
 });
+
+// ADR 0010: a page's content is never wider than the header's container, so
+// every page lines up with the logo and the navigation. Only decorative
+// elements (hidden from assistive technologies) may run to the screen's edges.
+for (const key of Object.keys(routes) as RouteKey[]) {
+  for (const locale of locales) {
+    test(`${key} in ${locale}: the content stays within the header's edges`, async ({
+      page,
+      isMobile,
+    }) => {
+      test.skip(isMobile, "checked on a wide screen, where the container is narrower than it");
+      await page.setViewportSize({ width: 1920, height: 950 });
+      // Under reduced motion nothing slides in (global.css): the boxes are
+      // measured where they rest, not part-way through their scroll reveal.
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      await page.goto(pathOf(key, locale));
+      // The content: every piece of text and every image, SVG or form field
+      // a visitor sees. Boxes are not measured: a background or a band may run
+      // to the screen's edges.
+      const outside = await page.evaluate(() => {
+        const header = document.querySelector("body > header");
+        if (header === null) throw new Error("no header");
+        const frame = header.getBoundingClientRect();
+        const padding = getComputedStyle(header);
+        const left = frame.left + Number.parseFloat(padding.paddingLeft) - 1;
+        const right = frame.right - Number.parseFloat(padding.paddingRight) + 1;
+        /** Seen: not hidden, decorative or inside a box clipped to a pixel (kept for screen readers). */
+        const seen = (element: Element) => {
+          if (element.closest('[aria-hidden="true"]') !== null) return false;
+          if (getComputedStyle(element).visibility === "hidden") return false;
+          for (let node: Element | null = element; node !== null; node = node.parentElement) {
+            const box = node.getBoundingClientRect();
+            if (box.width <= 1 || box.height <= 1) return false;
+          }
+          return true;
+        };
+        const main = document.querySelector("main");
+        if (main === null) throw new Error("no main");
+        const pieces: { label: string; boxes: DOMRect[] }[] = [];
+        const walker = document.createTreeWalker(main, NodeFilter.SHOW_TEXT);
+        for (let text = walker.nextNode(); text !== null; text = walker.nextNode()) {
+          const parent = text.parentElement;
+          if (parent === null || text.textContent?.trim() === "" || !seen(parent)) continue;
+          const range = document.createRange();
+          range.selectNodeContents(text);
+          pieces.push({
+            label: `"${text.textContent?.trim().slice(0, 40)}"`,
+            boxes: [...range.getClientRects()],
+          });
+        }
+        for (const media of main.querySelectorAll(
+          "img, svg, video, canvas, input, select, textarea",
+        )) {
+          if (media.parentElement?.closest("svg") || !seen(media)) continue;
+          pieces.push({
+            label: media.tagName.toLowerCase(),
+            boxes: [media.getBoundingClientRect()],
+          });
+        }
+        return pieces.flatMap(({ label, boxes }) =>
+          boxes
+            .filter((box) => box.width > 0 && (box.left < left || box.right > right))
+            .map(
+              (box) =>
+                `${label}: ${Math.round(box.left)}–${Math.round(box.right)} (header ${Math.round(left)}–${Math.round(right)})`,
+            ),
+        );
+      });
+      expect(outside).toEqual([]);
+    });
+  }
+}
