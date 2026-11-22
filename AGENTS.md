@@ -6,6 +6,7 @@ Standing rules for every AI agent working on this repository. The owner's genera
 
 - **The Sekoya Solutions website:** a static site built with Astro, in French at the root and English under `/en/`. Its source code is itself part of the portfolio, so the repository is public from the first commit (ADR 0009).
 - **Stack:** decided one ADR at a time, listed in the [ADR index](docs/adr/README.md). Nothing is implemented before its ADR is accepted.
+- **Responsive layout (ADR 0010):** media queries use only the widths 48, 64 and 80 rem and the height 45 rem; a unit test rejects any other value. A layout that breaks between two steps is fixed by making the component fluid, never by a rule for that range. A page or component is finished only when the width sweep passes on it.
 
 ## 2. Content rules (owner decisions)
 

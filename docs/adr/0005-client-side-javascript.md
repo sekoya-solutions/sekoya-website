@@ -2,6 +2,7 @@
 
 - Status: Accepted
 - Date: 2026-11-20, amended 2026-11-21 (the portfolio's demo facade, the contact subject)
+- Partly replaced by: [ADR 0010](0010-responsive-layout.md), for the career rings' drawing, which no longer follows the scroll
 - Deciders: Owner
 
 ## Context

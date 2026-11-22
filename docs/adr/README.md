@@ -13,3 +13,4 @@ One Architecture Decision Record (ADR) per significant technical choice, written
 | [0007](0007-measured-figures-and-placeholders.md) | Measured figures and placeholders | Accepted |
 | [0008](0008-contact-and-privacy.md) | Contact and privacy | Accepted |
 | [0009](0009-repository-licences-and-personal-information.md) | Repository, licences and personal information | Accepted |
+| [0010](0010-responsive-layout.md) | Responsive layout | Accepted |
