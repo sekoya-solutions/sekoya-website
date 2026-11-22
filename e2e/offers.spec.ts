@@ -115,13 +115,12 @@ test("each offer links to the contact page with its subject preselected", async 
   }
 });
 
-test("the offers page shows its placeholders as chips", async ({ page }) => {
+test("the offers page shows the approved region, with no placeholder left", async ({ page }) => {
   for (const locale of locales) {
     await page.goto(pathOf("offers", locale));
-    const chips = page.getByRole("main").locator(".placeholder");
     // The region of the third step.
-    await expect(chips).toHaveCount(1);
-    await expect(chips).toHaveText(/^\[TODO: .+\]$/);
+    await expect(page.getByRole("main")).toContainText("Île-de-France");
+    await expect(page.getByRole("main").locator(".placeholder")).toHaveCount(0);
   }
 });
 

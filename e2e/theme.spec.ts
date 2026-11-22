@@ -80,7 +80,9 @@ test("the theme script is a classic inline script before any stylesheet", async 
   await page.goto("/");
   const head = await page.evaluate(() =>
     [...document.head.children].map((element) => ({
-      script: element.tagName === "SCRIPT",
+      // The structured data's JSON is a script element that is not run.
+      script:
+        element.tagName === "SCRIPT" && element.getAttribute("type") !== "application/ld+json",
       external: element.hasAttribute("src"),
       deferred: element.hasAttribute("async") || element.hasAttribute("defer"),
       type: element.getAttribute("type"),

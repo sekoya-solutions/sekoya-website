@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { routeOf, routes } from "../src/i18n/routes";
+import { isListed, type RouteKey, routeOf, routes } from "../src/i18n/routes";
 import { measuredPages, runsPerPage } from "./lighthouse-pages";
 
 /** A route's template: a case study's or a project's, or the page's own key. */
@@ -12,9 +12,12 @@ describe("the pages Lighthouse measures", () => {
     for (const path of measuredPages) expect(routeOf(path).locale).toBe("fr");
   });
 
-  it("cover each template once", () => {
+  // A page kept out of search engines (the 404 page) is not measured: its
+  // noindex tag would lower its SEO score by design.
+  it("cover each template search engines list once", () => {
     const measured = measuredPages.map((path) => templateOf(routeOf(path).key));
-    const templates = new Set(Object.keys(routes).map(templateOf));
+    const listed = (Object.keys(routes) as RouteKey[]).filter(isListed);
+    const templates = new Set(listed.map(templateOf));
     expect(new Set(measured).size).toBe(measured.length);
     expect(new Set(measured)).toEqual(templates);
   });

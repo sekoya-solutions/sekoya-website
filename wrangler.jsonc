@@ -18,6 +18,9 @@
     // Pages are built as `offres.html` and served at `/offres`; `/offres/`
     // and `/offres.html` redirect there, matching `trailingSlash: "never"`
     // in astro.config.mjs.
-    "html_handling": "drop-trailing-slash"
+    "html_handling": "drop-trailing-slash",
+    // An address that matches no file gets the nearest 404.html up its path,
+    // with a 404 status: dist/en/404.html under /en/, dist/404.html elsewhere.
+    "not_found_handling": "404-page"
   }
 }

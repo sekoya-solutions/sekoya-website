@@ -40,8 +40,11 @@ for (const locale of locales) {
   test(`the contact page has no form and no script of its own in ${locale}`, async ({ page }) => {
     await page.goto(`${pathOf("contact", locale)}?sujet=audit`);
     await expect(page.locator("form")).toHaveCount(0);
-    // Only the theme script of every page: nothing to preselect, so no subject script.
-    const scripts = await page.locator("script").allTextContents();
+    // Only the theme script of every page: nothing to preselect, so no subject
+    // script. The structured data's JSON is not run.
+    const scripts = await page
+      .locator('script:not([type="application/ld+json"])')
+      .allTextContents();
     expect(scripts).toHaveLength(1);
     expect(scripts[0]).toContain("data-theme-toggle");
     // The quiz band links to the quiz.

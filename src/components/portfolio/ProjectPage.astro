@@ -40,7 +40,7 @@ const externalHint = t.portfolio.externalLink;
 const hasFigures = data.stats.length > 0 || data.lighthouse !== undefined;
 ---
 
-<BaseLayout title={`${data.title} ${t.portfolio.titleSuffix}`} description={data.summary}>
+<BaseLayout title={`${data.title} ${t.portfolio.titleSuffix}`} description={data.description ?? data.summary}>
   <article class="project-page mx-auto max-w-site px-(--gutter)">
     <a href={pathOf("portfolio", locale)} class="project-back">
       <Icon name="arrow" size={16} class="project-back-icon" />

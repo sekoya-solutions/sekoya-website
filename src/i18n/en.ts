@@ -22,7 +22,7 @@ export const en = {
     },
     contact: "Contact me",
     footer: {
-      tagline: "Freelance Tech Lead. [TODO: region] · remote · France.",
+      tagline: "Freelance Tech Lead. Île-de-France · remote · France.",
       legalForm: "SASU",
       navigationTitle: "Navigate",
       navigation: "Footer navigation",
@@ -102,5 +102,18 @@ export const en = {
     description:
       "The site's publisher and host, and what it does with your data: no cookie, no audience measurement, no third-party script.",
     externalLink: "external site",
+  },
+  notFound: {
+    title: "Page not found — Sekoya Solutions",
+    description: "This address leads to no page of the Sekoya Solutions website.",
+    eyebrow: "Error 404",
+    heading: "This page has taken root elsewhere.",
+    text: "The address matches no page of the site. These links put you back on the path:",
+    links: "Site pages",
+    home: "Home",
+  },
+  seo: {
+    jobTitle: "Freelance Tech Lead",
+    imageAlt: "Sekoya Solutions, freelance Tech Lead",
   },
 } satisfies Dictionary;

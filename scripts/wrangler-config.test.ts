@@ -19,6 +19,10 @@ describe("wrangler.jsonc", () => {
     expect(config.assets?.html_handling).toBe("drop-trailing-slash");
   });
 
+  it("serves the nearest 404 page, with a 404 status, for an address that matches no file", () => {
+    expect(config.assets?.not_found_handling).toBe("404-page");
+  });
+
   // `wrangler preview` refuses to run without a previews block.
   it("has the previews block that preview builds need", () => {
     expect(config.previews).toBeDefined();

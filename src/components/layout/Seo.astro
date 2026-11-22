@@ -1,0 +1,74 @@
+---
+/**
+ * The page's metadata for search engines and social networks: the canonical
+ * URL (or `noindex` for a page kept out of search engines, src/i18n/routes.ts),
+ * the hreflang alternates, Open Graph and Twitter's card with the default
+ * sharing image, and the structured data (src/lib/structured-data.ts).
+ */
+import { translations } from "../../i18n";
+import type { Locale } from "../../i18n/config";
+import { companyFacts, offersContent } from "../../i18n/content";
+import { alternates, isListed, type PageRoute, pathOf } from "../../i18n/routes";
+import { scriptJson, structuredData } from "../../lib/structured-data";
+
+interface Props {
+  route: PageRoute;
+  title: string;
+  description: string;
+}
+
+const { route, title, description } = Astro.props;
+const { key, locale } = route;
+if (Astro.site === undefined) throw new Error("astro.config.mjs must set `site`");
+const site = Astro.site;
+const t = translations(locale);
+const company = await companyFacts();
+const offers = await offersContent(locale);
+
+const ogLocales: Record<Locale, string> = { fr: "fr_FR", en: "en_US" };
+/** The default sharing image (public/og/), 1200 × 630. */
+const image = { path: "/og/og-default.png", width: 1200, height: 630 };
+const url = new URL(pathOf(key, locale), site).href;
+const listed = isListed(key);
+
+const data = structuredData({
+  site,
+  home: pathOf("home", locale),
+  person: { name: company.director, jobTitle: t.seo.jobTitle },
+  company: {
+    name: company.name,
+    description: t.home.description,
+    offers: offers.items.map((offer) => offer.title),
+  },
+  region: company.region,
+  country: { code: "FR", name: "France" },
+  profiles: [company.linkedin, company.github, company.malt],
+  logo: "/icon-512.png",
+  image: image.path,
+});
+---
+
+{listed ? <link rel="canonical" href={url} /> : <meta name="robots" content="noindex" />}
+{
+  alternates(key, site).map(({ hreflang, href }) => (
+    <link rel="alternate" hreflang={hreflang} href={href} />
+  ))
+}
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content={company.name} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={url} />
+<meta property="og:locale" content={ogLocales[locale]} />
+{
+  (Object.keys(ogLocales) as Locale[])
+    .filter((other) => other !== locale)
+    .map((other) => <meta property="og:locale:alternate" content={ogLocales[other]} />)
+}
+<meta property="og:image" content={new URL(image.path, site).href} />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content={String(image.width)} />
+<meta property="og:image:height" content={String(image.height)} />
+<meta property="og:image:alt" content={t.seo.imageAlt} />
+<meta name="twitter:card" content="summary_large_image" />
+<script type="application/ld+json" is:inline set:html={scriptJson(data)} />

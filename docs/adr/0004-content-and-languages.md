@@ -32,6 +32,7 @@ Chosen: **content collections with schemas (content 1) and Astro's built-in i18n
 - No French text in components: interface strings in the dictionaries, long copy in collections.
 - French typography applied by a small helper in the content pipeline, covered by unit tests.
 - Dates shown numerically (`05/2022 – 09/2025`) in both languages.
+- The sitemap is built from the route map, not with `@astrojs/sitemap`, which pairs languages by identical paths and so cannot link translated paths such as `/offres` and `/en/services`.
 
 ## Consequences
 

@@ -1,0 +1,58 @@
+---
+/**
+ * The page Cloudflare serves, with a 404 status, for an address that matches
+ * no page (wrangler.jsonc): the nearest 404.html up its path, so /en/…
+ * addresses get the English page and every other one the French page. The
+ * static logo, what happened, and links back to the home, offers and contact
+ * pages. Kept out of search engines (src/i18n/routes.ts).
+ */
+
+import { translations } from "../../i18n";
+import { pageLocale } from "../../i18n/config";
+import { pathOf } from "../../i18n/routes";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Logo from "../brand/Logo.astro";
+import Button from "../ui/Button.astro";
+
+const locale = pageLocale(Astro.currentLocale);
+const t = translations(locale);
+---
+
+<BaseLayout title={t.notFound.title} description={t.notFound.description}>
+  <div class="not-found mx-auto max-w-site px-(--gutter)">
+    <Logo variant="icon" class="not-found-logo" />
+    <p class="eyebrow mt-8">{t.notFound.eyebrow}</p>
+    <h1 class="not-found-title mt-3.5 font-bold tracking-[-0.02em]">{t.notFound.heading}</h1>
+    <p class="not-found-text">{t.notFound.text}</p>
+    <nav aria-label={t.notFound.links} class="mt-8 flex flex-wrap gap-4">
+      <Button href={pathOf("home", locale)} variant="primary">{t.notFound.home}</Button>
+      <Button href={pathOf("offers", locale)} variant="ghost">{t.layout.nav.offers}</Button>
+      <Button href={pathOf("contact", locale)} variant="ghost">{t.layout.contact}</Button>
+    </nav>
+  </div>
+</BaseLayout>
+
+<style>
+  .not-found {
+    max-width: 48rem;
+    padding-top: 48px;
+    text-align: start;
+  }
+
+  .not-found :global(.not-found-logo) {
+    width: 72px;
+    height: auto;
+  }
+
+  .not-found-title {
+    font-size: var(--fs-h1);
+    line-height: 1.08;
+  }
+
+  .not-found-text {
+    max-width: 40rem;
+    margin-top: 18px;
+    color: var(--muted);
+    font-size: 1.02rem;
+  }
+</style>
