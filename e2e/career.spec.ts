@@ -284,7 +284,8 @@ test.describe("the drawing, with motion", () => {
         margin: getComputedStyle(footer).marginTop,
       };
     });
-    expect(spacing).toEqual({ padding: "96px", margin: "96px" });
+    // The footer alone keeps the space before it.
+    expect(spacing).toEqual({ padding: "0px", margin: "96px" });
   });
 });
 
@@ -321,6 +322,7 @@ for (const viewport of [
             block: box(".stage-pin"),
             rings: box(".rings"),
             lead: box(".stage-lead"),
+            side: box(".stage-side"),
             panel: box("#career-panel"),
             legend: box(".legend"),
             width: document.documentElement.clientWidth,
@@ -333,6 +335,13 @@ for (const viewport of [
           boxes.height,
         );
         expect(boxes.rings.right).toBeLessThanOrEqual(boxes.panel.left);
+        // The ring sits halfway down its row, beside the side column.
+        const top = Math.min(boxes.rings.top, boxes.side.top);
+        const bottom = Math.max(boxes.rings.bottom, boxes.side.bottom);
+        expect(
+          Math.abs((boxes.rings.top + boxes.rings.bottom) / 2 - (top + bottom) / 2),
+          `${slug}: the ring is not centred`,
+        ).toBeLessThan(2);
         expect(boxes.lead.bottom).toBeLessThanOrEqual(boxes.panel.top);
         expect(boxes.rings.bottom).toBeLessThanOrEqual(boxes.legend.top);
         expect(boxes.panel.bottom, `${slug}: the panel overlaps the legend`).toBeLessThanOrEqual(

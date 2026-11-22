@@ -234,7 +234,6 @@ Astro.csp.insertScriptHash(careerRingsHash);
 
   .career-page {
     padding-top: 32px;
-    padding-bottom: 72px;
   }
 
   .career-head {
@@ -479,7 +478,6 @@ Astro.csp.insertScriptHash(careerRingsHash);
   @media (width >= 64rem) {
     .career-page {
       padding-top: 40px;
-      padding-bottom: 96px;
     }
 
     .career-head {
@@ -525,6 +523,11 @@ Astro.csp.insertScriptHash(careerRingsHash);
       grid-template-columns: minmax(0, var(--ring-size)) minmax(28rem, 1fr);
       gap: 24px 44px;
       align-items: start;
+    }
+
+    /* The ring sits halfway down the side column, however tall the panel. */
+    .stage-figure {
+      align-self: center;
     }
 
     .stage-figure > :global(.rings-figure) {

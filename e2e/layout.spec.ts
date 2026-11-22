@@ -251,3 +251,49 @@ for (const key of Object.keys(routes) as RouteKey[]) {
     });
   }
 }
+
+// The footer alone keeps the space before it (64 px on phones, 96 px from
+// 1024 px): no page adds its own space at the bottom, so the gap is the same
+// on every page.
+for (const key of Object.keys(routes) as RouteKey[]) {
+  for (const locale of locales) {
+    test(`${key} in ${locale}: the space before the footer is the footer's margin only`, async ({
+      page,
+      isMobile,
+    }) => {
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      await page.goto(pathOf(key, locale));
+      const { gap, margin } = await page.evaluate(() => {
+        const main = document.querySelector("main");
+        const footer = document.querySelector("body > footer");
+        if (main === null || footer === null) throw new Error("no main or footer");
+        // The bottom of the lowest box laid out in the page's content, leaving
+        // out positioned boxes (tooltips, decoration).
+        const bottom = Math.max(
+          ...[...main.querySelectorAll("*")]
+            .filter((element) => {
+              const style = getComputedStyle(element);
+              if (style.position === "absolute" || style.position === "fixed") return false;
+              // Rendered: not in a closed <details>, whose body keeps its layout boxes.
+              if (!element.checkVisibility()) return false;
+              // Not inside a box clipped to a pixel (kept for screen readers).
+              for (let node = element.parentElement; node !== null; node = node.parentElement) {
+                const box = node.getBoundingClientRect();
+                if (box.width <= 1 || box.height <= 1) return false;
+              }
+              return true;
+            })
+            .map((element) => element.getBoundingClientRect())
+            .filter((box) => box.height > 0)
+            .map((box) => box.bottom),
+        );
+        return {
+          gap: footer.getBoundingClientRect().top - bottom,
+          margin: Number.parseFloat(getComputedStyle(footer).marginTop),
+        };
+      });
+      expect(margin).toBe(isMobile ? 64 : 96);
+      expect(Math.abs(gap - margin)).toBeLessThan(1);
+    });
+  }
+}
