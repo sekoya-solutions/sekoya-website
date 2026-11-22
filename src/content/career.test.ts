@@ -31,6 +31,6 @@ describe("the career copy", () => {
   });
 
   it("has positions, so the comparison above checks something", () => {
-    expect(shared(career.fr).filter(([path]) => String(path).endsWith(".slug"))).toHaveLength(4);
+    expect(shared(career.fr).filter(([path]) => String(path).endsWith(".slug"))).toHaveLength(6);
   });
 });

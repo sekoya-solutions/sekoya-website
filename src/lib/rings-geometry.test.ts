@@ -4,9 +4,11 @@ import {
   bands,
   centre,
   currentThickness,
+  drawLength,
   drawWindow,
   edgePhase,
   firstRadius,
+  lastEnd,
   pastRadius,
   placeholderYears,
   type RingInput,
@@ -222,5 +224,12 @@ describe("the drawing", () => {
       expect((windows[index]?.end ?? 0) - start).toBeCloseTo(0.35);
     });
     expect(windows[3]?.end).toBeLessThan(0.96);
+  });
+
+  it.each([1, 2, 6, 10])("ends every band inside the drawing with %i bands", (count) => {
+    const windows = Array.from({ length: count }, (_, index) => drawWindow(index, count));
+    expect(windows[0]?.start).toBe(0);
+    for (const window of windows) expect(window.end).toBeLessThanOrEqual(lastEnd + 1e-9);
+    expect(windows.at(-1)?.end).toBeCloseTo(count > 1 ? lastEnd : drawLength);
   });
 });

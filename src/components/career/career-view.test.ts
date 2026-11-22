@@ -20,14 +20,14 @@ describe("the career's view", () => {
     expect(views.map((view) => view.slug)).toEqual(
       copy.positions.map((position: { slug: string }) => position.slug),
     );
-    expect(views.map((view) => view.band.index)).toEqual([3, 2, 1, 0]);
+    expect(views.map((view) => view.band.index)).toEqual([5, 4, 3, 2, 1, 0]);
   });
 
   it("says each position's period, duration and ring number", () => {
     const sos = bySlug("sos-accessoire");
     expect(sos.period).toBe("05/2022 – 09/2025");
     expect(sos.duration).toBe("3 ans 4 mois");
-    expect(sos.ringNumber).toBe("Anneau n° 3 depuis le centre");
+    expect(sos.ringNumber).toBe("Anneau n° 5 depuis le centre");
     expect(sos.name).toBe("SOS Accessoire, Lead Dev, de 05/2022 à 09/2025");
     expect(sos.band.hairlines).toHaveLength(3);
   });
@@ -37,14 +37,27 @@ describe("the career's view", () => {
     expect(current.current).toBe(true);
     expect(current.duration).toBeUndefined();
     expect(current.period).toMatch(/ – aujourd'hui$/);
-    expect(bySlug("culligan").duration).toBeUndefined();
-    expect(bySlug("culligan").band.placeholder).toBe(true);
+    expect(bySlug("culligan").duration).toBe("4 ans 2 mois");
+    // A position whose dates are still placeholders has no duration, and is flagged.
+    const pending = careerView(
+      copy.positions.map((position: { slug: string }) =>
+        position.slug === "culligan"
+          ? { ...position, start: "[TODO: début]", end: "[TODO: fin]" }
+          : position,
+      ),
+      copy.labels,
+      "fr",
+    ).find((view) => view.slug === "culligan");
+    expect(pending?.duration).toBeUndefined();
+    expect(pending?.band.placeholder).toBe(true);
   });
 
   it("shades the past bands from the oldest to the most recent", () => {
-    expect(["atos-bull", "culligan", "sos-accessoire"].map((slug) => bySlug(slug).shade)).toEqual([
-      0, 0.5, 1,
-    ]);
+    expect(
+      ["softeam", "enablon", "atos-bull", "culligan", "sos-accessoire"].map(
+        (slug) => bySlug(slug).shade,
+      ),
+    ).toEqual([0, 0.25, 0.5, 0.75, 1]);
   });
 
   it("writes one style rule per position, and the hash of that exact style sheet", () => {

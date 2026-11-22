@@ -1,6 +1,6 @@
 {
   "eyebrow": "Parcours",
-  "title": "[TODO: années d'expérience] de croissance, anneau après anneau.",
+  "title": "15 ans de croissance, anneau après anneau.",
   "lead": "Chaque anneau est un poste. Plus il est proche de l'écorce, plus il est récent. Un anneau fin correspond à une année.",
   "initial": "sos-accessoire",
   "labels": {
@@ -14,8 +14,14 @@
     "since": "depuis {start}",
     "present": "aujourd'hui",
     "readCaseStudy": "Lire l'étude de cas",
-    "years": { "one": "an", "other": "ans" },
-    "months": { "one": "mois", "other": "mois" }
+    "years": {
+      "one": "an",
+      "other": "ans"
+    },
+    "months": {
+      "one": "mois",
+      "other": "mois"
+    }
   },
   "positions": [
     {
@@ -23,7 +29,7 @@
       "company": "Sekoya Solutions",
       "role": "Tech Lead freelance",
       "summary": "audit, mission et sauvetage de projet",
-      "start": "[TODO: mois de création de Sekoya Solutions]",
+      "start": "2025-10",
       "end": null,
       "highlights": [
         "Audit technique, mission Tech Lead / Lead Dev, sauvetage de projet.",
@@ -60,10 +66,10 @@
     {
       "slug": "culligan",
       "company": "Culligan",
-      "role": "[TODO: rôle]",
+      "role": "Ingénieur Etude et Développement",
       "summary": "intégration, CRM sur mesure et application iPad",
-      "start": "[TODO: début]",
-      "end": "[TODO: fin]",
+      "start": "2017-10",
+      "end": "2021-12",
       "highlights": [
         "Intégration Salesforce / Talend et CRM sur mesure.",
         "Application iPad.",
@@ -75,13 +81,41 @@
     {
       "slug": "atos-bull",
       "company": "Atos / Bull",
-      "role": "[TODO: rôle]",
+      "role": "Ingénieur d'étude",
       "summary": "solutions de sécurité et plateformes IoT",
-      "start": "[TODO: début]",
-      "end": "[TODO: fin]",
+      "start": "2014-04",
+      "end": "2017-09",
       "highlights": ["Développement Java / PHP.", "Solutions de sécurité.", "Plateformes IoT."],
       "stack": ["Java", "PHP"],
       "caseStudy": "atos-bull"
+    },
+    {
+      "slug": "enablon",
+      "company": "Enablon",
+      "role": "Software Analyst",
+      "summary": "produits Enablon et Wizness.com",
+      "start": "2011-10",
+      "end": "2013-04",
+      "highlights": [
+        "Nouvelles fonctionnalités sur Wizness.com, intégré aux solutions Enablon avec un SSO (Single Sign-On).",
+        "Développement d'un MDM (Master Data Management) intégré aux produits Enablon.",
+        "SociaBlon, une application Android sociale interne."
+      ],
+      "stack": ["SSO", "MDM", "Android"]
+    },
+    {
+      "slug": "softeam",
+      "company": "Softeam",
+      "role": "Ingénieur d'étude",
+      "summary": "R&D Galaxy et produit Modelio",
+      "start": "2010-05",
+      "end": "2011-07",
+      "highlights": [
+        "Responsable du projet de R&D Galaxy de l'ANR chez Softeam, et de la spécification de l'architecture de sa plateforme.",
+        "Développement et intégration de plugins Eclipse dans Modelio.",
+        "Règles d'audit UML 2.3 et leur documentation."
+      ],
+      "stack": ["Java", "Eclipse", "Modelio", "UML"]
     }
   ]
 }
