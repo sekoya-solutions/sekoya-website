@@ -24,9 +24,12 @@ export default defineConfig({
     baseURL: `http://localhost:${port}`,
     trace: "retain-on-failure",
   },
+  // The width sweep (e2e/sweep.spec.ts, ADR 0010) is a project of its own,
+  // run by `npm run test:sweep` and its own CI job, not by `npm run test:e2e`.
   projects: [
-    { name: "desktop", use: { ...devices["Desktop Chrome"] } },
-    { name: "mobile", use: { ...devices["Pixel 7"] } },
+    { name: "desktop", use: { ...devices["Desktop Chrome"] }, testIgnore: /sweep\.spec\.ts$/ },
+    { name: "mobile", use: { ...devices["Pixel 7"] }, testIgnore: /sweep\.spec\.ts$/ },
+    { name: "sweep", use: { ...devices["Desktop Chrome"] }, testMatch: /sweep\.spec\.ts$/ },
   ],
   webServer: [
     { command: `npm run preview -- --port ${port}`, url: `http://localhost:${port}` },

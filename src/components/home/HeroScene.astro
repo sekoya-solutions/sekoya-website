@@ -17,10 +17,12 @@
 import { scene } from "./scene";
 ---
 
-<div class="hero-scene" aria-hidden="true">
-  <div class="hero-stage">
-    <div class="hero-halo"></div>
-    <Fragment set:html={scene.svg} />
+<div class="hero-scene-frame" aria-hidden="true">
+  <div class="hero-scene">
+    <div class="hero-stage">
+      <div class="hero-halo"></div>
+      <Fragment set:html={scene.svg} />
+    </div>
   </div>
 </div>
 
@@ -77,10 +79,24 @@ import { scene } from "./scene";
     );
   }
 
-  /* Between 640 and 1024 px, the cropped scene fades out at its sides. */
-  @media (min-width: 40rem) {
-    .hero-scene {
-      mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+  /* Below 1024 px, once the scene, at most 640 px wide, leaves room beside
+     it, its cropped sides fade out: the fade is as wide as that room, up to
+     12 % of the scene, so none shows while the scene fills the hero. The mask
+     is on the frame, as wide as the hero, so its percentages measure the
+     hero: the scene sits in its middle, `--room` from each side. */
+  @media (width < 64rem) {
+    .hero-scene-frame {
+      --scene: min(640px, 100%);
+      --room: calc((100% - var(--scene)) / 2);
+      --fade: min(var(--scene) * 0.12, var(--room));
+
+      mask-image: linear-gradient(
+        to right,
+        transparent var(--room),
+        #000 calc(var(--room) + var(--fade)),
+        #000 calc(100% - var(--room) - var(--fade)),
+        transparent calc(100% - var(--room))
+      );
     }
   }
 

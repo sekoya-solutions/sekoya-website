@@ -105,7 +105,7 @@ const offers = copy.items.map((item) => ({
   }
 
   /* Below 768 px the duration is plain text under the title. */
-  @media (max-width: 47.99rem) {
+  @media (width < 48rem) {
     .offer :global(.offer-duration) {
       grid-area: duration;
       justify-self: start;

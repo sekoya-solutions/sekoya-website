@@ -297,3 +297,32 @@ for (const key of Object.keys(routes) as RouteKey[]) {
     });
   }
 }
+
+// The header's bar fits from 320 px (ADR 0010): where the full logo has no
+// room beside the controls, it shows its emblem alone.
+for (const [width, shown] of [
+  [320, "emblem"],
+  [375, "emblem"],
+  [390, "full"],
+  [768, "full"],
+  [1280, "full"],
+] as const) {
+  test(`at ${width} px, the header shows the ${shown} logo and fits the screen`, async ({
+    page,
+    isMobile,
+  }) => {
+    test.skip(isMobile, "the width is set here");
+    await page.setViewportSize({ width, height: 700 });
+    await page.goto("/");
+    const banner = page.getByRole("banner");
+    const full = banner.locator(".logo-full");
+    const emblem = banner.locator(".logo-emblem");
+    await expect(shown === "full" ? full : emblem).toBeVisible();
+    await expect(shown === "full" ? emblem : full).toBeHidden();
+    // The link to the home page keeps its name either way.
+    await expect(banner.getByRole("link", { name: "Sekoya Solutions" })).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+  });
+}

@@ -2,6 +2,17 @@
 @import "./tokens.css";
 
 /*
+ * The breakpoints of the responsive variants (md:, lg:, xl:) are the three
+ * width steps of ADR 0010; the others are removed.
+ */
+@theme {
+  --breakpoint-*: initial;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+}
+
+/*
  * Tailwind's utilities map to the brand tokens (ADR 0003). `inline` makes
  * each utility read the token itself, so it follows the theme. Tailwind's
  * default palette is removed: only brand colours exist as utilities.
