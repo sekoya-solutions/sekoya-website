@@ -29,10 +29,13 @@ const contact = isRouteKey("contact")
   : undefined;
 ---
 
-<header class="relative z-10 mx-auto flex h-21 max-w-site items-center justify-between gap-6 px-(--gutter)">
-  <a href={pathOf("home", route.locale)} class="-ml-2.5 shrink-0 rounded-md">
-    <Logo class="h-14 w-auto" />
-  </a>
+<header class="relative z-10 mx-auto flex h-21 max-w-site items-center justify-between gap-3 px-(--gutter) md:gap-6">
+  <div class="header-logo">
+    <a href={pathOf("home", route.locale)} class="-ml-2.5 inline-block rounded-md">
+      <Logo class="logo-full h-14 w-auto" />
+      <Logo variant="icon" class="logo-emblem h-14 w-auto" />
+    </a>
+  </div>
   <nav aria-label={t.layout.navigation} class="nav-row">
     <ul class="flex items-center gap-7.5 text-sm">
       {
@@ -98,6 +101,39 @@ const contact = isRouteKey("contact")
 </header>
 
 <style>
+  /* Below 1280 px, the logo takes the room the controls leave, and shows its
+     emblem alone when the full logo does not fit in it. Only the logo is in
+     that container: a size container restyles what it holds as it is laid
+     out, which must not start the controls' transitions. */
+  .header-logo {
+    flex: 1 1 0;
+    min-width: 0;
+    container-type: inline-size;
+  }
+
+  @media (width >= 80rem) {
+    .header-logo {
+      flex: none;
+      container-type: normal;
+    }
+  }
+
+  .header-logo :global(.logo-emblem) {
+    display: none;
+  }
+
+  /* Below 7.5625rem (121 px), the full logo, 56 px tall, no longer fits
+     beside the controls (ADR 0010). */
+  @container (width < 7.5625rem) {
+    .header-logo :global(.logo-full) {
+      display: none;
+    }
+
+    .header-logo :global(.logo-emblem) {
+      display: block;
+    }
+  }
+
   /* The row from 1280 px, the menu below. */
   .nav-row {
     display: none;

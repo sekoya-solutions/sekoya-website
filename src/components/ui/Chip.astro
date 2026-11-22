@@ -25,7 +25,10 @@ const { variant = "neutral", class: className } = Astro.props;
     font-weight: 500;
     letter-spacing: 0.02em;
     line-height: 1.4;
-    white-space: nowrap;
+    /* On one line wherever it fits: in a row that wraps, a chip moves to the
+       next line before its text wraps. Only a chip wider than the whole line
+       wraps its text, rather than running past the page (ADR 0010). */
+    max-width: 100%;
   }
 
   .chip-mint {

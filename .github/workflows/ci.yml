@@ -169,6 +169,40 @@ jobs:
           path: test-results/
           retention-days: 7
 
+  # The width sweep (ADR 0010): every page, in both languages, from 320 to
+  # 1920 px wide, in a job of its own so it runs beside the end-to-end tests.
+  # Both builds, since Playwright serves both (playwright.config.ts).
+  sweep:
+    name: Width sweep
+    needs: changes
+    if: ${{ !cancelled() && needs.changes.outputs.docs_only != 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm run build:form-test
+      - run: npm run e2e:install -- --with-deps
+      # The same font as the end-to-end job, so text wraps as it does there.
+      - name: Install Roboto
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends fonts-roboto
+      - run: npm run test:sweep
+      - if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: sweep-traces
+          path: test-results/
+          retention-days: 7
+
   # The Lighthouse gate (ADR 0006): the same measurement as
   # `npm run lighthouse`, on the same pages, which fails when a page's median
   # is below 95 in any category on mobile, and writes nothing.

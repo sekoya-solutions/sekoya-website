@@ -26,6 +26,7 @@ Node.js at the version in [`.node-version`](.node-version), with npm.
 | `npm test` | Runs the unit tests |
 | `npm run e2e:install` | Downloads Chromium for Playwright into `.tools/ms-playwright` |
 | `npm run test:e2e` | Runs the end-to-end and accessibility tests against the builds (run `npm run build` and `npm run build:form-test` first) |
+| `npm run test:sweep` | Runs the width sweep (ADR 0010): every page, in both languages, from 320 to 1920 px wide, checked for sideways scroll, overflow, clipped text and overlapping regions (run both builds first) |
 | `npm run check:todos` | Lists the `[TODO: …]` placeholders left in the content and the build, and the missing files such as the CV; fails when it finds any, unless `ALLOW_TODO=1` (run `npm run build` first) |
 | `npm run lighthouse` | Builds the site, serves it with `wrangler dev`, runs mobile Lighthouse three times on one page per template and writes the medians, with the date, into `src/data/lighthouse.json`, which the footer and the portfolio show; with `-- --check`, writes nothing and fails when a page is below 95 in any category (run `npm run e2e:install` first) |
 | `npm run lint:md` | Lints the tracked Markdown files |

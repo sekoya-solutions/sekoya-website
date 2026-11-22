@@ -107,10 +107,10 @@ Astro.csp.insertScriptHash(careerRingsHash);
 
       <div class="stage" data-career-stage>
         <div class="stage-pin">
-        <div class="stage-figure">
+        <div class="stage-figure" data-region="career-stage">
           <TreeRings positions={positions} initial={initial} label={labels.rings} />
         </div>
-        <div class="stage-side">
+        <div class="stage-side" data-region="career-stage">
           <p class="career-lead stage-lead">
             <PlaceholderText text={copy.lead} />
           </p>
@@ -154,7 +154,7 @@ Astro.csp.insertScriptHash(careerRingsHash);
             }
           </div>
         </div>
-          <ul class="legend" aria-label={labels.legend}>
+          <ul class="legend" aria-label={labels.legend} data-region="career-stage">
             {
               oldestFirst.map((position) => (
                 <li>
