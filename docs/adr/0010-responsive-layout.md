@@ -1,6 +1,6 @@
 # ADR 0010: Responsive layout
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-11-22
 - Deciders: Owner
 
