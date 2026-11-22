@@ -4,6 +4,7 @@ import { locales } from "./config";
 import {
   alternates,
   caseStudyKey,
+  isListed,
   isRouteKey,
   linkHref,
   normalizePath,
@@ -63,6 +64,14 @@ describe("alternates", () => {
       { hreflang: "en", href: "https://sekoyasolutions.com/en" },
       { hreflang: "x-default", href: "https://sekoyasolutions.com/" },
     ]);
+  });
+});
+
+describe("isListed", () => {
+  it("keeps the 404 page out of search engines and lists every other page", () => {
+    expect(isListed("notFound")).toBe(false);
+    expect(isListed("home")).toBe(true);
+    expect(isListed("offers")).toBe(true);
   });
 });
 

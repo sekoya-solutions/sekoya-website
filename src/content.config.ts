@@ -252,6 +252,11 @@ const projects = defineCollection({
         /** The chip on the card's picture, such as "Game · Unity". */
         mediaLabel: text,
         summary: text,
+        /**
+         * The page's description for search engines, when the summary is
+         * longer than the 155 characters they show.
+         */
+        description: text.max(155).optional(),
         /** The card's picture and the demo's poster; without one, the logo on a glow. */
         cover: z.object({ src: image(), alt: text }).optional(),
         stats: z.array(z.object({ value: text, measuredOn: date, source: https })),
@@ -284,6 +289,10 @@ const projects = defineCollection({
       .refine(({ demo, cover }) => demo?.kind !== "play" || cover !== undefined, {
         message: "A playable demo needs a cover, its poster",
         path: ["cover"],
+      })
+      .refine(({ summary, description }) => description !== undefined || summary.length <= 155, {
+        message: "A summary longer than 155 characters needs a description for search engines",
+        path: ["description"],
       }),
 });
 
@@ -398,6 +407,8 @@ const company = defineCollection({
     name: text,
     /** The director of publication, named by the legal notice. */
     director: text,
+    /** The region the company works from, in its structured data (src/lib/structured-data.ts). */
+    region: text,
     capital: text,
     registration: text,
     vat: text,

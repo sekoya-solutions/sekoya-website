@@ -27,8 +27,8 @@ export const fr = frenchTypographyTree({
     contact: "Me contacter",
     /** The footer's brand and navigation columns (src/components/layout/Footer.astro). */
     footer: {
-      /** Under the logo; the region is still to approve. */
-      tagline: "Tech Lead freelance. [TODO: région] · remote · France.",
+      /** Under the logo. */
+      tagline: "Tech Lead freelance. Île-de-France · remote · France.",
       /** Before the company's name and its registration, from src/content/company. */
       legalForm: "SASU",
       /** The navigation column's heading. */
@@ -123,5 +123,22 @@ export const fr = frenchTypographyTree({
       "L'éditeur et l'hébergeur du site, et ce qu'il fait de vos données : aucun cookie, aucune mesure d'audience, aucun script tiers.",
     /** For a link to another site, read by screen readers only. */
     externalLink: "site externe",
+  },
+  /** The page served for an address that matches no page (src/components/layout/NotFound.astro). */
+  notFound: {
+    title: "Page introuvable — Sekoya Solutions",
+    description: "Cette adresse ne mène à aucune page du site Sekoya Solutions.",
+    eyebrow: "Erreur 404",
+    heading: "Cette page a pris racine ailleurs.",
+    text: "L'adresse ne correspond à aucune page du site. Ces liens vous remettent sur le chemin :",
+    links: "Pages du site",
+    home: "Accueil",
+  },
+  /** The metadata for search engines and social networks (src/lib/structured-data.ts). */
+  seo: {
+    /** The person's role, in the structured data. */
+    jobTitle: "Tech Lead freelance",
+    /** The default social sharing image's alternative text. */
+    imageAlt: "Sekoya Solutions, Tech Lead freelance",
   },
 });

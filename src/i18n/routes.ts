@@ -21,7 +21,21 @@ const pages = {
   contact: { fr: "/contact", en: "/en/contact" },
   legal: { fr: "/mentions-legales", en: "/en/legal" },
   quiz: { fr: "/quiz", en: "/en/quiz" },
+  // The page Cloudflare serves, with a 404 status, for an address that
+  // matches no page: the nearest 404.html up its path (wrangler.jsonc).
+  notFound: { fr: "/404", en: "/en/404" },
 } as const satisfies Record<string, Record<Locale, string>>;
+
+/**
+ * Pages kept out of search engines: no canonical URL, a `noindex` robots
+ * meta tag, and no entry in the sitemap.
+ */
+const unlistedPages: ReadonlySet<RouteKey> = new Set<RouteKey>(["notFound"]);
+
+/** Whether search engines may list a page (see `unlistedPages`). */
+export function isListed(key: RouteKey): boolean {
+  return !unlistedPages.has(key);
+}
 
 /** A case study's page: `caseStudy/<slug>`, under the case studies' path. */
 export type CaseStudyKey = `caseStudy/${string}`;

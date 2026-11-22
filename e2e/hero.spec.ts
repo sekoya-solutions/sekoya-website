@@ -287,7 +287,10 @@ test.describe("the hero copy", () => {
   test("ships no JavaScript beyond the theme and scroll reveal scripts", async ({ page }) => {
     await page.goto("/");
     await expect(page.locator("script[src]")).toHaveCount(0);
-    const scripts = await page.locator("script").allTextContents();
+    // The structured data's JSON is not run.
+    const scripts = await page
+      .locator('script:not([type="application/ld+json"])')
+      .allTextContents();
     expect(scripts).toHaveLength(2);
     expect(scripts[0]).toContain("data-theme-toggle");
     expect(scripts[1]).toContain("IntersectionObserver");
@@ -304,13 +307,13 @@ test.describe("the hero copy", () => {
     }
   });
 
-  test("shows its placeholders as chips, in both languages", async ({ page }) => {
+  test("shows the approved region, with no placeholder left, in both languages", async ({
+    page,
+  }) => {
     for (const locale of locales) {
       await page.goto(pathOf("home", locale));
-      const placeholders = page.locator("section.hero .placeholder");
-      await expect(placeholders.first()).toBeVisible();
-      for (const text of await placeholders.allTextContents())
-        expect(text).toMatch(/^\[TODO: .+\]$/);
+      await expect(page.locator("section.hero")).toContainText("Île-de-France");
+      await expect(page.locator("section.hero .placeholder")).toHaveCount(0);
     }
   });
 });
