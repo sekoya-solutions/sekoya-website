@@ -1,52 +1,18 @@
 import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { careerRingsHash, careerRingsScript, drawProgress, ringAt } from "./career-rings";
+import { careerRingsHash, careerRingsScript, ringsQuery } from "./career-rings";
 
 // The career rings' inline script (#18). Its behaviour in the browser, which
-// needs a real layout, is covered by e2e/career.spec.ts; here, its scroll
-// progress where CSS scroll-driven animations are missing, and its hash.
-
-describe("the drawing's progress on scroll", () => {
-  const viewport = 800;
-  const height = 3 * viewport;
-
-  it("is 0 until the track's top reaches the viewport's top", () => {
-    expect(drawProgress(300, height, viewport)).toBe(0);
-    expect(drawProgress(0, height, viewport)).toBe(0);
-  });
-
-  it("grows with the scroll, as CSS's contain range does", () => {
-    expect(drawProgress(-800, height, viewport)).toBe(0.5);
-    expect(drawProgress(-1600, height, viewport)).toBe(1);
-  });
-
-  it("is 1 once the track's bottom has passed the viewport's bottom", () => {
-    expect(drawProgress(-2000, height, viewport)).toBe(1);
-  });
-
-  it("is 1 for a track no taller than the viewport", () => {
-    expect(drawProgress(0, viewport, viewport)).toBe(1);
-    expect(drawProgress(-10, 400, viewport)).toBe(1);
-  });
-});
-
-describe("the band the panel follows while the rings draw", () => {
-  const starts = [0, 0.2, 0.4, 0.6];
-
-  it("is the most recent band whose drawing has started", () => {
-    expect(ringAt(starts, 0)).toBe(0);
-    expect(ringAt(starts, 0.19)).toBe(0);
-    expect(ringAt(starts, 0.2)).toBe(1);
-    expect(ringAt(starts, 0.45)).toBe(2);
-    expect(ringAt(starts, 1)).toBe(3);
-  });
-
-  it("takes a start written with rounding as reached", () => {
-    expect(ringAt([0, 0.6000000000000001], 0.6)).toBe(1);
-  });
-});
+// needs a real layout, is covered by e2e/career.spec.ts; here, that it shares
+// its media query with the page's styles, and its hash.
 
 describe("the inline script", () => {
+  it("shows the rings where the page's styles do", () => {
+    const styles = readFileSync(new URL("./Career.astro", import.meta.url), "utf8");
+    expect(styles).toContain(`@media (scripting: enabled) and ${ringsQuery} {`);
+  });
+
   it("is valid JavaScript that uses nothing outside its source", () => {
     expect(() => new Function(careerRingsScript)).not.toThrow();
   });

@@ -214,7 +214,7 @@ describe("the gaps between neighbouring lines", () => {
   });
 });
 
-describe("the drawing on scroll", () => {
+describe("the drawing", () => {
   it("starts each band a step after the previous one, the last ending before the bark", () => {
     const windows = [0, 1, 2, 3].map((index) => drawWindow(index, 4));
     [0, 0.2, 0.4, 0.6].forEach((start, index) => {

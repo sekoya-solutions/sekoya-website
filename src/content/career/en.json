@@ -12,7 +12,6 @@
     "ringName": "{company}, {role}, {period}",
     "period": "from {start} to {end}",
     "since": "since {start}",
-    "scrollHint": "Scroll to grow the rings",
     "present": "today",
     "readCaseStudy": "Read the case study",
     "years": { "one": "year", "other": "years" },

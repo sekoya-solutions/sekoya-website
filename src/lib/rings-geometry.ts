@@ -245,20 +245,20 @@ export function annulusPath(band: Band): string {
   return `${ringPath(band.outer, edgePhase(band.index))}${ringPath(band.inner, edgePhase(band.index - 1))}`;
 }
 
-/** When a band starts and ends drawing itself in, as shares of the scroll, oldest first. */
+/** When a band starts and ends drawing itself in, as shares of the drawing, oldest first. */
 export interface DrawWindow {
   readonly start: number;
   readonly end: number;
 }
 
-/** How long each band takes to draw itself in, as a share of the scroll. */
+/** How long each band takes to draw itself in, as a share of the drawing. */
 export const drawLength = 0.35;
 
-/** The share of the scroll from which the bark and the labels appear. */
+/** The share of the drawing from which the bark and the labels appear. */
 export const lateStart = 0.92;
 
 /**
- * The scroll share at which band `index` of `count` starts drawing itself in:
+ * The share of the drawing at which band `index` of `count` starts drawing itself in:
  * the oldest at once, each later one a step after, the last one ending just
  * after the bark starts to appear.
  */

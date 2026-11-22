@@ -12,7 +12,6 @@
     "ringName": "{company}, {role}, {period}",
     "period": "de {start} à {end}",
     "since": "depuis {start}",
-    "scrollHint": "Faites défiler : les anneaux poussent",
     "present": "aujourd'hui",
     "readCaseStudy": "Lire l'étude de cas",
     "years": { "one": "an", "other": "ans" },

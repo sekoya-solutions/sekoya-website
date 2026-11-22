@@ -101,8 +101,7 @@ for (const locale of locales) {
 }
 
 // The links sit in two columns, so the navigation is no taller than the
-// measured scores: the footer keeps its height, and the career page's pinned
-// rings still end with the footer coming up under them.
+// measured scores: the footer keeps its height.
 for (const [name, viewport] of Object.entries({ "1440 px": wide, "390 px": narrow })) {
   test(`the navigation's links sit in two columns at ${name}`, async ({ page }) => {
     await page.setViewportSize(viewport);
