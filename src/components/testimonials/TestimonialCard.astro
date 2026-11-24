@@ -2,7 +2,8 @@
 /**
  * A testimonial's card (#23): a large opening quote mark, the quote, a note
  * when it is a translation, then the author, their role and company, and a
- * link to their LinkedIn profile when they gave one. A quote or role in
+ * link to their LinkedIn profile when they gave one. The author's name is
+ * in mint, under a short gold rule. A quote or role in
  * another language than the page's is marked with its `lang`. No stars, no
  * rating.
  */
@@ -36,7 +37,7 @@ const lang = item.lang === locale ? undefined : item.lang;
   }
   <figcaption class="testimonial-author">
     <span class="grid gap-0.5">
-      <span class="font-semibold">{item.author}</span>
+      <span class="testimonial-name">{item.author}</span>
       <span class="text-[0.95rem] text-muted"><span lang={lang}>{item.role}</span> · {item.company}</span>
     </span>
     {
@@ -69,14 +70,33 @@ const lang = item.lang === locale ? undefined : item.lang;
     opacity: 0.4;
   }
 
+  /* Under a short gold rule, a shape, as the brand keeps gold off small text. */
   .testimonial-author {
+    position: relative;
     display: flex;
     gap: 12px;
     align-items: center;
     justify-content: space-between;
     margin-top: auto;
-    padding-top: 16px;
-    border-top: 1px solid var(--line);
+    padding-top: 18px;
+  }
+
+  .testimonial-author::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--accent);
+    content: "";
+  }
+
+  /* The author in the brand's mint, the link colour, readable in both themes. */
+  .testimonial-name {
+    color: var(--link);
+    font-size: 1.05rem;
+    font-weight: 600;
   }
 
   /* A 44 px target around the icon. */

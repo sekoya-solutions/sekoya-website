@@ -14,7 +14,7 @@ import { z } from "astro/zod";
 import { locales } from "../i18n/config";
 
 /** The longest quote, in characters. */
-export const maxQuoteLength = 280;
+export const maxQuoteLength = 512;
 
 const text = z.string().trim().min(1);
 const quote = text.max(maxQuoteLength);

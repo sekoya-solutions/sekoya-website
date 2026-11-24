@@ -1,0 +1,16 @@
+{
+  "lang": "fr",
+  "quote": "Fabrice a fait preuve d’un grand professionnalisme tout au long de la mission. Les délais ont toujours été respectés, avec une disponibilité constante et appréciable. Il sait identifier rapidement les points bloquants, y compris lorsqu’ils dépassent le strict périmètre de la mission, et propose des solutions pertinentes. La documentation produite est claire, complète et exploitable. Une collaboration rigoureuse, fiable et efficace.",
+  "author": "Sébastien",
+  "role": "Directeur des Systèmes d’Information",
+  "company": "SOS Accessoire",
+  "year": 2025,
+  "consent": true,
+  "featured": true,
+  "translations": {
+    "en": {
+      "quote": "Fabrice showed great professionalism throughout the engagement. Deadlines were always met, with constant and much appreciated availability. He quickly identifies blocking points, including when they go beyond the strict scope of the engagement, and proposes relevant solutions. The documentation he produced is clear, complete and usable. A rigorous, reliable and efficient collaboration.",
+      "role": "Chief Information Officer"
+    }
+  }
+}

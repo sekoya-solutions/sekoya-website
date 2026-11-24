@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { expect, type Page, test } from "@playwright/test";
 import { locales } from "../src/i18n/config";
-import { caseStudyKey, pathOf, type RouteKey } from "../src/i18n/routes";
+import { caseStudyKey, isRouteKey, pathOf, type RouteKey } from "../src/i18n/routes";
 
 // The home sections (#10): their content, in both languages, the scroll
 // reveal in its three modes (CSS scroll-driven animations, the fallback
@@ -14,11 +14,13 @@ function homeCopy(locale: string) {
   );
 }
 
+// The testimonials section only once a testimonial exists (#23).
 const sectionIds = [
   "values-title",
   "offers-title",
   "case-title",
   "portfolio-title",
+  ...(isRouteKey("testimonials") ? ["testimonials-title"] : []),
   "quiz-title",
   "contact-title",
 ];
@@ -102,14 +104,16 @@ test.describe("the home sections", () => {
         pathOf(project.page, locale),
       );
       // The hero's contact and offers buttons, the offers teaser, the featured
-      // case study, the portfolio's projects, the quiz teaser, the contact
-      // band's button, then the other sites.
+      // case study, the portfolio's projects, the testimonials page once a
+      // testimonial exists, the quiz teaser, the contact band's button, then
+      // the other sites.
       expect(hrefs).toEqual([
         pathOf("contact", locale),
         pathOf("offers", locale),
         ...offers,
         pathOf(caseStudyKey("sos-accessoire"), locale),
         ...projects,
+        ...(isRouteKey("testimonials") ? [pathOf("testimonials", locale)] : []),
         pathOf("quiz", locale),
         pathOf("contact", locale),
         "https://www.malt.fr/profile/fabricereynaud",

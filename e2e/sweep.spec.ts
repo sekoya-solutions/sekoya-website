@@ -12,8 +12,8 @@ import { pathOf, type RouteKey, routes, testimonialsPaths } from "../src/i18n/ro
 // clipped by a box that hides its overflow, and no overlap between the regions
 // a page marks as side by side (`data-region`, grouped by its value). Run as
 // its own Playwright project, `sweep` (playwright.config.ts), in its own CI job.
-// The pages only the feature test build has, the testimonials and the home
-// page with their section (#23), are swept there.
+// The home and testimonials pages are swept on the feature test build too,
+// with its fixtures (#23): two cards side by side, besides the site's own.
 
 /** The width step between two checked widths, in CSS pixels. */
 const step = 16;
@@ -165,8 +165,11 @@ const pages = [
     locales.map((locale) => ({ name: `${key} in ${locale}`, url: pathOf(key, locale) })),
   ),
   ...locales.flatMap((locale) => [
-    { name: `home with testimonials in ${locale}`, url: `${feature}${pathOf("home", locale)}` },
-    { name: `testimonials in ${locale}`, url: `${feature}${testimonialsPaths[locale]}` },
+    { name: `home in ${locale}, feature test build`, url: `${feature}${pathOf("home", locale)}` },
+    {
+      name: `testimonials in ${locale}, feature test build`,
+      url: `${feature}${testimonialsPaths[locale]}`,
+    },
   ]),
 ];
 

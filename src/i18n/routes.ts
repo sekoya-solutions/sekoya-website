@@ -81,13 +81,21 @@ function pagesUnder<K extends string>(
   ) as Record<K, Record<Locale, string>>;
 }
 
+/** A route map: each page's path in every language. */
+export type RouteMap = Readonly<Partial<Record<RouteKey, Readonly<Record<Locale, string>>>>>;
+
+/** The route map, with or without the testimonials page; apart so tests can build both. */
+export function routesFor(options: { testimonials: boolean }): RouteMap {
+  return {
+    ...pages,
+    ...(options.testimonials ? { testimonials: testimonialsPaths } : {}),
+    ...pagesUnder("caseStudies", caseStudySlugs(), caseStudyKey),
+    ...pagesUnder("portfolio", projectSlugs(), projectKey),
+  };
+}
+
 /** The pages that exist: every key, except the testimonials page until a testimonial does. */
-export const routes: Readonly<Partial<Record<RouteKey, Readonly<Record<Locale, string>>>>> = {
-  ...pages,
-  ...(hasTestimonials() ? { testimonials: testimonialsPaths } : {}),
-  ...pagesUnder("caseStudies", caseStudySlugs(), caseStudyKey),
-  ...pagesUnder("portfolio", projectSlugs(), projectKey),
-};
+export const routes: RouteMap = routesFor({ testimonials: hasTestimonials() });
 
 /** Whether a page exists: a key of the route map. */
 export function isRouteKey(value: string): value is RouteKey {

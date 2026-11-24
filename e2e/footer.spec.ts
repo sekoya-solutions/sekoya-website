@@ -34,8 +34,7 @@ for (const locale of locales) {
     quiz: t.quiz,
     contact: t.footer.contact,
   };
-  // The site has no testimonial yet, so no link to their page
-  // (testimonials.spec.ts checks it on the feature test build).
+  // The testimonials page only once a testimonial exists (testimonials.spec.ts).
   const builtPages = footerPages.filter(isRouteKey);
 
   test(`the brand column shows the logo, the tagline and the company line (${locale})`, async ({
@@ -58,7 +57,6 @@ for (const locale of locales) {
       .getByRole("contentinfo")
       .getByRole("navigation", { name: t.footer.navigation });
     const links = nav.getByRole("link");
-    expect(builtPages).not.toContain("testimonials");
     await expect(links).toHaveText(builtPages.map((key) => labels[key]));
     for (const [index, key] of builtPages.entries()) {
       await expect(links.nth(index)).toHaveAttribute("href", pathOf(key, locale));

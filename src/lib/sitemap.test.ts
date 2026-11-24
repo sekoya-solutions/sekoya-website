@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { locales } from "../i18n/config";
-import { isListed, pathOf, type RouteKey, routes } from "../i18n/routes";
+import {
+  isListed,
+  pathOf,
+  type RouteKey,
+  routes,
+  routesFor,
+  testimonialsPaths,
+} from "../i18n/routes";
 import { robots, sitemap } from "./sitemap";
 
 const site = new URL("https://example.com");
@@ -34,6 +41,17 @@ describe("sitemap", () => {
 
   it("leaves out the 404 page", () => {
     expect(xml).not.toContain("404");
+  });
+
+  // #23: the testimonials page is listed once a testimonial exists, and not before.
+  it("lists the testimonials page only when it exists", () => {
+    const keysOf = (testimonials: boolean) =>
+      (Object.keys(routesFor({ testimonials })) as RouteKey[]).filter(isListed);
+    const without = sitemap(site, keysOf(false));
+    for (const path of Object.values(testimonialsPaths)) expect(without).not.toContain(path);
+    if (Object.hasOwn(routes, "testimonials")) {
+      for (const path of Object.values(testimonialsPaths)) expect(xml).toContain(`${path}</loc>`);
+    }
   });
 
   it("links each page to its translations, then x-default on the French page", () => {

@@ -8,7 +8,7 @@
 import type { Locale } from "../../i18n/config";
 import { testimonialsPageContent } from "../../i18n/content";
 import { pathOf } from "../../i18n/routes";
-import { onHome, type ShownTestimonial } from "../../lib/testimonials";
+import { gridClasses, onHome, type ShownTestimonial } from "../../lib/testimonials";
 import SectionHead from "../home/SectionHead.astro";
 import Button from "../ui/Button.astro";
 import TestimonialCard from "./TestimonialCard.astro";
@@ -20,13 +20,14 @@ interface Props {
 
 const { items, locale } = Astro.props;
 const copy = await testimonialsPageContent(locale);
+const shown = onHome(items);
 ---
 
 <section aria-labelledby="testimonials-title">
   <SectionHead id="testimonials-title" eyebrow={copy.home.eyebrow} title={copy.home.title} />
-  <ul class="reveal-group grid gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+  <ul class:list={["reveal-group grid gap-4", gridClasses(shown.length)]}>
     {
-      onHome(items).map((item) => (
+      shown.map((item) => (
         <li class="grid">
           <TestimonialCard item={item} labels={copy.labels} locale={locale} />
         </li>

@@ -56,3 +56,15 @@ export function onHome(list: readonly ShownTestimonial[]): ShownTestimonial[] {
     ...recent.filter((item) => !item.featured),
   ].slice(0, homeCount);
 }
+
+/**
+ * The grid's classes for a number of cards: one card alone at a readable
+ * width, two side by side from 768 px, three or more in three columns from
+ * 1024 px, so no column is left empty beside a lone card. Written out whole
+ * so Tailwind finds them.
+ */
+export function gridClasses(count: number): string {
+  if (count <= 1) return "max-w-[760px]";
+  if (count === 2) return "md:grid-cols-2 lg:gap-6";
+  return "md:grid-cols-2 lg:grid-cols-3 lg:gap-6";
+}

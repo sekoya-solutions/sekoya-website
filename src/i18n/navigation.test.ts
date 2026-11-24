@@ -66,8 +66,8 @@ describe("the footer's navigation", () => {
     expect(footerPages).toEqual([...navigationPages, "testimonials", "quiz", "contact"]);
     for (const locale of locales) {
       const links = footerLinks({ key: "legal", locale });
-      // No testimonial exists yet, so neither does their page (#23).
-      expect(links.map((link) => link.page)).toEqual([...navigationPages, "quiz", "contact"]);
+      // The testimonials page only once a testimonial exists (#23).
+      expect(links.map((link) => link.page)).toEqual(footerPages.filter(isRouteKey));
       for (const link of links) expect(link.href).toBe(pathOf(link.page, locale));
     }
   });
@@ -76,7 +76,14 @@ describe("the footer's navigation", () => {
     const withoutQuiz = (page: string): page is RouteKey => page !== "quiz" && isRouteKey(page);
     expect(
       footerLinks({ key: "home", locale: "fr" }, withoutQuiz).map((link) => link.page),
-    ).toEqual([...navigationPages, "contact"]);
+    ).toEqual(footerPages.filter(withoutQuiz));
+    expect(footerPages.filter(withoutQuiz)).not.toContain("quiz");
+    // Without testimonials, no link to their page (#23).
+    const withoutTestimonials = (page: string): page is RouteKey =>
+      page !== "testimonials" && isRouteKey(page);
+    expect(
+      footerLinks({ key: "home", locale: "fr" }, withoutTestimonials).map((link) => link.page),
+    ).toEqual([...navigationPages, "quiz", "contact"]);
   });
 
   it("marks the page shown, or the section of a case study", () => {

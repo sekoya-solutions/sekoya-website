@@ -7,7 +7,7 @@ A testimonial is published only with its author's consent, and never invented. T
 ```json
 {
   "lang": "fr",
-  "quote": "The author's own words, at most 280 characters.",
+  "quote": "The author's own words, at most 512 characters.",
   "author": "First and last name",
   "role": "Role, in the quote's language",
   "company": "Company",

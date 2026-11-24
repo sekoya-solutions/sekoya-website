@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 import type { TestimonialData } from "../content/testimonial-schema";
-import { byRecent, homeCount, onHome, type ShownTestimonial, shownIn } from "./testimonials";
+import {
+  byRecent,
+  gridClasses,
+  homeCount,
+  onHome,
+  type ShownTestimonial,
+  shownIn,
+} from "./testimonials";
 
 // How the testimonials are shown (#23): the language of each quote, the
 // page's order, and the home section's choice.
@@ -86,5 +93,17 @@ describe("the testimonials' order", () => {
   it("shows the most recent on the home page when none is featured, and all when there are few", () => {
     expect(onHome([item("a", 2024), item("b", 2026)]).map(({ slug }) => slug)).toEqual(["b", "a"]);
     expect(onHome([])).toEqual([]);
+  });
+});
+
+describe("the grid of cards", () => {
+  it("shows one card alone at a readable width, with no columns", () => {
+    expect(gridClasses(1)).toBe("max-w-[760px]");
+  });
+
+  it("puts two side by side, and three or more in three columns", () => {
+    expect(gridClasses(2)).toContain("md:grid-cols-2");
+    expect(gridClasses(2)).not.toContain("grid-cols-3");
+    for (const count of [3, 4, 7]) expect(gridClasses(count)).toContain("lg:grid-cols-3");
   });
 });

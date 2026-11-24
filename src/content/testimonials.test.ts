@@ -56,9 +56,21 @@ describe("the testimonials folder", () => {
     );
   });
 
-  it("holds no testimonial on the site, so the site shows none", () => {
-    expect(testimonialSlugs(siteTestimonialsFolder)).toEqual([]);
-    expect(hasTestimonials(siteTestimonialsFolder)).toBe(false);
+  it("holds the site's testimonials, each passing the schema", () => {
+    const slugs = testimonialSlugs(siteTestimonialsFolder);
+    expect(hasTestimonials(siteTestimonialsFolder)).toBe(slugs.length > 0);
+    for (const slug of slugs) {
+      const data = JSON.parse(
+        readFileSync(new URL(`./testimonials/${slug}.json`, import.meta.url), "utf8"),
+      );
+      expect(testimonialSchema.safeParse(data).error?.issues ?? []).toEqual([]);
+    }
+  });
+
+  it("is empty when it holds only its README", () => {
+    const root = rootWith(["README.md"]);
+    expect(testimonialSlugs(siteTestimonialsFolder, root)).toEqual([]);
+    expect(hasTestimonials(siteTestimonialsFolder, root)).toBe(false);
   });
 
   it("gives the slugs of its JSON files, sorted, and skips its README", () => {

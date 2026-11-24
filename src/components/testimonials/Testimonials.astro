@@ -10,6 +10,7 @@ import { translations } from "../../i18n";
 import { pageLocale } from "../../i18n/config";
 import { testimonials, testimonialsPageContent } from "../../i18n/content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { gridClasses } from "../../lib/testimonials";
 import ScrollReveal from "../layout/ScrollReveal.astro";
 import TestimonialCard from "./TestimonialCard.astro";
 
@@ -26,7 +27,7 @@ const items = await testimonials(locale);
       <h1 class="text-h1 leading-[1.08] font-bold tracking-[-0.02em]">{copy.title}</h1>
       <p class="text-[1.02rem] leading-[1.6] font-light text-muted lg:text-lead">{copy.lead}</p>
     </div>
-    <ul class="reveal-group grid gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+    <ul class:list={["reveal-group grid gap-4", gridClasses(items.length)]}>
       {
         items.map((item) => (
           <li class="grid">
