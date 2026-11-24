@@ -6,6 +6,7 @@ A summary of the epics and their issues, and what each delivers. Status is kept 
 
 - [#1](https://github.com/sekoya-solutions/sekoya-website/issues/1) Record the initial architecture decisions: the first nine [Architecture Decision Records (ADRs)](adr/README.md), from the framework to the repository and its licences, written before any code.
 - [#46](https://github.com/sekoya-solutions/sekoya-website/issues/46) Reserve all rights on the whole repository: ADR 0009 records the change from MIT, and `LICENSE`, the README and the legal page say that the code is public to be read, not reused.
+- [#64](https://github.com/sekoya-solutions/sekoya-website/issues/64) One layout shift rule for every end-to-end test: a shared helper records a page's layout shifts and checks their total against the one allowance for the font swap (0.001); the hero and font-swap tests use it, both with the font held back until the first paint, and a unit test fails on any test that observes layout shifts elsewhere.
 
 ## [Epic #8](https://github.com/sekoya-solutions/sekoya-website/issues/8): Foundation
 
