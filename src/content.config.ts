@@ -8,6 +8,9 @@ import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 import { type ContactSubject, contactSubjects } from "./content/contact-subjects";
 import { type ProjectCategory, projectCategories } from "./content/project-categories";
+import { testimonialSchema } from "./content/testimonial-schema";
+import { hasTestimonials, testimonialsFolder } from "./content/testimonials";
+import type { Locale } from "./i18n/config";
 import { isPlaceholder } from "./lib/career";
 import { contactChannels } from "./lib/contact-channels";
 import { levelsCover, maxScore } from "./lib/quiz";
@@ -738,6 +741,41 @@ const quiz = defineCollection({
     }),
 });
 
+/**
+ * The testimonials (#23), one JSON file per testimonial, empty at launch
+ * (src/content/testimonials.ts, src/content/testimonial-schema.ts). The
+ * feature test build reads a fixture folder instead.
+ */
+const testimonials = defineCollection({
+  // The glob loader warns about a folder with no entry: while there is none,
+  // a loader that adds none.
+  loader: hasTestimonials()
+    ? glob({ pattern: "*.json", base: testimonialsFolder() })
+    : { name: "no-testimonials", load: async ({ store }) => store.clear() },
+  schema: testimonialSchema,
+});
+
+/**
+ * The testimonials page and the home section, one entry per language, shown
+ * only once a testimonial exists.
+ */
+const testimonialsPage = defineCollection({
+  loader: glob({ pattern: "*.json", base: "./src/content/testimonials-page" }),
+  schema: z.object({
+    eyebrow: text,
+    title: text,
+    lead: text,
+    /** The home section, between the portfolio and the quiz. */
+    home: z.object({ ...sectionHead, more: text }),
+    labels: z.object({
+      /** Under a translated quote, by the original's language. */
+      translatedFrom: z.object({ fr: text, en: text }) satisfies z.ZodType<Record<Locale, string>>,
+      /** The LinkedIn link's accessible name. */
+      linkedin: template("author"),
+    }),
+  }),
+});
+
 export const collections = {
   about,
   career,
@@ -751,4 +789,6 @@ export const collections = {
   caseStudiesPage,
   projects,
   portfolioPage,
+  testimonials,
+  testimonialsPage,
 };

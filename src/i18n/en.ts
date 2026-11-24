@@ -11,6 +11,8 @@ export const en = {
     legalNotice: "Legal notice",
     /** The footer's link to the quiz. */
     quiz: "Self-assessment",
+    /** The footer's link to the testimonials, once one exists. */
+    testimonials: "Testimonials",
     navigation: "Main navigation",
     menu: "Menu",
     nav: {
@@ -73,6 +75,11 @@ export const en = {
       "Public projects you can open, play and read: code, architecture decisions and measurements.",
     titleSuffix: "— Portfolio — Sekoya Solutions",
     externalLink: "external site",
+  },
+  testimonials: {
+    title: "Testimonials — Sekoya Solutions",
+    description:
+      "What the clients and colleagues who worked with me say, in their own words and with their consent.",
   },
   career: {
     title: "Career — Sekoya Solutions",

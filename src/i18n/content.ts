@@ -7,7 +7,9 @@ import { type CollectionEntry, getCollection, getEntry } from "astro:content";
 import { careerDifferences } from "../content/career-parity";
 import { caseStudyDifferences } from "../content/case-study-parity";
 import { projectDifferences } from "../content/project-parity";
+import { testimonialSlugs } from "../content/testimonials";
 import { frenchTypographyDeep } from "../lib/french-typography";
+import { byRecent, type ShownTestimonial, shownIn } from "../lib/testimonials";
 import { type Locale, locales } from "./config";
 
 /** The collections that hold one page's copy, one entry per language. */
@@ -19,7 +21,8 @@ type PageCollection =
   | "about"
   | "contact"
   | "legal"
-  | "quiz";
+  | "quiz"
+  | "testimonialsPage";
 
 /** A page's copy in a language; a missing entry fails the build. */
 async function pageContent<C extends PageCollection>(
@@ -222,4 +225,37 @@ export async function project(locale: Locale, slug: string): Promise<Project> {
   const found = (await projects(locale)).find((candidate) => candidate.slug === slug);
   if (found === undefined) throw new Error(`src/content/projects/${locale}/${slug}.mdx is missing`);
   return found;
+}
+
+/** The testimonials page's and home section's copy in a language. */
+export function testimonialsPageContent(locale: Locale) {
+  return pageContent("testimonialsPage", locale);
+}
+
+/**
+ * The testimonials in a page's language, the most recent first
+ * (src/lib/testimonials.ts); none while the folder holds none. The
+ * collection is read only then, since Astro warns about an empty one, and it
+ * must hold every file of the folder, which the route map reads
+ * (src/content/testimonials.ts), or the build fails. French texts get French
+ * typography; names stay as written.
+ */
+export async function testimonials(locale: Locale): Promise<ShownTestimonial[]> {
+  const slugs = testimonialSlugs();
+  if (slugs.length === 0) return [];
+  const entries = await getCollection("testimonials");
+  const ids = entries.map(({ id }) => id).sort();
+  if (ids.join() !== slugs.join()) {
+    throw new Error(
+      `The testimonials collection (${ids.join(", ")}) differs from its folder (${slugs.join(", ")})`,
+    );
+  }
+  return entries
+    .map(({ id, data }) => shownIn(id, data, locale))
+    .map((item) =>
+      item.lang === "fr"
+        ? { ...item, ...frenchTypographyDeep({ quote: item.quote, role: item.role }) }
+        : item,
+    )
+    .sort(byRecent);
 }

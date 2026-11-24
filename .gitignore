@@ -27,7 +27,7 @@ desktop.ini
 # Dependencies, and the files Astro builds or generates
 /node_modules/
 /dist/
-/dist-form/
+/dist-feature/
 /.astro/
 
 # Playwright results and traces

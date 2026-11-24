@@ -1,6 +1,7 @@
 import { expect, type Page, test } from "@playwright/test";
+import { featureTestPort } from "../scripts/feature-test";
 import { locales } from "../src/i18n/config";
-import { pathOf, type RouteKey, routes } from "../src/i18n/routes";
+import { pathOf, type RouteKey, routes, testimonialsPaths } from "../src/i18n/routes";
 
 // The width sweep (ADR 0010): every page, in French and English, widened step
 // by step from 320 to 1920 px, with each width step's value and the pixel
@@ -11,6 +12,8 @@ import { pathOf, type RouteKey, routes } from "../src/i18n/routes";
 // clipped by a box that hides its overflow, and no overlap between the regions
 // a page marks as side by side (`data-region`, grouped by its value). Run as
 // its own Playwright project, `sweep` (playwright.config.ts), in its own CI job.
+// The home and testimonials pages are swept on the feature test build too,
+// with its fixtures (#23): two cards side by side, besides the site's own.
 
 /** The width step between two checked widths, in CSS pixels. */
 const step = 16;
@@ -156,35 +159,47 @@ async function settled(page: Page) {
 
 test.describe.configure({ mode: "parallel" });
 
-for (const key of Object.keys(routes) as RouteKey[]) {
-  for (const locale of locales) {
-    test(`${key} in ${locale}`, async ({ page }) => {
-      test.setTimeout(180_000);
-      // At rest: under reduced motion nothing slides or fades in (global.css).
-      await page.emulateMedia({ reducedMotion: "reduce" });
-      await page.setViewportSize({ width: widths[0] ?? 320, height: heights[0] ?? 600 });
-      await page.goto(pathOf(key, locale));
-      await page.evaluate(() => document.fonts.ready);
-      const found = new Map<string, string[]>();
-      const sizes = [
-        ...heights.flatMap((height) => widths.map((width) => [width, height] as const)),
-        ...references,
-      ];
-      for (const [width, height] of sizes) {
-        await page.setViewportSize({ width, height });
-        await settled(page);
-        for (const problem of await page.evaluate(problemsNow)) {
-          const kind = problem.replace(/\(.*\)$/, "").trim();
-          found.set(kind, [...(found.get(kind) ?? []), `${width}×${height}`]);
-        }
+const feature = `http://localhost:${featureTestPort}`;
+const pages = [
+  ...(Object.keys(routes) as RouteKey[]).flatMap((key) =>
+    locales.map((locale) => ({ name: `${key} in ${locale}`, url: pathOf(key, locale) })),
+  ),
+  ...locales.flatMap((locale) => [
+    { name: `home in ${locale}, feature test build`, url: `${feature}${pathOf("home", locale)}` },
+    {
+      name: `testimonials in ${locale}, feature test build`,
+      url: `${feature}${testimonialsPaths[locale]}`,
+    },
+  ]),
+];
+
+for (const { name, url } of pages) {
+  test(name, async ({ page }) => {
+    test.setTimeout(180_000);
+    // At rest: under reduced motion nothing slides or fades in (global.css).
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.setViewportSize({ width: widths[0] ?? 320, height: heights[0] ?? 600 });
+    await page.goto(url);
+    await page.evaluate(() => document.fonts.ready);
+    const found = new Map<string, string[]>();
+    const sizes = [
+      ...heights.flatMap((height) => widths.map((width) => [width, height] as const)),
+      ...references,
+    ];
+    for (const [width, height] of sizes) {
+      await page.setViewportSize({ width, height });
+      await settled(page);
+      for (const problem of await page.evaluate(problemsNow)) {
+        const kind = problem.replace(/\(.*\)$/, "").trim();
+        found.set(kind, [...(found.get(kind) ?? []), `${width}×${height}`]);
       }
-      // One line per problem, with the sizes where it shows.
-      const report = [...found].map(([problem, sizes]) =>
-        sizes.length > 6
-          ? `${problem}: ${sizes.length} sizes, ${sizes.slice(0, 3).join(", ")} … ${sizes.slice(-2).join(", ")}`
-          : `${problem}: ${sizes.join(", ")}`,
-      );
-      expect(report).toEqual([]);
-    });
-  }
+    }
+    // One line per problem, with the sizes where it shows.
+    const report = [...found].map(([problem, sizes]) =>
+      sizes.length > 6
+        ? `${problem}: ${sizes.length} sizes, ${sizes.slice(0, 3).join(", ")} … ${sizes.slice(-2).join(", ")}`
+        : `${problem}: ${sizes.join(", ")}`,
+    );
+    expect(report).toEqual([]);
+  });
 }

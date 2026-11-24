@@ -138,9 +138,9 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      # The contact form is off on the site; its tests run on a second
-      # build with a test address (scripts/form-test.ts).
-      - run: npm run build:form-test
+      # The contact form and the testimonials are off on the site; their
+      # tests run on a second build that turns them on (scripts/feature-test.ts).
+      - run: npm run build:feature-test
       # The placeholder guard (ADR 0007) lists the placeholders left and the
       # missing files, such as the CV. It only reports until the launch makes
       # it a gate on the production build.
@@ -188,7 +188,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - run: npm run build:form-test
+      - run: npm run build:feature-test
       - run: npm run e2e:install -- --with-deps
       # The same font as the end-to-end job, so text wraps as it does there.
       - name: Install Roboto

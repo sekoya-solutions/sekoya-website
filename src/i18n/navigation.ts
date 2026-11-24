@@ -12,8 +12,11 @@ export const navigationPages = ["offers", "caseStudies", "career", "portfolio", 
 
 export type NavigationPage = (typeof navigationPages)[number];
 
-/** The footer's pages, in its order: the main pages, then the quiz and contact. */
-export const footerPages = [...navigationPages, "quiz", "contact"] as const;
+/**
+ * The footer's pages, in its order: the main pages, the testimonials (once
+ * one exists, src/i18n/routes.ts), then the quiz and contact.
+ */
+export const footerPages = [...navigationPages, "testimonials", "quiz", "contact"] as const;
 
 export type FooterPage = (typeof footerPages)[number];
 

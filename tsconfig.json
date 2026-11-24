@@ -1,7 +1,7 @@
 {
   "extends": "astro/tsconfigs/strict",
   "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist", "dist-form"],
+  "exclude": ["dist", "dist-feature"],
   "compilerOptions": {
     // The scripts run directly in Node.js, which only strips type syntax.
     "erasableSyntaxOnly": true,

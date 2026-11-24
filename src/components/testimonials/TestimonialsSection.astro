@@ -1,0 +1,40 @@
+---
+/**
+ * The home page's testimonials section (#23), between the portfolio and the
+ * quiz: up to three cards, the featured ones first (src/lib/testimonials.ts),
+ * and a link to the testimonials page. The home page renders it only once a
+ * testimonial exists.
+ */
+import type { Locale } from "../../i18n/config";
+import { testimonialsPageContent } from "../../i18n/content";
+import { pathOf } from "../../i18n/routes";
+import { gridClasses, onHome, type ShownTestimonial } from "../../lib/testimonials";
+import SectionHead from "../home/SectionHead.astro";
+import Button from "../ui/Button.astro";
+import TestimonialCard from "./TestimonialCard.astro";
+
+interface Props {
+  items: readonly ShownTestimonial[];
+  locale: Locale;
+}
+
+const { items, locale } = Astro.props;
+const copy = await testimonialsPageContent(locale);
+const shown = onHome(items);
+---
+
+<section aria-labelledby="testimonials-title">
+  <SectionHead id="testimonials-title" eyebrow={copy.home.eyebrow} title={copy.home.title} />
+  <ul class:list={["reveal-group grid gap-4", gridClasses(shown.length)]}>
+    {
+      shown.map((item) => (
+        <li class="grid">
+          <TestimonialCard item={item} labels={copy.labels} locale={locale} />
+        </li>
+      ))
+    }
+  </ul>
+  <Button href={pathOf("testimonials", locale)} variant="text" icon="arrow" class="reveal mt-6">
+    {copy.home.more}
+  </Button>
+</section>

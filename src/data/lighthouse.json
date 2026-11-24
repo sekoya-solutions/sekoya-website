@@ -1,5 +1,5 @@
 {
-  "measuredOn": "2026-11-22",
+  "measuredOn": "2026-11-24",
   "lighthouse": "13.6.0",
   "runs": 3,
   "summary": {
@@ -70,6 +70,12 @@
       "seo": 100
     },
     "/mentions-legales": {
+      "performance": 100,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 100
+    },
+    "/temoignages": {
       "performance": 100,
       "accessibility": 100,
       "bestPractices": 100,

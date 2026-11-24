@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { caseStudySlugs, projectSlugs } from "../content/slugs";
+import { hasTestimonials } from "../content/testimonials";
 import { locales } from "./config";
 import {
   alternates,
@@ -10,12 +11,15 @@ import {
   normalizePath,
   pathOf,
   projectKey,
+  type RouteKey,
   routeOf,
   routes,
+  routesFor,
+  testimonialsPaths,
 } from "./routes";
 
-const entries = Object.entries(routes).flatMap(([key, paths]) =>
-  locales.map((locale) => ({ key, locale, path: paths[locale] })),
+const entries = (Object.keys(routes) as RouteKey[]).flatMap((key) =>
+  locales.map((locale) => ({ key, locale, path: pathOf(key, locale) })),
 );
 
 describe("the route map", () => {
@@ -78,7 +82,7 @@ describe("isListed", () => {
 describe("isRouteKey", () => {
   it("accepts a page of the map and rejects one that does not exist yet", () => {
     expect(isRouteKey("home")).toBe(true);
-    expect(isRouteKey("testimonials")).toBe(false);
+    expect(isRouteKey("not-a-page")).toBe(false);
     expect(isRouteKey("toString")).toBe(false);
   });
 });
@@ -93,7 +97,7 @@ describe("linkHref", () => {
   });
 
   it("gives no address to a page that does not exist yet", () => {
-    expect(linkHref({ page: "testimonials" }, "fr")).toBeUndefined();
+    expect(linkHref({ page: "not-a-page" }, "fr")).toBeUndefined();
   });
 });
 
@@ -130,5 +134,33 @@ describe("the portfolio's routes", () => {
 
   it("have no page for a project without a file", () => {
     expect(isRouteKey(projectKey("nowhere"))).toBe(false);
+  });
+});
+
+describe("the testimonials page (#23)", () => {
+  // The page exists only once a testimonial does: the map without them has
+  // no page, and the site's map follows its folder (src/content/testimonials).
+  it("is not a page while no testimonial exists", () => {
+    const empty = routesFor({ testimonials: false });
+    expect(Object.hasOwn(empty, "testimonials")).toBe(false);
+    expect(Object.keys(empty)).toEqual(Object.keys(routes).filter((key) => key !== "testimonials"));
+    expect(routesFor({ testimonials: true }).testimonials).toEqual(testimonialsPaths);
+  });
+
+  it("is a page of the site exactly when its folder holds a testimonial", () => {
+    expect(isRouteKey("testimonials")).toBe(hasTestimonials());
+    if (hasTestimonials()) {
+      expect(pathOf("testimonials", "fr")).toBe(testimonialsPaths.fr);
+      expect(linkHref({ page: "testimonials" }, "en")).toBe(testimonialsPaths.en);
+    } else {
+      expect(() => pathOf("testimonials", "fr")).toThrow(/testimonials/);
+      expect(linkHref({ page: "testimonials" }, "fr")).toBeUndefined();
+    }
+  });
+
+  it("has a translated path in each language, which no other page uses", () => {
+    expect(testimonialsPaths).toEqual({ fr: "/temoignages", en: "/en/testimonials" });
+    const others = entries.filter(({ key }) => key !== "testimonials").map(({ path }) => path);
+    for (const locale of locales) expect(others).not.toContain(testimonialsPaths[locale]);
   });
 });

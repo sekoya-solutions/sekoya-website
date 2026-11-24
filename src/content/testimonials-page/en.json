@@ -1,0 +1,17 @@
+{
+  "eyebrow": "Testimonials",
+  "title": "What the people I worked with say",
+  "lead": "Clients and colleagues describe our work together, in their own words and with their consent.",
+  "home": {
+    "eyebrow": "Testimonials",
+    "title": "What the people I worked with say.",
+    "more": "All testimonials"
+  },
+  "labels": {
+    "translatedFrom": {
+      "fr": "Translated from French",
+      "en": "Translated from English"
+    },
+    "linkedin": "{author}'s LinkedIn profile"
+  }
+}

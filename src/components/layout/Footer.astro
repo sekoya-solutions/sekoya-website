@@ -3,8 +3,8 @@
  * The footer, in three columns from 1024 px and stacked on phones: the brand
  * (the horizontal logo, the tagline and the company line, its registration
  * read from src/content/company), the navigation (src/i18n/navigation.ts:
- * the main pages, the quiz and contact, each shown once its page exists), and
- * the site's measured Lighthouse scores. Then the copyright line and the link
+ * the main pages, the testimonials, the quiz and contact, each shown once
+ * its page exists), and the site's measured Lighthouse scores. Then the copyright line and the link
  * to the legal notice, which French law requires on every page.
  */
 import { translations } from "../../i18n";
@@ -22,7 +22,12 @@ const { route } = Astro.props;
 const t = translations(route.locale).layout;
 const company = await companyFacts();
 const links = footerLinks(route);
-const labels: Record<FooterPage, string> = { ...t.nav, quiz: t.quiz, contact: t.footer.contact };
+const labels: Record<FooterPage, string> = {
+  ...t.nav,
+  testimonials: t.testimonials,
+  quiz: t.quiz,
+  contact: t.footer.contact,
+};
 const year = new Date().getFullYear();
 ---
 

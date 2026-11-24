@@ -12,6 +12,8 @@ export const fr = frenchTypographyTree({
     legalNotice: "Mentions légales",
     /** The footer's link to the quiz. */
     quiz: "Auto-diagnostic",
+    /** The footer's link to the testimonials, once one exists. */
+    testimonials: "Témoignages",
     /** The header's navigation landmark, read by screen readers only. */
     navigation: "Navigation principale",
     /** The button that opens the navigation below 1280 px, read by screen readers only. */
@@ -90,6 +92,11 @@ export const fr = frenchTypographyTree({
     titleSuffix: "— Portfolio — Sekoya Solutions",
     /** For a link to another site, read by screen readers only. */
     externalLink: "site externe",
+  },
+  testimonials: {
+    title: "Témoignages — Sekoya Solutions",
+    description:
+      "Ce que disent les clients et les collègues qui ont travaillé avec moi, avec leurs mots et leur accord.",
   },
   career: {
     title: "Parcours — Sekoya Solutions",

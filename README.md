@@ -19,13 +19,13 @@ Node.js at the version in [`.node-version`](.node-version), with npm.
 | `npm ci` | Installs the locked dependencies |
 | `npm run dev` | Starts the development server |
 | `npm run build` | Builds the static site into `dist/` |
-| `npm run build:form-test` | Builds the site with the contact form on, into `dist-form/`, for the end-to-end tests only (the form is off on the site) |
+| `npm run build:feature-test` | Builds the site with the contact form and a test testimonial on, into `dist-feature/`, for the end-to-end tests only (both are off on the site) |
 | `npm run preview` | Serves the build in `dist/` with `wrangler dev`, with the hosting configuration and headers |
 | `npm run check` | Lints and checks formatting (Biome), and checks types (`astro check`) |
 | `npm run format` | Fixes formatting and safe lint issues |
 | `npm test` | Runs the unit tests |
 | `npm run e2e:install` | Downloads Chromium for Playwright into `.tools/ms-playwright` |
-| `npm run test:e2e` | Runs the end-to-end and accessibility tests against the builds (run `npm run build` and `npm run build:form-test` first) |
+| `npm run test:e2e` | Runs the end-to-end and accessibility tests against the builds (run `npm run build` and `npm run build:feature-test` first) |
 | `npm run test:sweep` | Runs the width sweep (ADR 0010): every page, in both languages, from 320 to 1920 px wide, checked for sideways scroll, overflow, clipped text and overlapping regions (run both builds first) |
 | `npm run check:todos` | Lists the `[TODO: …]` placeholders left in the content and the build, and the missing files such as the CV; fails when it finds any, unless `ALLOW_TODO=1` (run `npm run build` first) |
 | `npm run lighthouse` | Builds the site, serves it with `wrangler dev`, runs mobile Lighthouse three times on one page per template and writes the medians, with the date, into `src/data/lighthouse.json`, which the footer and the portfolio show; with `-- --check`, writes nothing and fails when a page is below 95 in any category (run `npm run e2e:install` first) |
@@ -46,7 +46,7 @@ Node.js at the version in [`.node-version`](.node-version), with npm.
 | `src/assets/` | Logos, animated logo, avatar, portfolio screenshots and font, processed by the build |
 | `src/data/` | The Lighthouse measurement, written by `npm run lighthouse` |
 | `public/` | Files copied as they are into the build, including the `_headers` and `_redirects` files |
-| `e2e/` | End-to-end and accessibility tests, and the Worker configuration that serves the test build with the contact form on |
+| `e2e/` | End-to-end and accessibility tests, and the fixtures and the Worker configuration of the feature test build |
 | `scripts/` | Build and CI helper scripts, with their unit tests |
 | `docs/adr/` | Architecture Decision Records |
 | `docs/roadmap.md` | The epics and their issues |

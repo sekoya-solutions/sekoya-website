@@ -33,6 +33,7 @@ Chosen: **content collections with schemas (content 1) and Astro's built-in i18n
 - French typography applied by a small helper in the content pipeline, covered by unit tests.
 - Dates shown numerically (`05/2022 – 09/2025`) in both languages.
 - The sitemap is built from the route map, not with `@astrojs/sitemap`, which pairs languages by identical paths and so cannot link translated paths such as `/offres` and `/en/services`.
+- Testimonials are the exception to one entry per language: one file per testimonial holds the quote as its author wrote it, marked with its language, and any translation the author approved. A page in another language shows the translation, marked as translated, or else the original.
 
 ## Consequences
 
