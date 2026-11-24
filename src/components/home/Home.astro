@@ -3,16 +3,17 @@
  * The home page, in the page's language: src/pages/index.astro in French and
  * src/pages/en/index.astro in English. Its copy is in src/content/home.
  *
- * The hero, then the sections, 96 px apart (56 px below 768 px), with a
+ * The hero, then the sections (the testimonials only once one exists), 96 px apart (56 px below 768 px), with a
  * circuit divider between two sections. The sections reveal themselves as
  * they scroll into view (global.css, with ScrollReveal.astro's fallback).
  */
 
 import { translations } from "../../i18n";
 import { pageLocale } from "../../i18n/config";
-import { homeContent } from "../../i18n/content";
+import { homeContent, testimonials } from "../../i18n/content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ScrollReveal from "../layout/ScrollReveal.astro";
+import TestimonialsSection from "../testimonials/TestimonialsSection.astro";
 import CircuitDivider from "./CircuitDivider.astro";
 import ContactBand from "./ContactBand.astro";
 import FeaturedCase from "./FeaturedCase.astro";
@@ -26,6 +27,8 @@ import ValueProps from "./ValueProps.astro";
 const locale = pageLocale(Astro.currentLocale);
 const t = translations(locale);
 const copy = await homeContent(locale);
+// The testimonials section, between the portfolio and the quiz, once one exists (#23).
+const testimonialList = await testimonials(locale);
 // The scene's timing rules are an inline <style>, which the policy must allow.
 if (Astro.csp === undefined) throw new Error("astro.config.mjs must enable the CSP");
 Astro.csp.insertStyleHash(sceneCssHash);
@@ -43,8 +46,17 @@ Astro.csp.insertStyleHash(sceneCssHash);
     <CircuitDivider />
     <PortfolioTeaser copy={copy.portfolio} locale={locale} />
     <CircuitDivider flip />
+    {
+      testimonialList.length > 0 && (
+        <>
+          <TestimonialsSection items={testimonialList} locale={locale} />
+          <CircuitDivider />
+        </>
+      )
+    }
     <QuizTeaser copy={copy.quiz} locale={locale} />
-    <CircuitDivider />
+    {/* The dividers alternate, with or without the testimonials. */}
+    <CircuitDivider flip={testimonialList.length > 0} />
     <ContactBand copy={copy.contact} locale={locale} />
   </div>
   <ScrollReveal />

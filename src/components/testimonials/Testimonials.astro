@@ -1,0 +1,40 @@
+---
+/**
+ * The testimonials page (#23), in the page's language:
+ * src/pages/[testimonials].astro in French and
+ * src/pages/en/[testimonials].astro in English, built only once a
+ * testimonial exists. Its copy is in src/content/testimonials-page; every
+ * testimonial, the most recent first, in one to three columns.
+ */
+import { translations } from "../../i18n";
+import { pageLocale } from "../../i18n/config";
+import { testimonials, testimonialsPageContent } from "../../i18n/content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ScrollReveal from "../layout/ScrollReveal.astro";
+import TestimonialCard from "./TestimonialCard.astro";
+
+const locale = pageLocale(Astro.currentLocale);
+const t = translations(locale);
+const copy = await testimonialsPageContent(locale);
+const items = await testimonials(locale);
+---
+
+<BaseLayout title={t.testimonials.title} description={t.testimonials.description}>
+  <div class="mx-auto max-w-site px-(--gutter) pt-8 lg:pt-10">
+    <div class="mb-10 grid max-w-[760px] gap-4.5 lg:mb-14">
+      <p class="eyebrow">{copy.eyebrow}</p>
+      <h1 class="text-h1 leading-[1.08] font-bold tracking-[-0.02em]">{copy.title}</h1>
+      <p class="text-[1.02rem] leading-[1.6] font-light text-muted lg:text-lead">{copy.lead}</p>
+    </div>
+    <ul class="reveal-group grid gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+      {
+        items.map((item) => (
+          <li class="grid">
+            <TestimonialCard item={item} labels={copy.labels} locale={locale} />
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+  <ScrollReveal />
+</BaseLayout>

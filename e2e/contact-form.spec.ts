@@ -1,19 +1,19 @@
 import { readFileSync } from "node:fs";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, test } from "@playwright/test";
-import { formTestAction, formTestPort } from "../scripts/form-test";
+import { featureTestPort, formTestAction } from "../scripts/feature-test";
 import { locales } from "../src/i18n/config";
 import { pathOf } from "../src/i18n/routes";
 import { honeypotName } from "../src/lib/contact-form";
 
 // The contact form (#16, ADR 0008), on the test build where it is on
-// (scripts/form-test.ts): labelled fields, the browser's own validation with
+// (scripts/feature-test.ts): labelled fields, the browser's own validation with
 // each field's message linked to it, the honeypot out of reach, the consent
 // checkbox, the post to the form's address (caught before it leaves the
 // browser), the subject preselected by the `sujet` parameter (ADR 0005), and
 // the legal notice's section on the form.
 
-test.use({ baseURL: `http://localhost:${formTestPort}` });
+test.use({ baseURL: `http://localhost:${featureTestPort}` });
 
 function contactCopy(locale: string) {
   return JSON.parse(

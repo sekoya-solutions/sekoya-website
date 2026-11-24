@@ -1,0 +1,17 @@
+---
+/**
+ * The testimonials page in English (#23), built only once a testimonial
+ * exists (src/i18n/routes.ts): its path comes from the route map, and without
+ * a testimonial there is no path to build.
+ */
+import Testimonials from "../../components/testimonials/Testimonials.astro";
+import { isRouteKey, pathOf } from "../../i18n/routes";
+
+export function getStaticPaths() {
+  return isRouteKey("testimonials")
+    ? [{ params: { testimonials: pathOf("testimonials", "en").slice("/en/".length) } }]
+    : [];
+}
+---
+
+<Testimonials />

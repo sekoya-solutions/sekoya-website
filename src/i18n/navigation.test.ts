@@ -62,11 +62,12 @@ describe("the header's navigation", () => {
 });
 
 describe("the footer's navigation", () => {
-  it("links the main pages, then the quiz and contact, in the page's language", () => {
-    expect(footerPages).toEqual([...navigationPages, "quiz", "contact"]);
+  it("links the main pages, the testimonials, then the quiz and contact, in the page's language", () => {
+    expect(footerPages).toEqual([...navigationPages, "testimonials", "quiz", "contact"]);
     for (const locale of locales) {
       const links = footerLinks({ key: "legal", locale });
-      expect(links.map((link) => link.page)).toEqual([...footerPages]);
+      // No testimonial exists yet, so neither does their page (#23).
+      expect(links.map((link) => link.page)).toEqual([...navigationPages, "quiz", "contact"]);
       for (const link of links) expect(link.href).toBe(pathOf(link.page, locale));
     }
   });

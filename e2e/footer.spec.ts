@@ -4,7 +4,7 @@ import { expect, type Page, test } from "@playwright/test";
 import { locales } from "../src/i18n/config";
 import { dictionaries } from "../src/i18n/index";
 import { footerPages } from "../src/i18n/navigation";
-import { pathOf, type RouteKey, routes } from "../src/i18n/routes";
+import { isRouteKey, pathOf, type RouteKey, routes } from "../src/i18n/routes";
 
 // The footer's brand and navigation columns (#48), beside the measured
 // column (site-scores.spec.ts): three columns side by side on wide screens,
@@ -30,9 +30,13 @@ for (const locale of locales) {
   const t = dictionaries[locale].layout;
   const labels: Record<(typeof footerPages)[number], string> = {
     ...t.nav,
+    testimonials: t.testimonials,
     quiz: t.quiz,
     contact: t.footer.contact,
   };
+  // The site has no testimonial yet, so no link to their page
+  // (testimonials.spec.ts checks it on the feature test build).
+  const builtPages = footerPages.filter(isRouteKey);
 
   test(`the brand column shows the logo, the tagline and the company line (${locale})`, async ({
     page,
@@ -54,8 +58,9 @@ for (const locale of locales) {
       .getByRole("contentinfo")
       .getByRole("navigation", { name: t.footer.navigation });
     const links = nav.getByRole("link");
-    await expect(links).toHaveText(footerPages.map((key) => labels[key]));
-    for (const [index, key] of footerPages.entries()) {
+    expect(builtPages).not.toContain("testimonials");
+    await expect(links).toHaveText(builtPages.map((key) => labels[key]));
+    for (const [index, key] of builtPages.entries()) {
       await expect(links.nth(index)).toHaveAttribute("href", pathOf(key, locale));
     }
     // The page shown is marked, and only it.

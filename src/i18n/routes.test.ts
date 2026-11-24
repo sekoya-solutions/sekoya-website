@@ -10,12 +10,14 @@ import {
   normalizePath,
   pathOf,
   projectKey,
+  type RouteKey,
   routeOf,
   routes,
+  testimonialsPaths,
 } from "./routes";
 
-const entries = Object.entries(routes).flatMap(([key, paths]) =>
-  locales.map((locale) => ({ key, locale, path: paths[locale] })),
+const entries = (Object.keys(routes) as RouteKey[]).flatMap((key) =>
+  locales.map((locale) => ({ key, locale, path: pathOf(key, locale) })),
 );
 
 describe("the route map", () => {
@@ -130,5 +132,22 @@ describe("the portfolio's routes", () => {
 
   it("have no page for a project without a file", () => {
     expect(isRouteKey(projectKey("nowhere"))).toBe(false);
+  });
+});
+
+describe("the testimonials page (#23)", () => {
+  // The site has no testimonial yet: no page, so no link to it either. The
+  // feature test build, with a fixture, checks the page (e2e/testimonials.spec.ts).
+  it("is not a page while no testimonial exists", () => {
+    expect(isRouteKey("testimonials")).toBe(false);
+    expect(() => pathOf("testimonials", "fr")).toThrow(/testimonials/);
+    expect(linkHref({ page: "testimonials" }, "fr")).toBeUndefined();
+  });
+
+  it("has a translated path in each language, which no other page uses", () => {
+    expect(testimonialsPaths).toEqual({ fr: "/temoignages", en: "/en/testimonials" });
+    for (const locale of locales) {
+      expect(entries.map(({ path }) => path)).not.toContain(testimonialsPaths[locale]);
+    }
   });
 });

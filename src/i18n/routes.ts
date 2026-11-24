@@ -3,12 +3,15 @@
  * language switch and the hreflang alternates point to the equivalent page.
  * Astro's i18n does not translate paths, so this map is kept by hand, except
  * for the case studies and the portfolio's projects, one page each, which
- * come from their files (src/content/slugs.ts): every page must be in it (the
+ * come from their files (src/content/slugs.ts), and the testimonials page,
+ * there only once a testimonial exists (src/content/testimonials.ts): every
+ * page must be in it (the
  * base layout fails the build otherwise), and an end-to-end test visits every
  * entry in both languages.
  */
 import { subjectParameter } from "../content/contact-subjects";
 import { caseStudySlugs, projectSlugs } from "../content/slugs";
+import { hasTestimonials } from "../content/testimonials";
 import { defaultLocale, type Locale, locales } from "./config";
 
 const pages = {
@@ -27,6 +30,15 @@ const pages = {
 } as const satisfies Record<string, Record<Locale, string>>;
 
 /**
+ * The testimonials page's paths (#23). The page, and so its footer link and
+ * its sitemap entry, exists only once a testimonial does.
+ */
+export const testimonialsPaths = {
+  fr: "/temoignages",
+  en: "/en/testimonials",
+} as const satisfies Record<Locale, string>;
+
+/**
  * Pages kept out of search engines: no canonical URL, a `noindex` robots
  * meta tag, and no entry in the sitemap.
  */
@@ -43,7 +55,7 @@ export type CaseStudyKey = `caseStudy/${string}`;
 /** A portfolio project's page: `project/<slug>`, under the portfolio's path. */
 export type ProjectKey = `project/${string}`;
 
-export type RouteKey = keyof typeof pages | CaseStudyKey | ProjectKey;
+export type RouteKey = keyof typeof pages | "testimonials" | CaseStudyKey | ProjectKey;
 
 /** The route key of a case study. */
 export function caseStudyKey(slug: string): CaseStudyKey {
@@ -69,8 +81,10 @@ function pagesUnder<K extends string>(
   ) as Record<K, Record<Locale, string>>;
 }
 
-export const routes: Readonly<Record<RouteKey, Readonly<Record<Locale, string>>>> = {
+/** The pages that exist: every key, except the testimonials page until a testimonial does. */
+export const routes: Readonly<Partial<Record<RouteKey, Readonly<Record<Locale, string>>>>> = {
   ...pages,
+  ...(hasTestimonials() ? { testimonials: testimonialsPaths } : {}),
   ...pagesUnder("caseStudies", caseStudySlugs(), caseStudyKey),
   ...pagesUnder("portfolio", projectSlugs(), projectKey),
 };
@@ -121,10 +135,11 @@ export function linkHref(
   return `${pathOf(link.page, locale)}${query}${hash}`;
 }
 
-/** The path of a route in a language; a case study or project missing from the map throws. */
+/** The path of a route in a language; a page missing from the map throws. */
 export function pathOf(key: RouteKey, locale: Locale): string {
-  if (!isRouteKey(key)) throw new Error(`The page "${key}" is missing from src/i18n/routes.ts`);
-  return routes[key][locale];
+  const paths = Object.hasOwn(routes, key) ? routes[key] : undefined;
+  if (paths === undefined) throw new Error(`The page "${key}" is missing from src/i18n/routes.ts`);
+  return paths[locale];
 }
 
 /**

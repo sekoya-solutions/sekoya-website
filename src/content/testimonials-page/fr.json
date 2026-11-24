@@ -1,0 +1,17 @@
+{
+  "eyebrow": "Témoignages",
+  "title": "Ce que disent ceux qui ont travaillé avec moi",
+  "lead": "Des clients et des collègues racontent notre travail ensemble, avec leurs mots et leur accord.",
+  "home": {
+    "eyebrow": "Témoignages",
+    "title": "Ce que disent ceux qui ont travaillé avec moi.",
+    "more": "Tous les témoignages"
+  },
+  "labels": {
+    "translatedFrom": {
+      "fr": "Traduit du français",
+      "en": "Traduit de l'anglais"
+    },
+    "linkedin": "Profil LinkedIn de {author}"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "lang": "en",
+  "quote": "A test quote for the feature test build: it checks the section and the page, and is never deployed.",
+  "author": "Test Author",
+  "role": "Test role",
+  "company": "Example Company",
+  "year": 2026,
+  "linkedin": "https://www.linkedin.com/in/test-author",
+  "consent": true,
+  "featured": true,
+  "translations": {
+    "fr": {
+      "quote": "Une citation de test pour la version de test : elle vérifie la section et la page, et n'est jamais déployée.",
+      "role": "Rôle de test"
+    }
+  }
+}

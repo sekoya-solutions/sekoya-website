@@ -1,0 +1,96 @@
+---
+/**
+ * A testimonial's card (#23): a large opening quote mark, the quote, a note
+ * when it is a translation, then the author, their role and company, and a
+ * link to their LinkedIn profile when they gave one. A quote or role in
+ * another language than the page's is marked with its `lang`. No stars, no
+ * rating.
+ */
+import type { CollectionEntry } from "astro:content";
+import { translations } from "../../i18n";
+import type { Locale } from "../../i18n/config";
+import { fill } from "../../lib/career";
+import type { ShownTestimonial } from "../../lib/testimonials";
+import Icon from "../ui/Icon.astro";
+
+interface Props {
+  item: ShownTestimonial;
+  labels: CollectionEntry<"testimonialsPage">["data"]["labels"];
+  locale: Locale;
+}
+
+const { item, labels, locale } = Astro.props;
+const t = translations(locale);
+const lang = item.lang === locale ? undefined : item.lang;
+---
+
+<figure class="card testimonial reveal">
+  <span class="quote-mark" aria-hidden="true">“</span>
+  <blockquote lang={lang} class="text-[1.05rem] leading-[1.6] lg:text-lead">
+    <p>{item.quote}</p>
+  </blockquote>
+  {
+    item.translatedFrom !== undefined && (
+      <p class="text-sm text-muted">{labels.translatedFrom[item.translatedFrom]}</p>
+    )
+  }
+  <figcaption class="testimonial-author">
+    <span class="grid gap-0.5">
+      <span class="font-semibold">{item.author}</span>
+      <span class="text-[0.95rem] text-muted"><span lang={lang}>{item.role}</span> · {item.company}</span>
+    </span>
+    {
+      item.linkedin !== undefined && (
+        <a href={item.linkedin} class="linkedin-link">
+          <Icon name="linkedin" size={22} />
+          <span class="sr-only">
+            {fill(labels.linkedin, { author: item.author })} ({t.home.externalLink})
+          </span>
+        </a>
+      )
+    }
+  </figcaption>
+</figure>
+
+<style>
+  .testimonial {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 28px 24px 24px;
+  }
+
+  .quote-mark {
+    height: 0.5em;
+    color: var(--mint);
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1;
+    opacity: 0.4;
+  }
+
+  .testimonial-author {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+  }
+
+  /* A 44 px target around the icon. */
+  .linkedin-link {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    color: var(--muted);
+  }
+
+  .linkedin-link:hover {
+    color: var(--mint);
+  }
+</style>

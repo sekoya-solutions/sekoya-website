@@ -1,5 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
-import { formTestPort } from "./scripts/form-test.ts";
+import { featureTestPort } from "./scripts/feature-test.ts";
 import { browsersPath } from "./scripts/playwright-browsers.ts";
 
 // Playwright's browsers, in .tools/ms-playwright (scripts/playwright-browsers.ts).
@@ -13,8 +13,9 @@ const isCI = process.env.CI !== undefined && process.env.CI !== "";
 // The tests run against the production build in dist/, served by
 // `wrangler dev`, Cloudflare's local emulation of the Worker, with its
 // configuration and headers files (ADR 0002): run `npm run build` first.
-// The contact form's tests run against the test build with the form on, in
-// dist-form/ on its own port: run `npm run build:form-test` first too.
+// The tests of the features that are off on the site (the contact form, the
+// testimonials) run against the feature test build, in dist-feature/ on its
+// own port (scripts/feature-test.ts): run `npm run build:feature-test` first too.
 export default defineConfig({
   testDir: "e2e",
   forbidOnly: isCI,
@@ -34,8 +35,8 @@ export default defineConfig({
   webServer: [
     { command: `npm run preview -- --port ${port}`, url: `http://localhost:${port}` },
     {
-      command: `npm run preview -- --config e2e/wrangler.form-test.jsonc --port ${formTestPort}`,
-      url: `http://localhost:${formTestPort}`,
+      command: `npm run preview -- --config e2e/wrangler.feature-test.jsonc --port ${featureTestPort}`,
+      url: `http://localhost:${featureTestPort}`,
     },
   ].map((server) => ({
     ...server,
