@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { locales } from "../src/i18n/config";
 import { pathOf, type RouteKey, routes } from "../src/i18n/routes";
+import { expectLayoutStable, holdFont, painted, recordLayoutShifts } from "./layout-shift";
 
 // The base layout (ADR 0003, ADR 0010): the font, the landmarks, the skip
 // link, the focus ring, the icons and the width of the content.
@@ -50,44 +51,19 @@ test("the font is preloaded, swapped, and has size-adjusted fallbacks", async ({
 });
 
 // The page barely shifts through a real swap from a size-adjusted fallback
-// to Outfit. Those fallbacks resize fonts installed on the visitor's machine
-// (for system-ui: BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue or
-// Arial), so one of them must be installed where the test runs; CI installs
-// Roboto. Without one, the page starts in an unadjusted font and shifts.
-// `size-adjust` matches the average width only, so a row of short labels
-// aligned from the right or the centre (the header's navigation and its
-// contact button, from 1280 px) still moves by a few pixels: the owner allows
-// that, up to `maxFontSwapShift`, a hundredth of Google's 0.1 "good" limit
-// for the whole page.
-const maxFontSwapShift = 0.001;
-
+// to Outfit, within the one allowance for layout shifts (e2e/layout-shift.ts).
+// Those fallbacks resize fonts installed on the visitor's machine (for
+// system-ui: BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue or Arial),
+// so one of them must be installed where the test runs; CI installs Roboto.
+// Without one, the page starts in an unadjusted font and shifts.
 test("swapping the fallback for the font barely shifts the layout", async ({ page }) => {
-  // Every layout shift, recorded from before the page's first byte.
-  await page.addInitScript(() => {
-    const state = window as { shifts?: number[]; shiftObserver?: PerformanceObserver };
-    state.shifts = [];
-    state.shiftObserver = new PerformanceObserver((list) => {
-      for (const entry of list.getEntries())
-        state.shifts?.push((entry as PerformanceEntry & { value: number }).value);
-    });
-    state.shiftObserver.observe({ type: "layout-shift" });
-  });
+  await recordLayoutShifts(page);
   // The font is held back until the page has painted with the fallback, so
   // the swap really happens on screen.
-  let release = () => {};
-  const held = new Promise<void>((resolve) => {
-    release = resolve;
-  });
-  await page.route("**/_astro/fonts/*.woff2", async (route) => {
-    await held;
-    await route.continue();
-  });
+  const release = await holdFont(page);
   await page.goto("/", { waitUntil: "commit" });
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  // Two frames: the page has been painted at least once, with the fallback.
-  await page.evaluate(
-    () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
-  );
+  await painted(page);
   expect(await page.evaluate(outfitStatus)).toBe("loading");
   // A local face that matched an installed font has loaded; the others
   // report an error.
@@ -102,21 +78,8 @@ test("swapping the fallback for the font barely shifts the layout", async ({ pag
   ).not.toEqual([]);
   release();
 
-  const shifts = await page.evaluate(async () => {
-    await document.fonts.ready;
-    // Two more frames, so the swap is laid out and painted.
-    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-    const state = window as { shifts?: number[]; shiftObserver?: PerformanceObserver };
-    // Entries not yet delivered to the callback are taken here.
-    const pending = state.shiftObserver?.takeRecords() ?? [];
-    return [
-      ...(state.shifts ?? []),
-      ...pending.map((entry) => (entry as PerformanceEntry & { value: number }).value),
-    ];
-  });
+  await expectLayoutStable(page);
   expect(await page.evaluate(outfitStatus)).toBe("loaded");
-  const total = shifts.reduce((sum, shift) => sum + shift, 0);
-  expect(total, `layout shifts: ${shifts.join(", ")}`).toBeLessThanOrEqual(maxFontSwapShift);
 });
 
 test("the page has a header, a main region and a footer", async ({ page }) => {

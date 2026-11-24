@@ -1,6 +1,7 @@
 import { expect, type Page, test } from "@playwright/test";
 import { locales } from "../src/i18n/config";
 import { pathOf } from "../src/i18n/routes";
+import { expectLayoutStable, holdFont, painted, recordLayoutShifts } from "./layout-shift";
 
 // The home hero (#9): the logo's growth timeline, the copy's reveal, reduced
 // motion, the Largest Contentful Paint (LCP) element and layout stability.
@@ -258,8 +259,16 @@ test.describe("the hero copy", () => {
     expect(lcp.inHeading, `the LCP element is a ${lcp.tag}`).toBe(true);
   });
 
+  // Within the one allowance for layout shifts (e2e/layout-shift.ts), with
+  // the font held back until the page has painted, as on a slow connection:
+  // the swap then happens while the hero animates.
   test("shifts no layout while the hero animates", async ({ page }) => {
-    await page.goto("/");
+    await recordLayoutShifts(page);
+    const release = await holdFont(page);
+    await page.goto("/", { waitUntil: "commit" });
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await painted(page);
+    release();
     // Wait for every animation that ends: the whole growth and the reveal.
     await page.evaluate(() =>
       Promise.all(
@@ -272,16 +281,7 @@ test.describe("the hero copy", () => {
           .map((animation) => animation.finished),
       ),
     );
-    // A buffered observer holds every shift so far at once (Performance
-    // Timeline: observe() copies the buffered entries into its records).
-    const shifts = await page.evaluate(() => {
-      const observer = new PerformanceObserver(() => {});
-      observer.observe({ type: "layout-shift", buffered: true });
-      const entries = observer.takeRecords() as (PerformanceEntry & { value: number })[];
-      observer.disconnect();
-      return entries.map((entry) => entry.value);
-    });
-    expect(shifts).toEqual([]);
+    await expectLayoutStable(page);
   });
 
   test("ships no JavaScript beyond the theme and scroll reveal scripts", async ({ page }) => {
